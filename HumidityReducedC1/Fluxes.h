@@ -1,0 +1,120 @@
+/*
+ * Fluxes.h
+ *
+ *  Created on: Jun 19, 2017
+ *      Author: chuckjia
+ */
+
+#ifndef FLUXES_H_
+#define FLUXES_H_
+
+#include "InitialConditions.h"
+
+// Initialize fluxes
+double Hx[numCellsXDir][numCellsPDir][2];
+double Hp[numCellsXDir][numCellsPDir][2];
+
+// Initialize the reconstructions
+double uX[numCellsXDir][numCellsPDir][2];
+double uP[numCellsXDir][numCellsPDir][2];
+
+void reconstrSoln() {
+	for (int j = 1; j < numXGridPts; j++) {
+		double DpVal = getDp(j);
+		for (int k = 1; k < numPGridPts; k++) {
+			double solnThis1 = soln[j][k][0], solnThis2 = soln[j][k][1],
+					solnRight1 = soln[j + 1][k][0], solnRight2 = soln[j + 1][k][1],
+					solnLeft1 = soln[j - 1][k][0], solnLeft2 = soln[j - 1][k][1],
+					solnUpper1 = soln[j][k + 1][0], solnUpper2 = soln[j][k + 1][1],
+					solnLower1 = soln[j][k - 1][0], solnLower2 = soln[j][k - 1][1];
+			uX[j][k][0] = minmod3(theta * (solnRight1 - solnThis1) / Dx,
+					0.5 * (solnRight1 - solnLeft1) / Dx,
+					theta * (solnThis1 - solnLeft1) / Dx);
+			uX[j][k][1] = minmod3(theta * (solnRight2 - solnThis2) / Dx,
+					0.5 * (solnRight2 - solnLeft2) / Dx,
+					theta * (solnThis2 - solnLeft2) / Dx);
+			uP[j][k][0] = minmod3(theta * (solnUpper1 - solnThis1) / DpVal,
+					0.5 * (solnUpper1 - solnLower1) / DpVal,
+					theta * (solnThis1 - solnLower1) / DpVal);
+			uP[j][k][1] = minmod3(theta * (solnUpper2 - solnThis2) / DpVal,
+					0.5 * (solnUpper2 - solnLower2) / DpVal,
+					theta * (solnThis2 - solnLower2) / DpVal);
+		}
+	}
+}
+
+void reconstrFcn(double res[2], int j, int k, double x, double p) {
+	double xCenter = getCenterX(j, k), pCenter = getCenterP(j, k);
+	double uThis1 = soln[j][k][0], uThis2 = soln[j][k][1];
+	double xTerm = x - xCenter; // The term x - x_j
+	double pTerm = p - pCenter; // The term y - y_k
+	res[0] = uThis1 + uX[j][k][0] * xTerm + uP[j][k][0] * pTerm;
+	res[1] = uThis2 + uX[j][k][1] * xTerm + uP[j][k][1] * pTerm;
+}
+
+void calcFluxes() {
+	reconstrSoln();
+	for (int j = 1; j < numXGridPts; j++) {
+		double DpVal = getDp(j);
+		for (int k = 1; k < numPGridPts; k++) {
+			// The center of this cell
+			double xCenter = getCenterX(j, k), pCenter = getCenterP(j, k);
+
+			// Reconstructed values at the interfaces
+			double solnN[2], solnSNext[2], solnE[2], solnWNext[2];
+			double pTemp = 0.5 * (getTopLeftP(j, k) + getTopRightP(j, k));
+			reconstrFcn(solnN, j, k, xCenter, pTemp);
+			reconstrFcn(solnSNext, j, k + 1, xCenter, pTemp);
+			double xTemp = getRightX(j, k);
+			reconstrFcn(solnE, j, k, xTemp, pCenter);
+			reconstrFcn(solnWNext, j + 1, k, xTemp, pCenter);
+
+			// The speeds of the interface
+			// Speeds a+ and a-
+			double eval1 = uFcn(solnWNext[0], solnWNext[1]),
+					eval2 = uFcn(solnE[0], solnE[1]); // Eigenvalues
+			double aPlus = max3(eval1, eval2, 0);
+			double aMinus = min3(eval1, eval2, 0);
+			// Speeds b+ and b-, 1st component
+			eval1 = omegaFcn(solnSNext[0], solnSNext[1]);
+			eval2 = omegaFcn(solnN[0], solnN[1]);
+			double bPlus = max3(eval1, eval2, 0);
+			double bMinus = min3(eval1, eval2, 0);
+
+			// Calculate the numerical fluxes: Hx
+			double plusVal = aPlus, minusVal = aMinus;
+			xTemp = getRightX(j, k), pTemp = pCenter;
+			// Here solnVal = u_{j, k}^E, solnNextVal = u_{j + 1,k}^W
+			// 1st component of Hx
+			double solnVal = solnE[0], solnNextVal = solnWNext[0];
+			Hx[j][k][0] = (plusVal * fFcn(solnVal, xTemp, pTemp) -
+					minusVal * fFcn(solnNextVal, xTemp, pTemp) +
+					plusVal * minusVal * (solnNextVal - solnVal))
+					/ (plusVal - minusVal);
+			// 2nd component of Hx
+			solnVal = solnE[1], solnNextVal = solnWNext[1];
+			Hx[j][k][1] = (plusVal * fFcn(solnVal, xTemp, pTemp) -
+					minusVal * fFcn(solnNextVal, xTemp, pTemp) +
+					plusVal * minusVal * (solnNextVal - solnVal))
+					/ (plusVal - minusVal);
+			// Calculate the numerical fluxes: Hp
+			plusVal = bPlus, minusVal = bMinus;
+			xTemp = xCenter, pTemp = 0.5 * (getTopLeftP(j, k) + getTopRightP(j, k));
+			// Here solnVal = u_{j, k}^N, solnNextVal = u_{j + 1,k}^S
+			// 1st component of Hp
+			solnVal = solnN[0], solnNextVal = solnSNext[0];
+			Hp[j][k][0] = (plusVal * fFcn(solnVal, xTemp, pTemp) -
+					minusVal * fFcn(solnNextVal, xTemp, pTemp) +
+					plusVal * minusVal * (solnNextVal - solnVal))
+					/ (plusVal - minusVal);
+			// 2nd component of Hp
+			solnVal = solnN[1], solnNextVal = solnSNext[1];
+			Hp[j][k][1] = (plusVal * fFcn(solnVal, xTemp, pTemp) -
+					minusVal * fFcn(solnNextVal, xTemp, pTemp) +
+					plusVal * minusVal * (solnNextVal - solnVal))
+					/ (plusVal - minusVal);
+		}
+	}
+}
+
+#endif /* FLUXES_H_ */
