@@ -1,14 +1,13 @@
 /*
  * Fluxes.h
  *
- *  Created on: Jun 19, 2017
+ *  Created on: Jun 10, 2017
  *      Author: chuckjia
  */
 
 #ifndef FLUXES_H_
 #define FLUXES_H_
-
-#include "InitialConditions.h"
+#include "ModelConditions.h"
 
 // Initialize fluxes
 double Hx[numCellsXDir][numCellsPDir][2];
@@ -27,20 +26,64 @@ void reconstrSoln() {
 					solnLeft1 = soln[j - 1][k][0], solnLeft2 = soln[j - 1][k][1],
 					solnUpper1 = soln[j][k + 1][0], solnUpper2 = soln[j][k + 1][1],
 					solnLower1 = soln[j][k - 1][0], solnLower2 = soln[j][k - 1][1];
-			uX[j][k][0] = minmod3(theta * (solnRight1 - solnThis1) / Dx,
+			uX[j][k][0] = minmod3(theta_CONST * (solnRight1 - solnThis1) / Dx,
 					0.5 * (solnRight1 - solnLeft1) / Dx,
-					theta * (solnThis1 - solnLeft1) / Dx);
-			uX[j][k][1] = minmod3(theta * (solnRight2 - solnThis2) / Dx,
+					theta_CONST * (solnThis1 - solnLeft1) / Dx);
+			uX[j][k][1] = minmod3(theta_CONST * (solnRight2 - solnThis2) / Dx,
 					0.5 * (solnRight2 - solnLeft2) / Dx,
-					theta * (solnThis2 - solnLeft2) / Dx);
-			uP[j][k][0] = minmod3(theta * (solnUpper1 - solnThis1) / DpVal,
+					theta_CONST * (solnThis2 - solnLeft2) / Dx);
+			uP[j][k][0] = minmod3(theta_CONST * (solnUpper1 - solnThis1) / DpVal,
 					0.5 * (solnUpper1 - solnLower1) / DpVal,
-					theta * (solnThis1 - solnLower1) / DpVal);
-			uP[j][k][1] = minmod3(theta * (solnUpper2 - solnThis2) / DpVal,
+					theta_CONST * (solnThis1 - solnLower1) / DpVal);
+			uP[j][k][1] = minmod3(theta_CONST * (solnUpper2 - solnThis2) / DpVal,
 					0.5 * (solnUpper2 - solnLower2) / DpVal,
-					theta * (solnThis2 - solnLower2) / DpVal);
+					theta_CONST * (solnThis2 - solnLower2) / DpVal);
 		}
 	}
+	// When j = 0 or numCellsPDir - 1
+	int indRange[2] = {0, numCellsPDir - 1};
+	for (int ii = 0; ii < 2; ii++) {
+		int jVal = indRange[ii];
+		for (int k = 1; k < numPGridPts; k++) {
+			uX[jVal][k][0] = 0;
+			uX[jVal][k][1] = 0;
+			double DpVal = getDp(jVal);
+			double solnThis1 = soln[jVal][k][0], solnThis2 = soln[jVal][k][1],
+					solnUpper1 = soln[jVal][k + 1][0], solnUpper2 = soln[jVal][k + 1][1],
+					solnLower1 = soln[jVal][k - 1][0], solnLower2 = soln[jVal][k - 1][1];
+			uP[jVal][k][0] = minmod3(theta_CONST * (solnUpper1 - solnThis1) / DpVal,
+					0.5 * (solnUpper1 - solnLower1) / DpVal,
+					theta_CONST * (solnThis1 - solnLower1) / DpVal);
+			uP[jVal][k][1] = minmod3(theta_CONST * (solnUpper2 - solnThis2) / DpVal,
+					0.5 * (solnUpper2 - solnLower2) / DpVal,
+					theta_CONST * (solnThis2 - solnLower2) / DpVal);
+		}
+	}
+	// When i = 0 or numCellsXDir - 1
+	indRange[1] = numCellsXDir - 1;
+	for (int ii = 0; ii < 2; ii++) {
+		int kVal = indRange[ii];
+		for (int j = 1; j < numPGridPts; j++) {
+			double solnThis1 = soln[j][kVal][0], solnThis2 = soln[j][kVal][1],
+					solnRight1 = soln[j + 1][kVal][0], solnRight2 = soln[j + 1][kVal][1],
+					solnLeft1 = soln[j - 1][kVal][0], solnLeft2 = soln[j - 1][kVal][1];
+			uX[j][kVal][0] = minmod3(theta_CONST * (solnRight1 - solnThis1) / Dx,
+					0.5 * (solnRight1 - solnLeft1) / Dx,
+					theta_CONST * (solnThis1 - solnLeft1) / Dx);
+			uX[j][kVal][1] = minmod3(theta_CONST * (solnRight2 - solnThis2) / Dx,
+					0.5 * (solnRight2 - solnLeft2) / Dx,
+					theta_CONST * (solnThis2 - solnLeft2) / Dx);
+			uP[j][kVal][0] = 0;
+			uP[j][kVal][1] = 0;
+		}
+	}
+	// Corners
+	uX[0][0][0] = 0; uX[0][0][1] = 0; uP[0][0][0] = 0; uP[0][0][1] = 0;
+	int jTemp = numCellsXDir - 1, kTemp = numCellsPDir - 1;
+	uX[jTemp][0][0] = 0; uX[jTemp][0][1] = 0; uP[jTemp][0][0] = 0; uP[jTemp][0][1] = 0;
+	uX[0][kTemp][0] = 0; uX[0][kTemp][1] = 0; uP[0][kTemp][0] = 0; uP[0][kTemp][1] = 0;
+	uX[jTemp][kTemp][0] = 0; uX[jTemp][kTemp][1] = 0;
+	uP[jTemp][kTemp][0] = 0; uP[jTemp][kTemp][1] = 0;
 }
 
 void reconstrFcn(double res[2], int j, int k, double x, double p) {
@@ -54,9 +97,9 @@ void reconstrFcn(double res[2], int j, int k, double x, double p) {
 
 void calcFluxes() {
 	reconstrSoln();
-	for (int j = 1; j < numXGridPts; j++) {
+	for (int j = 0; j < numCellsXDir; j++) {
 		double DpVal = getDp(j);
-		for (int k = 1; k < numPGridPts; k++) {
+		for (int k = 0; k < numCellsPDir; k++) {
 			// The center of this cell
 			double xCenter = getCenterX(j, k), pCenter = getCenterP(j, k);
 

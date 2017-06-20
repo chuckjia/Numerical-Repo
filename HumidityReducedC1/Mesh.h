@@ -1,7 +1,7 @@
 /*
  * Mesh.h
  *
- *  Created on: Jun 18, 2017
+ *  Created on: Jun 10, 2017
  *      Author: chuckjia
  */
 
@@ -219,9 +219,7 @@ double getCenterP(int i, int j) {
 void buildMesh() {
 	calcDp();
 	buildGrid();
-	//printGrid(numXGridPts, numPGridPts, meshGridP);
 	calcGeometry();
-	//printGrid(numCellsXDir, numCellsPDir, cellVol);
 }
 
 #endif /* MESH_H_ */
