@@ -10,14 +10,14 @@
 
 #include "Constants.h"
 
-double DpArr[numXGridPts];  // DpArr[i] stores the Delta p value at x[i + 1/2][j]
+double DpArr[numGridPtsXDir];  // DpArr[i] stores the Delta p value at x[i + 1/2][j]
 
 /*
  * meshGridY[i][j] represents the y coordinate of the grid
  * point (i + 1/2, j + 1/2)
  * meshGrid is global
  */
-double meshGridP[numXGridPts][numPGridPts];
+double meshGridP[numGridPtsXDir][numGridPtsPDir];
 
 // The following are arrays storing the geometry of cells
 double cellVol[numCellsXDir][numCellsPDir];  // Stores the volumes of all cells
@@ -30,7 +30,7 @@ double cellCenter[numCellsXDir][numCellsPDir][2];  // Stores the centers of all 
  */
 
 void calcDp() {
-	for (int i = 0; i < numXGridPts; i++)
+	for (int i = 0; i < numGridPtsXDir; i++)
 		DpArr[i] = Dp(x0 + i * Dx);
 }
 
@@ -39,7 +39,7 @@ void calcDp() {
  */
 
 double getDp(int i) {
-	if (i == numXGridPts)
+	if (i == numGridPtsXDir)
 		return DpArr[i - 1];
 	return DpArr[i];
 }
@@ -49,9 +49,9 @@ double getDp(int i) {
  */
 
 void buildGrid() {
-	for (int i = 0; i < numXGridPts; i++) {
+	for (int i = 0; i < numGridPtsXDir; i++) {
 		double DpVal = DpArr[i];
-		for (int j = 0; j < numPGridPts; j++)
+		for (int j = 0; j < numGridPtsPDir; j++)
 			meshGridP[i][j] = j * DpVal;
 	}
 }
@@ -60,22 +60,22 @@ void buildGrid() {
  * Following functions are getters for coordinates of each cell
  */
 
-double getRightX(int i, int j) {
-	if (i == numXGridPts)
+double getCellRightX(int i, int j) {
+	if (i == numGridPtsXDir)
 		return xL;
 	return i * Dx;
 }
 
-double getLeftX(int i, int j) {
+double getCellLeftX(int i, int j) {
 	if (i == 0)
 		return x0;
 	return (i - 1) * Dx;
 }
 
 double getTopRightP(int i, int j) {
-	if (i == numXGridPts)
+	if (i == numGridPtsXDir)
 		i--;
-	if (j == numPGridPts)
+	if (j == numGridPtsPDir)
 		j--;
 	return meshGridP[i][j];
 }
@@ -83,7 +83,7 @@ double getTopRightP(int i, int j) {
 double getTopLeftP(int i, int j) {
 	if (i == 0)
 		i++;
-	if (j == numPGridPts)
+	if (j == numGridPtsPDir)
 		j--;
 	return meshGridP[i - 1][j];
 }
@@ -97,7 +97,7 @@ double getBottLeftP(int i, int j) {
 }
 
 double getBottRightP(int i, int j) {
-	if (i == numXGridPts)
+	if (i == numGridPtsXDir)
 		i--;
 	if (j == 0)
 		j++;
@@ -150,7 +150,7 @@ void calcGeometry() {
 	for (int i = 1; i < rightmostXInd; i++)
 		for (int j = 1; j < upmostPInd; j++) {
 			// Cell corner coordinates
-			double xLeft = getLeftX(i, j), xRight = getRightX(i, j);
+			double xLeft = getCellLeftX(i, j), xRight = getCellRightX(i, j);
 			double topLeft[2] = {xLeft, getTopLeftP(i, j)};
 			double topRight[2] = {xRight, getTopRightP(i, j)};
 			double bottLeft[2] = {xLeft, getBottLeftP(i, j)};
@@ -183,7 +183,7 @@ void calcGeometry() {
 		cellVol[i][jBott] = 0;
 		cellVol[i][jTop] = 0;
 		// Cell center
-		double xCenter = 0.5 * (getLeftX(i, jBott) + getRightX(i, jBott));
+		double xCenter = 0.5 * (getCellLeftX(i, jBott) + getCellRightX(i, jBott));
 		cellCenter[i][jBott][0] = xCenter;
 		cellCenter[i][jBott][1] = pA;
 		cellCenter[i][jTop][0] = xCenter;

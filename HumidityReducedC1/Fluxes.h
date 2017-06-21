@@ -18,9 +18,9 @@ double uX[numCellsXDir][numCellsPDir][2];
 double uP[numCellsXDir][numCellsPDir][2];
 
 void reconstrSoln() {
-	for (int j = 1; j < numXGridPts; j++) {
+	for (int j = 1; j < numGridPtsXDir; j++) {
 		double DpVal = getDp(j);
-		for (int k = 1; k < numPGridPts; k++) {
+		for (int k = 1; k < numGridPtsPDir; k++) {
 			double solnThis1 = soln[j][k][0], solnThis2 = soln[j][k][1],
 					solnRight1 = soln[j + 1][k][0], solnRight2 = soln[j + 1][k][1],
 					solnLeft1 = soln[j - 1][k][0], solnLeft2 = soln[j - 1][k][1],
@@ -44,7 +44,7 @@ void reconstrSoln() {
 	int indRange[2] = {0, numCellsPDir - 1};
 	for (int ii = 0; ii < 2; ii++) {
 		int jVal = indRange[ii];
-		for (int k = 1; k < numPGridPts; k++) {
+		for (int k = 1; k < numGridPtsPDir; k++) {
 			uX[jVal][k][0] = 0;
 			uX[jVal][k][1] = 0;
 			double DpVal = getDp(jVal);
@@ -63,7 +63,7 @@ void reconstrSoln() {
 	indRange[1] = numCellsXDir - 1;
 	for (int ii = 0; ii < 2; ii++) {
 		int kVal = indRange[ii];
-		for (int j = 1; j < numPGridPts; j++) {
+		for (int j = 1; j < numGridPtsPDir; j++) {
 			double solnThis1 = soln[j][kVal][0], solnThis2 = soln[j][kVal][1],
 					solnRight1 = soln[j + 1][kVal][0], solnRight2 = soln[j + 1][kVal][1],
 					solnLeft1 = soln[j - 1][kVal][0], solnLeft2 = soln[j - 1][kVal][1];
@@ -108,7 +108,7 @@ void calcFluxes() {
 			double pTemp = 0.5 * (getTopLeftP(j, k) + getTopRightP(j, k));
 			reconstrFcn(solnN, j, k, xCenter, pTemp);
 			reconstrFcn(solnSNext, j, k + 1, xCenter, pTemp);
-			double xTemp = getRightX(j, k);
+			double xTemp = getCellRightX(j, k);
 			reconstrFcn(solnE, j, k, xTemp, pCenter);
 			reconstrFcn(solnWNext, j + 1, k, xTemp, pCenter);
 
@@ -126,7 +126,7 @@ void calcFluxes() {
 
 			// Calculate the numerical fluxes: Hx
 			double plusVal = aPlus, minusVal = aMinus;
-			xTemp = getRightX(j, k), pTemp = pCenter;
+			xTemp = getCellRightX(j, k), pTemp = pCenter;
 			// Here solnVal = u_{j, k}^E, solnNextVal = u_{j + 1,k}^W
 			// 1st component of Hx
 			double solnVal = solnE[0], solnNextVal = solnWNext[0];

@@ -36,9 +36,9 @@ void rk2() {
 		printf("%5.1f percent\n", t / finalTime * 100);
 		// Step 1
 		calcFluxes();
-		for (int j = 1; j < numXGridPts; j++) {
+		for (int j = 1; j < numGridPtsXDir; j++) {
 			double DpVal = getDp(j);
-			for (int k = 1; k < numPGridPts; k++) {
+			for (int k = 1; k < numGridPtsPDir; k++) {
 				// Preserve the current solution
 				solnCurr[j][k][0] = soln[j][k][0];
 				solnCurr[j][k][1] = soln[j][k][1];
@@ -53,9 +53,9 @@ void rk2() {
 
 		// Step 2
 		calcFluxes();
-		for (int j = 1; j < numXGridPts; j++) {
+		for (int j = 1; j < numGridPtsXDir; j++) {
 			double DpVal = getDp(j);
-			for (int k = 1; k < numPGridPts; k++) {
+			for (int k = 1; k < numGridPtsPDir; k++) {
 				// Calculate R
 				double RVal[2];
 				calcRVal(RVal, j, k, t, DpVal);
@@ -67,24 +67,24 @@ void rk2() {
 
 		// The boundary conditions
 		// When j = 0 (left side)
-		for (int k = 1; k < numPGridPts; k++) {
+		for (int k = 1; k < numGridPtsPDir; k++) {
 			soln[0][k][0] = soln[1][k][0];
 			soln[0][k][1] = soln[1][k][1];
 		}
 		// When j = numCellsXDir - 1 (right side)
 		int jVal1 = numCellsXDir - 1, jVal2 = numCellsXDir - 2;
-		for (int k = 1; k < numPGridPts; k++) {
+		for (int k = 1; k < numGridPtsPDir; k++) {
 			soln[jVal1][k][0] = soln[jVal2][k][0];
 			soln[jVal1][k][1] = soln[jVal2][k][1];
 		}
 		// When k = 0 (bottom side)
-		for (int j = 1; j < numXGridPts; j++) {
+		for (int j = 1; j < numGridPtsXDir; j++) {
 			soln[j][0][0] = soln[j][1][0];
 			soln[j][0][1] = soln[j][1][1];
 		}
 		// When k = numCellsPDir - 1 (top side)
 		int kVal1 = numCellsPDir - 1, kVal2 = numCellsPDir - 2;
-		for (int j = 1; j < numPGridPts; j++) {
+		for (int j = 1; j < numGridPtsPDir; j++) {
 			soln[j][kVal1][0] = soln[j][kVal2][0];
 			soln[j][kVal1][1] = soln[j][kVal2][1];
 		}

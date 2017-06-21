@@ -27,8 +27,8 @@ const int finalTime = numTimeSteps * Dt;
 const double x0 = 0;
 const double xL = 50;
 const double Dx = (xL - x0) / Nx;
-const int numXGridPts = Nx + 1;
-const int numPGridPts = Np + 1;
+const int numGridPtsXDir = Nx + 1;
+const int numGridPtsPDir = Np + 1;
 const int numCellsXDir = Nx + 2;
 const int numCellsPDir = Np + 2;
 

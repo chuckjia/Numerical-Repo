@@ -4,7 +4,3 @@ flux
 fluxes
 runge
 kutta
-min
-minmod
-sgn
-coords
