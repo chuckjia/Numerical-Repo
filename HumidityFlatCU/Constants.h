@@ -44,11 +44,13 @@ const double pB = 1000;
  * Auto-generated constants
  */
 const double Dx = (xL - x0) / Nx;  // Size of each x step
+const double DxInv = Nx / (xL - x0);
 const double Dp = (pB - pA) / Np;  // Size of each p step
-const int numGridPtsXDir = Nx + 1;  // Number of grid points in the x direction
-const int numGridPtsPDir = Np + 1;  // Number of grid points in the p direction
-const int numCellsXDir = Nx + 2;  // Number of cells in the x direction (including flat control volumes)
-const int numCellsPDir = Np + 2;  // Number of cells in the p direction (including flat control volumes)
+const double DpInv = Np / (pB - pA);
+const int numCellsX = Nx + 2;  // Number of cells in the x direction (including flat control volumes)
+const int numCellsP = Np + 2;  // Number of cells in the p direction (including flat control volumes)
+const int lastIndexX = Nx + 1;  // The rightmost cell index on the x-direction (used for convenience)
+const int lastIndexP = Np + 1;  // The top cell index on the p-direction (used for convenience)
 
 /*
  * Other (preset) model constants: constants used in the model functions
@@ -59,25 +61,24 @@ const double R_CONST = 287;
 const double Cp_CONST = 1004;
 const double Rv_CONST = 461.50;
 
-
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Model Functions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double uFcn(double x, double p) {
+double u_fcn(double x, double p) {
 	return 7.5 + cos(M_PI * p / p0_CONST) * cos(2 * M_PI * x / xL);
 }
 
-double omegaFcn(double x, double p) {
+double omega_fcn(double x, double p) {
 	return sin(M_PI * p / p0_CONST) * cos(2 * M_PI * x / xL);
 }
 
-double fFcn(double input, double x, double p) {
-	return uFcn(x, p) * input;
+double f_fcn(double input, double x, double p) {
+	return u_fcn(x, p) * input;
 }
 
-double gFcn(double input, double x, double p) {
-	return omegaFcn(x, p) * input;
+double g_fcn(double input, double x, double p) {
+	return omega_fcn(x, p) * input;
 }
 
 #endif /* CONSTANTS_H_ */

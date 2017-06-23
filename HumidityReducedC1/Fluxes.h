@@ -10,12 +10,12 @@
 #include "ModelConditions.h"
 
 // Initialize fluxes
-double Hx[numCellsXDir][numCellsPDir][2];
-double Hp[numCellsXDir][numCellsPDir][2];
+double Hx[numCellsX][numCellsP][2];
+double Hp[numCellsX][numCellsP][2];
 
 // Initialize the reconstructions
-double uX[numCellsXDir][numCellsPDir][2];
-double uP[numCellsXDir][numCellsPDir][2];
+double uX[numCellsX][numCellsP][2];
+double uP[numCellsX][numCellsP][2];
 
 void reconstrSoln() {
 	for (int j = 1; j < numGridPtsXDir; j++) {
@@ -41,7 +41,7 @@ void reconstrSoln() {
 		}
 	}
 	// When j = 0 or numCellsPDir - 1
-	int indRange[2] = {0, numCellsPDir - 1};
+	int indRange[2] = {0, numCellsP - 1};
 	for (int ii = 0; ii < 2; ii++) {
 		int jVal = indRange[ii];
 		for (int k = 1; k < numGridPtsPDir; k++) {
@@ -60,7 +60,7 @@ void reconstrSoln() {
 		}
 	}
 	// When i = 0 or numCellsXDir - 1
-	indRange[1] = numCellsXDir - 1;
+	indRange[1] = numCellsX - 1;
 	for (int ii = 0; ii < 2; ii++) {
 		int kVal = indRange[ii];
 		for (int j = 1; j < numGridPtsPDir; j++) {
@@ -79,7 +79,7 @@ void reconstrSoln() {
 	}
 	// Corners
 	uX[0][0][0] = 0; uX[0][0][1] = 0; uP[0][0][0] = 0; uP[0][0][1] = 0;
-	int jTemp = numCellsXDir - 1, kTemp = numCellsPDir - 1;
+	int jTemp = numCellsX - 1, kTemp = numCellsP - 1;
 	uX[jTemp][0][0] = 0; uX[jTemp][0][1] = 0; uP[jTemp][0][0] = 0; uP[jTemp][0][1] = 0;
 	uX[0][kTemp][0] = 0; uX[0][kTemp][1] = 0; uP[0][kTemp][0] = 0; uP[0][kTemp][1] = 0;
 	uX[jTemp][kTemp][0] = 0; uX[jTemp][kTemp][1] = 0;
@@ -97,9 +97,9 @@ void reconstrFcn(double res[2], int j, int k, double x, double p) {
 
 void calcFluxes() {
 	reconstrSoln();
-	for (int j = 0; j < numCellsXDir; j++) {
+	for (int j = 0; j < numCellsX; j++) {
 		double DpVal = getDp(j);
-		for (int k = 0; k < numCellsPDir; k++) {
+		for (int k = 0; k < numCellsP; k++) {
 			// The center of this cell
 			double xCenter = getCenterX(j, k), pCenter = getCenterP(j, k);
 

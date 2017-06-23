@@ -29,11 +29,11 @@ const double xL = 50;
 const double Dx = (xL - x0) / Nx;
 const int numGridPtsXDir = Nx + 1;
 const int numGridPtsPDir = Np + 1;
-const int numCellsXDir = Nx + 2;
-const int numCellsPDir = Np + 2;
+const int numCellsX = Nx + 2;
+const int numCellsP = Np + 2;
 
 // Initialize the solution
-double soln[numCellsXDir][numCellsPDir][2];
+double soln[numCellsX][numCellsP][2];
 
 const double pA = 200;
 

@@ -20,8 +20,8 @@ double DpArr[numGridPtsXDir];  // DpArr[i] stores the Delta p value at x[i + 1/2
 double meshGridP[numGridPtsXDir][numGridPtsPDir];
 
 // The following are arrays storing the geometry of cells
-double cellVol[numCellsXDir][numCellsPDir];  // Stores the volumes of all cells
-double cellCenter[numCellsXDir][numCellsPDir][2];  // Stores the centers of all cells
+double cellVol[numCellsX][numCellsP];  // Stores the volumes of all cells
+double cellCenter[numCellsX][numCellsP][2];  // Stores the centers of all cells
 
 /*
  * Calculate and store all the Delta p values. DpArr[i] represents the Delta p
@@ -146,7 +146,7 @@ void calcBaryCenter(double center[2], double topLeft[2], double topRight[2],
 
 void calcGeometry() {
 	// Calculate for all normal (inner) cells
-	int rightmostXInd = numCellsXDir - 1, upmostPInd = numCellsPDir - 1;
+	int rightmostXInd = numCellsX - 1, upmostPInd = numCellsP - 1;
 	for (int i = 1; i < rightmostXInd; i++)
 		for (int j = 1; j < upmostPInd; j++) {
 			// Cell corner coordinates

@@ -9,8 +9,23 @@
 
 #ifndef TESTFCNS_H_
 #define TESTFCNS_H_
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Including Basic Libraries
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
 #include <stdio.h>
 #include <math.h>
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Test Functions and Solutions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Functions For Testing Purposes
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 /*
  * Print out a 2D array/matrix of double-precision entries

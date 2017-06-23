@@ -10,7 +10,7 @@
 #include "Fluxes.h"
 
 // Temporarily store the solution for use in the Runge-Kutta method
-double solnCurr[numCellsXDir][numCellsPDir][2];
+double solnCurr[numCellsX][numCellsP][2];
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Calculate the vector R
@@ -72,7 +72,7 @@ void rk2() {
 			soln[0][k][1] = soln[1][k][1];
 		}
 		// When j = numCellsXDir - 1 (right side)
-		int jVal1 = numCellsXDir - 1, jVal2 = numCellsXDir - 2;
+		int jVal1 = numCellsX - 1, jVal2 = numCellsX - 2;
 		for (int k = 1; k < numGridPtsPDir; k++) {
 			soln[jVal1][k][0] = soln[jVal2][k][0];
 			soln[jVal1][k][1] = soln[jVal2][k][1];
@@ -83,7 +83,7 @@ void rk2() {
 			soln[j][0][1] = soln[j][1][1];
 		}
 		// When k = numCellsPDir - 1 (top side)
-		int kVal1 = numCellsPDir - 1, kVal2 = numCellsPDir - 2;
+		int kVal1 = numCellsP - 1, kVal2 = numCellsP - 2;
 		for (int j = 1; j < numGridPtsPDir; j++) {
 			soln[j][kVal1][0] = soln[j][kVal2][0];
 			soln[j][kVal1][1] = soln[j][kVal2][1];

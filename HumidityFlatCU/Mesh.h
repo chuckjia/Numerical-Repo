@@ -18,55 +18,46 @@
 /*
  * Initialize the space for the mesh
  */
-double cellLeftX[numCellsXDir],  // Stores x-coords of left side of cell
-cellRightX[numCellsXDir],  // Stores x-coords of right side of cell
-cellTopP[numCellsXDir],  // Stores p-coords of top side of cell
-cellBottP[numCellsXDir];  // Stores p-coords of bottom side of cell
-double cellCenter[numCellsXDir][numCellsPDir][2];  // Stores coords of centers of all cells
+// Stores x-coords of the left (0) and right (1) sides of a cell
+double cellSideX[numCellsX][2];
+// Stores p-coords of the bottom (0) and top (1) sides of a cell
+double cellSideP[numCellsP][2];
+double cellCenter[numCellsX][numCellsP][2];  // Stores coords of centers of all cells
 double cellVol = Dx * Dp;
 
 /*
  * Constructs the grid: calculate cellLeftX, cellRightX, cellTopP, cellBottP
  */
 void buildGrid() {
-	// Temporary values
-	int tempInt;
-	double tempDb;
-
 	// x direction
-	cellLeftX[0] = 0;
-	cellRightX[0] = 0;
-	tempInt = numCellsXDir - 1;
-	for (int i = 1; i < tempInt; i++) {
-		cellLeftX[i] = (i - 1) * Dx;
-		cellRightX[i] = i * Dx;
+	cellSideX[0][0] = x0;
+	cellSideX[0][1] = x0;
+	for (int i = 1; i < lastIndexX; i++) {
+		cellSideX[i][0] = x0 + (i - 1) * Dx;
+		cellSideX[i][1] = x0 + i * Dx;
 	}
-	tempDb = cellRightX[tempInt - 1];
-	cellLeftX[tempInt] = tempDb;
-	cellRightX[tempInt] = tempDb;
+	cellSideX[lastIndexX][0] = xL;
+	cellSideX[lastIndexX][1] = xL;
 
 	// p direction
-	cellTopP[0] = 0;
-	cellBottP[0] = 0;
-	tempInt = numCellsPDir - 1;
-	for (int j = 1; j < tempInt; j++) {
-		cellBottP[j] = (j - 1) * Dp;
-		cellTopP[j] = j * Dp;
+	cellSideP[0][0] = 0;
+	cellSideP[0][1] = 0;
+	for (int j = 1; j < lastIndexP; j++) {
+		cellSideP[j][0] = pA + (j - 1) * Dp;
+		cellSideP[j][1] = pA + j * Dp;
 	}
-	tempDb = cellTopP[tempInt - 1];
-	cellBottP[tempInt] = tempDb;
-	cellTopP[tempInt] = tempDb;
+	cellSideP[lastIndexP][0] = pB;
+	cellSideP[lastIndexP][1] = pB;
 }
 
 /*
  * Calculate the center coordinates for all cells and store them in the cellCenter
  */
 void calcCellCenter() {
-	int tempInt1 = numCellsXDir - 1, tempInt2 = numCellsPDir - 1;
-	for (int i = 0; i < tempInt1; i++)
-		for (int j = 0; j < tempInt2; j++) {
-			cellCenter[i][j][0] = 0.5 * (cellLeftX[i] + cellRightX[i]);
-			cellCenter[i][j][1] = 0.5 * (cellTopP[j] + cellBottP[j]);
+	for (int i = 0; i < numCellsX; i++)
+		for (int j = 0; j < numCellsP; j++) {
+			cellCenter[i][j][0] = 0.5 * (cellSideX[i][0] + cellSideX[i][1]);
+			cellCenter[i][j][1] = 0.5 * (cellSideP[j][0] + cellSideP[j][1]);
 		}
 }
 
@@ -78,28 +69,28 @@ void calcCellCenter() {
  * Get the x coordinate on the left side of a cell
  */
 double getCellLeftX(int i, int j) {
-	return cellLeftX[i];
+	return cellSideX[i][0];
 }
 
 /*
  * Get the x coordinate on the right side of a cell
  */
 double getCellRightX(int i, int j) {
-	return cellRightX[i];
-}
-
-/*
- * Get the p coordinate on the top side of a cell
- */
-double getCellTopP(int i, int j) {
-	return cellTopP[j];
+	return cellSideX[i][1];
 }
 
 /*
  * Get the p coordinate on the bottom side of a cell
  */
 double getCellBottP(int i, int j) {
-	return cellBottP[j];
+	return cellSideP[j][0];
+}
+
+/*
+ * Get the p coordinate on the top side of a cell
+ */
+double getCellTopP(int i, int j) {
+	return cellSideP[j][1];
 }
 
 /*
@@ -117,10 +108,18 @@ double getCenterP(int i, int j) {
 }
 
 /*
+ * Get the coordinate of the center of a cell and pass to a pointer
+ */
+void getCenter(double *ans[2], int i, int j) {
+	ans[0] = cellCenter[i][j][0];
+	ans[1] = cellCenter[i][j][1];
+}
+
+/*
  * Get the volume of a cell
  */
 double getVol(int i, int j) {
-	if (i == 0 || j == 0 || i == numGridPtsXDir || j == numGridPtsPDir)
+	if (i == 0 || j == 0 || i == lastIndexX || j == lastIndexP)
 		return 0;
 	return cellVol;
 }
