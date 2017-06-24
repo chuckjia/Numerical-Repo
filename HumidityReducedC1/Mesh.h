@@ -208,11 +208,11 @@ double getVol(int i, int j) {
 	return cellVol[i][j];
 }
 
-double getCenterX(int i, int j) {
+double getCellCenterX(int i, int j) {
 	return cellCenter[i][j][0];
 }
 
-double getCenterP(int i, int j) {
+double getCellCenterP(int i, int j) {
 	return cellCenter[i][j][1];
 }
 

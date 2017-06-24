@@ -96,21 +96,21 @@ double getCellTopP(int i, int j) {
 /*
  * Get the x coordinate of the center of a cell
  */
-double getCenterX(int i, int j) {
+double getCellCenterX(int i, int j) {
 	return cellCenter[i][j][0];
 }
 
 /*
  * Get the p coordinate of the center of a cell
  */
-double getCenterP(int i, int j) {
+double getCellCenterP(int i, int j) {
 	return cellCenter[i][j][1];
 }
 
 /*
  * Get the coordinate of the center of a cell and pass to a pointer
  */
-void getCenter(double *ans[2], int i, int j) {
+void getCenter(double ans[2], int i, int j) {
 	ans[0] = cellCenter[i][j][0];
 	ans[1] = cellCenter[i][j][1];
 }

@@ -94,7 +94,7 @@ void modelSource(double ans[2], double T, double q, double x, double p) {
 void setInitCond() {
 	for (int i = 0; i < numCellsX; i++)
 		for (int j = 0; j < numCellsP; j++) {
-			double xVal = getCenterX(i, j), pVal = getCenterP(i, j);
+			double xVal = getCellCenterX(i, j), pVal = getCellCenterP(i, j);
 			soln[i][j][0] = TManufactured2(xVal, pVal, 0);
 			soln[i][j][1] = qManufactured2(xVal, pVal, 0);
 		}

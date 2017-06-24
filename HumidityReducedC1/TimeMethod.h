@@ -19,7 +19,7 @@ double solnCurr[numCellsX][numCellsP][2];
 void calcRVal(double RVal[2], int j, int k, double t, double DpVal) {
 	double sourceVal[2];
 	sourceFcn(sourceVal, soln[j][k][0], soln[j][k][1],
-			getCenterX(j, k), getCenterP(j, k), t);
+			getCellCenterX(j, k), getCellCenterP(j, k), t);
 	RVal[0] = - (Hx[j][k][0] - Hx[j - 1][k][0]) / Dx -
 			(Hp[j][k][0] - Hp[j][k - 1][0]) / DpVal + sourceVal[0];
 	RVal[1] = - (Hx[j][k][1] - Hx[j - 1][k][1]) / Dx -

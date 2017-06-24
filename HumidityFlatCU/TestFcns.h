@@ -44,7 +44,7 @@ void printMatrix(int numRows, int numCols, double mat[numRows][numCols]) {
  * dimension having fixed length 2. That is, the matrix is essentially a 2D
  * array of pairs of double-precision numbers.
  */
-void printMatrix3D2(int numRows, int numCols, double mat[numRows][numCols][2]) {
+void printMatrix2DTimes2(int numRows, int numCols, double mat[numRows][numCols][2]) {
 	for (int i = 0; i < numRows; i++) {
 		for (int j = 0; j < numCols; j++) {
 			printf("(%5.1f, %5.1f) ", mat[i][j][0], mat[i][j][1]);
@@ -57,7 +57,7 @@ void printMatrix3D2(int numRows, int numCols, double mat[numRows][numCols][2]) {
  * This function works the same with printMatrix3D2(), except that it prints out
  * only the first component of each entry of the 2D array of pairs.
  */
-void printMatrix3D_Comp1(int numRows, int numCols, double mat[numRows][numCols][2]) {
+void printMatrix2DTimes2_Comp1(int numRows, int numCols, double mat[numRows][numCols][2]) {
 	for (int i = 0; i < numRows; i++) {
 		for (int j = 0; j < numCols; j++) {
 			printf("%5.1f ", mat[i][j][0]);

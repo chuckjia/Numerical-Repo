@@ -13,6 +13,24 @@
 #include "TestFcns.h"
 
 /*
+ * The method realizes the mathematical function min(x, y)
+ */
+double min(double x, double y) {
+	if (x < y)
+		return x;
+	return y;
+}
+
+/*
+ * The method realizes the mathematical function max(x, y)
+ */
+double max(double x, double y) {
+	if (x > y)
+		return x;
+	return y;
+}
+
+/*
  * The method realizes the mathematical function min(x, y, z)
  */
 double min3(double x, double y, double z) {
