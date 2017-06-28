@@ -5,8 +5,8 @@
  *      Author: chuckjia
  */
 
-#ifndef FLUXES_H_
-#define FLUXES_H_
+#ifndef CUFLUXES_H_
+#define CUFLUXES_H_
 #include "Conditions.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -14,6 +14,7 @@
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Initialize the fluxes
+// Hx[j][k] represents H_{j+1/2,k}^x and Hp[j][k] represents H_{j,k+1/2}^y
 double Hx[numCellsX][numCellsP][2];
 double Hp[numCellsX][numCellsP][2];
 
@@ -145,50 +146,42 @@ void calcFluxesCU() {
 			bMinus = min(eVal, 0);
 
 			// Calculate the fluxes
-			for (int ii = 0; ii < 2; ii++) {
-				Hx[j][k][ii] = (aPlus * fFcn_Helper(uFcnValRight, slE[ii]) -
-						aMinus * fFcn_Helper(uFcnValRight, slWNext[ii]) +
-						aPlus * aMinus * (slWNext[ii] - slE[ii])) / (aPlus - aMinus);
-				Hp[j][k][ii] = (bPlus * gFcn_Helper(omegaFcnValTop, slN[ii]) -
-						bMinus * gFcn_Helper(omegaFcnValTop, slSNext[ii]) +
-						bPlus * bMinus * (slSNext[ii] - slN[ii])) / (bPlus - bMinus);
+			if (aPlus != aMinus) {
+				for (int ii = 0; ii < 2; ii++)
+					Hx[j][k][ii] = (aPlus * fFcn_Helper(uFcnValRight, slE[ii]) -
+							aMinus * fFcn_Helper(uFcnValRight, slWNext[ii]) +
+							aPlus * aMinus * (slWNext[ii] - slE[ii])) / (aPlus - aMinus);
+			} else {
+				Hx[j][k][0] = 0;
+				Hx[j][k][1] = 0;
 			}
+			if (bPlus != bMinus) {
+				for (int ii = 0; ii < 2; ii++)
+					Hp[j][k][ii] = (bPlus * gFcn_Helper(omegaFcnValTop, slN[ii]) -
+							bMinus * gFcn_Helper(omegaFcnValTop, slSNext[ii]) +
+							bPlus * bMinus * (slSNext[ii] - slN[ii])) / (bPlus - bMinus);
+			} else {
+				Hp[j][k][0] = 0;
+				Hp[j][k][1] = 0;
+			}
+
+			/*if (bPlus - bMinus == 0 || aPlus - aMinus == 0) {
+				printf("j = %d, k = %d\n", j, k);
+				printf("aPlus = %f, aMinus= %f,\n bPlus = %f, bMinus = %f\n", aPlus, aMinus, bPlus, bMinus);
+			}*/
 		}
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Calculate Fluxes: Wrapper Function
+ * Runge-Kutta Method: RHS Calculation
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void calcFluxes() {
-	calcFluxesCU();
+void calcRHS_RK_CU(double ans[2], int j, int k) {
+	for (int ii = 0; ii < 2; ii++) {
+		ans[0] += - (Hx[j][k][ii] + Hx[j - 1][k][ii]) * DxInv
+				- (Hp[j][k][ii] - Hp[j][k - 1][ii]) * DpInv;
+		ans[1] += 0;
+	}
 }
 
-#endif /* FLUXES_H_ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif /* CUFLUXES_H_ */

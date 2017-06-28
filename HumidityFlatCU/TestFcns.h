@@ -3,67 +3,43 @@
  *
  *  Created on: Jun 20, 2017
  *      Author: chuckjia
- *
- *  This header file contains functions created for testing purposes.
  */
 
 #ifndef TESTFCNS_H_
 #define TESTFCNS_H_
+#include "TimeSteps.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Including Basic Libraries
+ * Methods For Testing Purposes
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-#include <stdio.h>
-#include <math.h>
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Test Functions and Solutions
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Functions For Testing Purposes
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-/*
- * Print out a 2D array/matrix of double-precision entries
- */
-void printMatrix(int numRows, int numCols, double mat[numRows][numCols]) {
-	for (int i = 0; i < numRows; i++) {
-		for (int j = 0; j < numCols; j++) {
-			printf("%5.2f ", mat[i][j]);
+double errorL2norm() {
+	double t = finalTime;
+	double sum1 = 0;
+	double sum2 = 0;
+	for (int j = 1; j < lastIndexX; j++)
+		for (int k = 1; k < lastIndexP; k++) {
+			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
+			double ExactVal = soln_T_Test1(x, p, t, j, k);
+			double NumericalVal = sl[j][k][0];
+			sum1 += pow(ExactVal - NumericalVal, 2);
+			sum2 += ExactVal * ExactVal;
 		}
-		printf("\n");
-	}
+	return sqrt(sum1 / sum2);
 }
 
-/*
- * Print out a 3D array/matrix of double-precision entries with the last
- * dimension having fixed length 2. That is, the matrix is essentially a 2D
- * array of pairs of double-precision numbers.
- */
-void printMatrix2DTimes2(int numRows, int numCols, double mat[numRows][numCols][2]) {
-	for (int i = 0; i < numRows; i++) {
-		for (int j = 0; j < numCols; j++) {
-			printf("(%5.1f, %5.1f) ", mat[i][j][0], mat[i][j][1]);
+void writeResToFile() {
+	FILE *f = fopen("res.txt", "wb");
+	for (int i = 0; i < numCellsX; i++) {
+		for (int j = 0; j < numCellsP; j++) {
+			double val = sl[i][j][0];
+			if (fabs(val) < 0.00001)
+				val = 0;
+			fprintf(f, "%f ", val);
 		}
-		printf("\n");
+		fprintf(f, "\n");
 	}
-}
-
-/*
- * This function works the same with printMatrix3D2(), except that it prints out
- * only the first component of each entry of the 2D array of pairs.
- */
-void printMatrix2DTimes2_Comp1(int numRows, int numCols, double mat[numRows][numCols][2]) {
-	for (int i = 0; i < numRows; i++) {
-		for (int j = 0; j < numCols; j++) {
-			printf("%5.1f ", mat[i][j][0]);
-		}
-		printf("\n");
-	}
+	fclose(f);
 }
 
 #endif /* TESTFCNS_H_ */

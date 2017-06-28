@@ -20,8 +20,8 @@ double DpArr[numGridPtsXDir];  // DpArr[i] stores the Delta p value at x[i + 1/2
 double meshGridP[numGridPtsXDir][numGridPtsPDir];
 
 // The following are arrays storing the geometry of cells
-double cellVol[numCellsX][numCellsP];  // Stores the volumes of all cells
-double cellCenter[numCellsX][numCellsP][2];  // Stores the centers of all cells
+double cellVols[numCellsX][numCellsP];  // Stores the volumes of all cells
+double cellCenters[numCellsX][numCellsP][2];  // Stores the centers of all cells
 
 /*
  * Calculate and store all the Delta p values. DpArr[i] represents the Delta p
@@ -156,64 +156,64 @@ void calcGeometry() {
 			double bottLeft[2] = {xLeft, getBottLeftP(i, j)};
 			double bottRight[2] = {xRight, getBottRightP(i, j)};
 			// Cell volume
-			cellVol[i][j] = calcVol(topLeft, topRight, bottLeft, bottRight);
+			cellVols[i][j] = calcVol(topLeft, topRight, bottLeft, bottRight);
 			// Cell bary-center
 			double center[2];
 			calcBaryCenter(center, topLeft, topRight, bottLeft, bottRight);
-			cellCenter[i][j][0] = center[0];
-			cellCenter[i][j][1] = center[1];
+			cellCenters[i][j][0] = center[0];
+			cellCenters[i][j][1] = center[1];
 		}
 	// The following are for flat control volumes
 	// When i = 0 and i = numCellsXDir - 1 (rightmostX)
 	int iLeft = 0, iRight = rightmostXInd;
 	for (int j = 1; j < upmostPInd; j++) {
 		// Cell volume
-		cellVol[iLeft][j] = 0;
-		cellVol[iRight][j] = 0;
+		cellVols[iLeft][j] = 0;
+		cellVols[iRight][j] = 0;
 		// Cell center
-		cellCenter[iLeft][j][0] = x0;
-		cellCenter[iLeft][j][1] = 0.5 * (getTopRightP(iLeft, j) + getBottRightP(iLeft, j));
-		cellCenter[iRight][j][0] = xL;
-		cellCenter[iRight][j][1] = 0.5 * (getTopRightP(iRight, j) + getBottRightP(iRight, j));
+		cellCenters[iLeft][j][0] = x0;
+		cellCenters[iLeft][j][1] = 0.5 * (getTopRightP(iLeft, j) + getBottRightP(iLeft, j));
+		cellCenters[iRight][j][0] = xL;
+		cellCenters[iRight][j][1] = 0.5 * (getTopRightP(iRight, j) + getBottRightP(iRight, j));
 	}
 	// When j = 0 and j = numCellsPDir - 1 (upmostP)
 	int jBott = 0, jTop = upmostPInd;
 	for (int i = 1; i < rightmostXInd; i++) {
 		// Cell volume
-		cellVol[i][jBott] = 0;
-		cellVol[i][jTop] = 0;
+		cellVols[i][jBott] = 0;
+		cellVols[i][jTop] = 0;
 		// Cell center
 		double xCenter = 0.5 * (getCellLeftX(i, jBott) + getCellRightX(i, jBott));
-		cellCenter[i][jBott][0] = xCenter;
-		cellCenter[i][jBott][1] = pA;
-		cellCenter[i][jTop][0] = xCenter;
-		cellCenter[i][jTop][1] = 0.5 * (getBottLeftP(i, jTop) + getBottRightP(i, jTop));
+		cellCenters[i][jBott][0] = xCenter;
+		cellCenters[i][jBott][1] = pA;
+		cellCenters[i][jTop][0] = xCenter;
+		cellCenters[i][jTop][1] = 0.5 * (getBottLeftP(i, jTop) + getBottRightP(i, jTop));
 	}
 	// Corners
-	cellVol[0][0] = 0;
-	cellVol[0][upmostPInd] = 0;
-	cellVol[rightmostXInd][0] = 0;
-	cellVol[rightmostXInd][upmostPInd] = 0;
-	cellCenter[0][0][0] = x0;
-	cellCenter[0][0][1] = pA;
-	cellCenter[0][upmostPInd][0] = x0;
-	cellCenter[0][upmostPInd][1] = pB(x0);
-	cellCenter[rightmostXInd][0][0] = xL;
-	cellCenter[rightmostXInd][0][1] = pA;
-	cellCenter[rightmostXInd][upmostPInd][0] = xL;
-	cellCenter[rightmostXInd][upmostPInd][1] = pB(xL);
+	cellVols[0][0] = 0;
+	cellVols[0][upmostPInd] = 0;
+	cellVols[rightmostXInd][0] = 0;
+	cellVols[rightmostXInd][upmostPInd] = 0;
+	cellCenters[0][0][0] = x0;
+	cellCenters[0][0][1] = pA;
+	cellCenters[0][upmostPInd][0] = x0;
+	cellCenters[0][upmostPInd][1] = pB(x0);
+	cellCenters[rightmostXInd][0][0] = xL;
+	cellCenters[rightmostXInd][0][1] = pA;
+	cellCenters[rightmostXInd][upmostPInd][0] = xL;
+	cellCenters[rightmostXInd][upmostPInd][1] = pB(xL);
 }
 
 double getVol(int i, int j) {
-	return cellVol[i][j];
+	return cellVols[i][j];
 }
 
 double getCellCenterX(int i, int j) {
-	return cellCenter[i][j][0];
+	return cellCenters[i][j][0];
 }
 
 double getCellCenterP(int i, int j) {
-	return cellCenter[i][j][1];
+	return cellCenters[i][j][1];
 }
 
 void buildMesh() {

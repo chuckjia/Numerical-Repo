@@ -9,7 +9,7 @@
 
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
-#include "MathFcns.h"
+#include "BasicFcns.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Numerical Scheme Constants
@@ -18,15 +18,11 @@
 /*
  * User-set constants
  */
-const int Nx = 10;  // Number of divisions on the x-direction
-const int Np = 10;  // Number of divisions on the p-direction
-const int numTimeSteps = 0;  // Number of time steps
-const double Dt = 0.1;  // Size of time steps
-
-/*
- * Auto-generated constants
- */
-const double finalTime = numTimeSteps * Dt;
+const int Nx = 200;  // Number of divisions on the x-direction
+const int Np = 200;  // Number of divisions on the p-direction
+const int numTimeSteps = 10000;  // Number of time steps
+const double finalTime = 1;
+const double Dt = finalTime/numTimeSteps;  // Size of time steps
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Model Constants
@@ -36,7 +32,7 @@ const double finalTime = numTimeSteps * Dt;
  * User-set constants
  */
 const double x0 = 0;  // Leftmost x
-const double xL = 50000;  // Rightmost x
+const double xL = 5000;  // Rightmost x
 const double pA = 200;
 const double pB = 1000;
 
