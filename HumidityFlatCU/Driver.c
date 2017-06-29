@@ -8,17 +8,24 @@
 #include "TestFcns.h"
 
 int main() {
-	printf("\n===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	printf("Solving model equations by the central upwind method.\n");
-	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
+	printf("\n===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
+	printf("Solving model equations using ");
+	if (numericalScheme == 1)
+		printf("the Central Upwind Method\n");
+	else
+		printf("the Godnuv method\n");
+	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
+	printf("Parameters:\n  Nx = %d, Np = %d, numTimeSteps = %d\n", Nx, Np, numTimeSteps);
 
 	buildMesh();
-	test1Prep();
+	setUpTests();
 	setInitCond();
+	selectScheme();
 	timeMethod();
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, sl);
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, Hx);
-	printf("\nL2 norm of error = %f\n", errorL2norm());
+	printf("\nL2 norm of relative error = %1.10f\n", relativeErrorL2norm());
+	printf("\nL2 norm of absolute error = %1.10f\n", absErrorL2norm());
 	writeResToFile();
 	printf("\n");
 }

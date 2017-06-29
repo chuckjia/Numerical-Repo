@@ -13,11 +13,11 @@ int main() {
 	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
 	buildMesh();
 	setInitCond();
-	test1Prep();
+	prep_Test1();
 	timeMethod();
 	printf("\n");
 	//printMatrix2DTimes2_Comp1(numCellsX, numCellsP, sl);
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, Hx);
-	printf("\nL2 norm of error = %f\n", errorL2norm());
+	printf("\nL2 norm of error = %f\n", relativeErrorL2norm());
 	printf("\n");
 }

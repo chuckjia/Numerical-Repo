@@ -18,11 +18,20 @@
 /*
  * User-set constants
  */
-const int Nx = 200;  // Number of divisions on the x-direction
-const int Np = 200;  // Number of divisions on the p-direction
-const int numTimeSteps = 10000;  // Number of time steps
-const double finalTime = 1;
-const double Dt = finalTime/numTimeSteps;  // Size of time steps
+// Scheme selection
+const int numericalScheme = 0;  // 0 represents Godnuv, 1 represents Central Upwind
+const int timeScheme = 2; // 2 represents RK2, 4 represents RK4
+// Step size selection
+const int numDivisions = 100;
+const int numTimeSteps = 1 << 9;  // Number of time steps
+
+const int testNumber = 1;
+
+/*
+ * Auto-generated constants
+ */
+const int Nx = numDivisions;  // Number of divisions on the x-direction
+const int Np = numDivisions;  // Number of divisions on the p-direction
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Model Constants
@@ -35,6 +44,8 @@ const double x0 = 0;  // Leftmost x
 const double xL = 5000;  // Rightmost x
 const double pA = 200;
 const double pB = 1000;
+const double finalTime = 1;
+const double Dt = finalTime/numTimeSteps;  // Size of time steps
 
 /*
  * Auto-generated constants

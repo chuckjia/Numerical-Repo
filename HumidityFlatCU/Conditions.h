@@ -10,6 +10,26 @@
 #include "Models.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Wrapper Functions for Tests
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+double (*calcExactT)(double x, double p, double t, int j, int k);
+double (*sourceFcnPtr)(double T, double q, double x, double p, double t,
+		int j, int k);
+
+void setUpTests() {
+	if (testNumber == 1) {
+		prep_Test1();
+		calcExactT = &soln_T_Test1;
+		sourceFcnPtr = &source1_test1;
+	} else {
+		prep_Test2();
+		calcExactT = &soln_T_Test2;
+		sourceFcnPtr = &source1_test2;
+	}
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Initial Conditions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
@@ -30,7 +50,7 @@ void setInitCond() {
 	for (int j = 0; j < numCellsX; j++)
 		for (int k = 0; k < numCellsP; k++) {
 			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			sl[j][k][0] = soln_T_Test1(x, p, 0, j, k);
+			sl[j][k][0] = (*calcExactT)(x, p, 0, j, k);
 			sl[j][k][1] = 0;
 		}
 
@@ -100,7 +120,7 @@ void dirichletCond() {
  * Source function: wrapper
  */
 void calcSourceFcn(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	ans[0] = source1_test1(T, q, x, p, t, j, k);
+	ans[0] = (*sourceFcnPtr)(T, q, x, p, t, j, k);
 	ans[1] = 0;
 }
 

@@ -13,7 +13,7 @@
  * Methods For Testing Purposes
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double errorL2norm() {
+double relativeErrorL2norm() {
 	double t = finalTime;
 	double sum1 = 0;
 	double sum2 = 0;
@@ -26,6 +26,20 @@ double errorL2norm() {
 			sum2 += ExactVal * ExactVal;
 		}
 	return sqrt(sum1 / sum2);
+}
+
+double absErrorL2norm() {
+	double t = finalTime;
+	double sum1 = 0;
+	double sum2 = 0;
+	for (int j = 1; j < lastIndexX; j++)
+		for (int k = 1; k < lastIndexP; k++) {
+			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
+			double ExactVal = soln_T_Test1(x, p, t, j, k);
+			double NumericalVal = sl[j][k][0];
+			sum1 += pow(ExactVal - NumericalVal, 2);
+		}
+	return sqrt(cellVol * sum1);
 }
 
 void writeResToFile() {

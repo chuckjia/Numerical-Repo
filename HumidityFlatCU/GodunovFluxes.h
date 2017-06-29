@@ -1,12 +1,12 @@
 /*
- * GodnuvFluxes.h
+ * GodunovFluxes.h
  *
  *  Created on: Jun 20, 2017
  *      Author: chuckjia
  */
 
-#ifndef GODNUVFLUXES_H_
-#define GODNUVFLUXES_H_
+#ifndef GODUNOVFLUXES_H_
+#define GODUNOVFLUXES_H_
 #include "Conditions.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -18,7 +18,7 @@
 double FFlux[numCellsX][numCellsP][2];
 double GFlux[numCellsX][numCellsP][2];
 
-void calcFluxesGodnuv() {
+void calcFluxesGodunov(double sl[numCellsX][numCellsP][2]) {
 	// Calculate G fluxes
 	for (int i = 1; i < lastIndexX; i++)
 		for (int j = 1; j < lastIndexP; j++) {
@@ -51,11 +51,11 @@ void calcFluxesGodnuv() {
 		}
 }
 
-void calcRHS_RK_Godnuv(double ans[2], int i, int j) {
+void calcRHS_RK_Godunov(double ans[2], int i, int j) {
 	for (int ii = 0; ii < 2; ii++) {
 		ans[ii] += -1 / cellVol * (GFlux[i][j][ii] - GFlux[i][j - 1][ii] +
 				FFlux[i][j][ii] - FFlux[i - 1][j][ii]);
 	}
 }
 
-#endif /* GODNUVFLUXES_H_ */
+#endif /* GODUNOVFLUXES_H_ */

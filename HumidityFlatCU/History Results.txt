@@ -1,0 +1,18 @@
+History Results:
+
+Result 1:
+
+===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 
+Solving model equations using the Godnuv method
+===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 
+Parameters:
+  Nx = 200, Np = 200, numTimeSteps = 4000
+
+- Mesh successfully built. (0.60ms)
+
+- Initial conditions set. (0.7ms)
+
+- Using the 2nd order Runge-Kutta method.
+  [Completed]: 100%. (42.39s)
+
+L2 norm of error = 0.000134
