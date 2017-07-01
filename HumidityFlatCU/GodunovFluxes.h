@@ -53,8 +53,8 @@ void calcFluxesGodunov(double sl[numCellsX][numCellsP][2]) {
 
 void calcRHS_RK_Godunov(double ans[2], int i, int j) {
 	for (int ii = 0; ii < 2; ii++) {
-		ans[ii] += -1 / cellVol * (GFlux[i][j][ii] - GFlux[i][j - 1][ii] +
-				FFlux[i][j][ii] - FFlux[i - 1][j][ii]);
+		ans[ii] += - (GFlux[i][j][ii] - GFlux[i][j - 1][ii] +
+				FFlux[i][j][ii] - FFlux[i - 1][j][ii]) / cellVol;
 	}
 }
 

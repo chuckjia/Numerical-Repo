@@ -24,6 +24,7 @@ double cellSidesX[numCellsX][2];
 double cellSidesP[numCellsP][2];
 double cellCenters[numCellsX][numCellsP][2];  // Stores coords of centers of all cells
 double cellVol = Dx * Dp; // The volume of all cells (in this model, all have same volume)
+double cellVolInv = DxInv * DpInv;
 
 /*
  * Constructs the grid: calculate cellSidesX and cellSidesP
@@ -110,10 +111,10 @@ double getCellCenterP(int i, int j) {
 /*
  * Get the coordinate of the center of a cell and pass to a pointer
  */
-void getCellCenter(double ans[2], int i, int j) {
+/*void getCellCenter(double ans[2], int i, int j) {
 	ans[0] = cellCenters[i][j][0];
 	ans[1] = cellCenters[i][j][1];
-}
+}*/
 
 /*
  * Get the volume of a cell

@@ -123,6 +123,7 @@ void printMatrix2DTimes2(int numRows, int numCols, double mat[numRows][numCols][
  * only the first component of each entry of the 2D array of pairs.
  */
 void printMatrix2DTimes2_Comp1(int numRows, int numCols, double mat[numRows][numCols][2]) {
+	printf("\nTesting result: right now the matrix is\n");
 	for (int i = 0; i < numRows; i++) {
 		for (int j = 0; j < numCols; j++) {
 			double val = mat[i][j][0];

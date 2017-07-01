@@ -12,20 +12,26 @@
 #include "BasicFcns.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Numerical Scheme Constants
+ * General Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-/*
- * User-set constants
- */
 // Scheme selection
-const int numericalScheme = 0;  // 0 represents Godnuv, 1 represents Central Upwind
-const int timeScheme = 2; // 2 represents RK2, 4 represents RK4
+const int numericalScheme = 0;  // 0 represents Godunov, 1 represents Central Upwind
+const int timeScheme = 2;  // 2 represents RK2, 4 represents RK4
+
 // Step size selection
 const int numDivisions = 100;
-const int numTimeSteps = 1 << 9;  // Number of time steps
+const int numTimeSteps = 100;  // Number of time steps
 
-const int testNumber = 1;
+// Test selection
+const int testNumber = 2;
+
+// Final Time
+const double finalTime = 1;
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Numerical Scheme Constants
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 /*
  * Auto-generated constants
@@ -41,10 +47,9 @@ const int Np = numDivisions;  // Number of divisions on the p-direction
  * User-set constants
  */
 const double x0 = 0;  // Leftmost x
-const double xL = 5000;  // Rightmost x
-const double pA = 200;
-const double pB = 1000;
-const double finalTime = 1;
+const double xL = 5e4;  // Rightmost x: model value 5e4
+const double pA = 2e2;  // Bottom p: model value 200
+const double pB = 10e2;  // Top p: model value 1000
 const double Dt = finalTime/numTimeSteps;  // Size of time steps
 
 /*

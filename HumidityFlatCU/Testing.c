@@ -8,16 +8,5 @@
 #include "TestFcns.h"
 
 int main() {
-	printf("\n===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	printf("Solving model equations by the central upwind method.\n");
-	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	buildMesh();
-	setInitCond();
-	prep_Test1();
-	timeMethod();
-	printf("\n");
-	//printMatrix2DTimes2_Comp1(numCellsX, numCellsP, sl);
-	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, Hx);
-	printf("\nL2 norm of error = %f\n", relativeErrorL2norm());
-	printf("\n");
+	printf("%1.13f\n", 1 / 1000 * M_PI);
 }

@@ -9,14 +9,17 @@
 
 int main() {
 	printf("\n===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	printf("Solving model equations using ");
 	if (numericalScheme == 1)
-		printf("the Central Upwind Method\n");
+		printf("Central Upwind Method");
 	else
-		printf("the Godnuv method\n");
+		printf("Godunov Method");
+	printf(": Solving Model Equations\n");
 	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	printf("Parameters:\n  Nx = %d, Np = %d, numTimeSteps = %d\n", Nx, Np, numTimeSteps);
-
+	printf("\nParameters:  Nx = %d, Np = %d, numTimeSteps = %d, finalTime = %1.2fs\n",
+			Nx, Np, numTimeSteps, finalTime);
+	printf("Model Selection: Test %d\n", testNumber);
+	printf("\n----- ----- ----- -----\n");
+	printf("\nProgram Progress\n");
 	buildMesh();
 	setUpTests();
 	setInitCond();
@@ -24,8 +27,11 @@ int main() {
 	timeMethod();
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, sl);
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, Hx);
-	printf("\nL2 norm of relative error = %1.10f\n", relativeErrorL2norm());
-	printf("\nL2 norm of absolute error = %1.10f\n", absErrorL2norm());
+	printf("\n----- ----- ----- -----\n");
+	printf("\nComparison Data\n");
+	showL2Errors();
+	showL1Errors();
+	middleDiff();
 	writeResToFile();
 	printf("\n");
 }

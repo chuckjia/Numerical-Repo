@@ -9,6 +9,13 @@
 #define CONDITIONS_H_
 #include "Models.h"
 
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Initialize the solution
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+double sl[numCellsX][numCellsP][2];
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Wrapper Functions for Tests
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -16,48 +23,26 @@
 double (*calcExactT)(double x, double p, double t, int j, int k);
 double (*sourceFcnPtr)(double T, double q, double x, double p, double t,
 		int j, int k);
+void (*addBoundaryCondPtr)();
+
+/*
+ * Pre-declaration for the boundary conditions
+ */
+void neumannCond();
+void dirichletCond();
 
 void setUpTests() {
 	if (testNumber == 1) {
 		prep_Test1();
 		calcExactT = &soln_T_Test1;
 		sourceFcnPtr = &source1_test1;
+		addBoundaryCondPtr = &neumannCond;
 	} else {
 		prep_Test2();
 		calcExactT = &soln_T_Test2;
 		sourceFcnPtr = &source1_test2;
+		addBoundaryCondPtr = &dirichletCond;
 	}
-}
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Initial Conditions
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-/*
- * Initialize the solution
- */
-double sl[numCellsX][numCellsP][2];
-
-/*
- * Set initial conditions
- */
-void setInitCond() {
-	// Measure execution time
-	clock_t startTime, endTime;
-	startTime = clock();
-
-	// Main body
-	for (int j = 0; j < numCellsX; j++)
-		for (int k = 0; k < numCellsP; k++) {
-			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			sl[j][k][0] = (*calcExactT)(x, p, 0, j, k);
-			sl[j][k][1] = 0;
-		}
-
-	// Measure execution time
-	endTime = clock();
-	double cpuTimeUsed = (double) (endTime - startTime) * 0.001;
-	printf("\n- Initial conditions set. (%1.1fms)\n", cpuTimeUsed);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -91,6 +76,9 @@ void neumannCond() {
 	}
 }
 
+/*
+ * Dirichlet condition
+ */
 void dirichletCond() {
 	// When j = 0 or lastIndexX
 	for (int k = 1; k < lastIndexP; k++) {
@@ -99,7 +87,7 @@ void dirichletCond() {
 		sl[0][k][1] = 0;
 		// When j = lastIndexX
 		sl[lastIndexX][k][0] = 0;
-		sl[lastIndexX][k][1] = sl[secLastIndexX][k][1];
+		sl[lastIndexX][k][1] = 0;
 	}
 	// When k = 0 or lastIndexP
 	for (int j = 1; j < lastIndexX; j++) {
@@ -110,6 +98,33 @@ void dirichletCond() {
 		sl[j][lastIndexP][0] = 0;
 		sl[j][lastIndexP][1] = 0;
 	}
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Initial Conditions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+/*
+ * Set initial conditions
+ */
+void setInitCond() {
+	// Measure execution time
+	clock_t startTime, endTime;
+	startTime = clock();
+
+	// Main body
+	for (int j = 0; j < numCellsX; j++)
+		for (int k = 0; k < numCellsP; k++) {
+			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
+			sl[j][k][0] = (*calcExactT)(x, p, 0, j, k);
+			sl[j][k][1] = 0;
+		}
+
+	// Measure execution time
+	endTime = clock();
+	double cpuTimeUsed = (double) (endTime - startTime) * 0.001;
+	printf("\n- Initial conditions set. (%1.1fms)\n", cpuTimeUsed);
+	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, sl);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
