@@ -11,6 +11,6 @@ int main() {
 	buildMesh();
 	setInitCond();
 	//printMatrix3D_1(numCellsXDir, numCellsPDir, soln);
-	rk2();
+	rk2_CU();
 	//printMatrix3D_1(numCellsXDir, numCellsPDir, soln);
 }

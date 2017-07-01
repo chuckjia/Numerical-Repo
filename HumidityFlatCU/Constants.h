@@ -20,11 +20,11 @@ const int numericalScheme = 0;  // 0 represents Godunov, 1 represents Central Up
 const int timeScheme = 2;  // 2 represents RK2, 4 represents RK4
 
 // Step size selection
-const int numDivisions = 100;
-const int numTimeSteps = 100;  // Number of time steps
+const int numDivisions = 200;
+const int numTimeSteps = 200;  // Number of time steps
 
 // Test selection
-const int testNumber = 2;
+const int testNumber = 1;
 
 // Final Time
 const double finalTime = 1;

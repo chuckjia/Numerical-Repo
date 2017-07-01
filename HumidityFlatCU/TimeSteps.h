@@ -47,7 +47,7 @@ void calcRHS_RK(double ans[2], int j, int k) {
 
 const double timer_factor1_CONST = 100 / finalTime;
 
-void rk2() {
+void rk2_CU() {
 	// Initialize the intermediate solution
 	double slCurr[numCellsX][numCellsP][2];
 	// Some temporary constansts
@@ -225,7 +225,7 @@ void timeMethod() {
 
 	// Main body
 	if (timeScheme == 2)
-		rk2();
+		rk2_CU();
 	else
 		rk4();
 

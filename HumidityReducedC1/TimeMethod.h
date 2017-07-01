@@ -30,7 +30,7 @@ void calcRVal(double RVal[2], int j, int k, double t, double DpVal) {
  * 2nd order Runge-Kutta method
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void rk2() {
+void rk2_CU() {
 	for (int ii = 1; ii <= numTimeSteps; ii++){
 		double t = ii * Dt;
 		printf("%5.1f percent\n", t / finalTime * 100);
