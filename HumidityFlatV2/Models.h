@@ -44,6 +44,30 @@ double zeroInit(double x, double p, double t, int j, int k) {
 }
 
 /* ----- ----- ----- ----- -----
+ * Original Model
+ * ----- ----- ----- ----- ----- */
+
+double initTOrig(double x, double p, double t, int j, int k) {
+	return 300 - (1 - p / p0_CONST) * 50;
+}
+
+double initqOrig(double x, double p, double t, int j, int k) {
+	double T = initTOrig(x, p, t, j, k);
+	return 0.622 / p * 6.112 * exp(17.67 * (T - 273.15) / (T - 29.65)) - 0.0052;
+}
+
+void source_Orig(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
+	double omegaVal = omega_fcn(x, p);
+	double qsVal = 0.622 / p * 6.112 * exp(17.67 * (T - 273.15) / (T - 29.65));
+	double deltaVal = 0.25 * (1 - sign(omegaVal)) * (1 + sign(q - qsVal));
+	double LVal = 2.5008e6 - 2300 * (T - 275);
+	double FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T) / (
+			Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+	ans[0] = omegaVal * (R_CONST * T - deltaVal * LVal * FVal) / (p * Cp_CONST);
+	ans[1] = deltaVal * omegaVal * FVal / p;
+}
+
+/* ----- ----- ----- ----- -----
  * Test 1
  * ----- ----- ----- ----- ----- */
 
@@ -118,7 +142,7 @@ void prep_Test2() {
 }
 
 double soln_T_Test2(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test2 * t) * sin(coeff1_Test2 * x) * sin(coeff2_Test2 * p) * 1000;
+	return cos(coeff3_Test2 * t) * sin(coeff1_Test2 * x) * sin(coeff2_Test2 * p) * 100;
 }
 
 void source_Test2(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
@@ -128,7 +152,7 @@ void source_Test2(double ans[2], double T, double q, double x, double p, double 
 			T * (uxDer_cache[j][k] + omegapDer_cache[j][k]) +
 			T_tPart * (uFcn_cache[j][k] * coeff1_Test2 * cos(inputx) * T_pPart +
 					omegaFcn_cache[j][k] * coeff2_Test2 * T_xPart * cos(inputp));
-	ans[0] = ans[0] * 1000;
+	ans[0] = ans[0] * 100;
 	ans[1] = 0;
 }
 
@@ -155,7 +179,7 @@ void prep_Test3() {
 double coeff_Test3 = 2 * M_PI;
 double x0xLSum_Test3 = x0 + xL;
 double pApBSum_Test3 = pA + pB;
-double scaleCoeff_Test3 = 1e10;
+double scaleCoeff_Test3 = 1e8;
 
 double soln_T_Test3(double x, double p, double t, int j, int k) {
 	return cos(coeff_Test3 * t) * solnCache_Test3[j][k][0] * solnCache_Test3[j][k][1] / scaleCoeff_Test3;
@@ -169,176 +193,8 @@ void source_Test3(double ans[2], double T, double q, double x, double p, double 
 			uFcn_cache[j][k] * solnPartT * solnPartP * (2 * x - x0xLSum_Test3) +
 			omegaFcn_cache[j][k] * solnPartT * solnPartX * (
 					(p - pA) * (p - pB) / p + log(p) * (2 * p - pApBSum_Test3))) /
-					scaleCoeff_Test3;
+			scaleCoeff_Test3;
 	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 4
- * ----- ----- ----- ----- ----- */
-
-void prep_Test4() {
-}
-
-double soln_T_Test4(double x, double p, double t, int j, int k) {
-	return 1;
-}
-
-void source_Test4(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	ans[0] = 0;
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 5: Test 2 with omegaFcn == 0
- * ----- ----- ----- ----- ----- */
-
-double coeff1_Test5 = 4 * M_PI / xL;
-double coeff2_Test5 = M_PI / 200;
-double coeff3_Test5 = 2 * M_PI;
-
-void prep_Test5() {
-	u_omega_fillCache();
-}
-
-double soln_T_Test5(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test5 * t) * sin(coeff1_Test5 * x) * sin(coeff2_Test5 * p) * 1000;
-}
-
-void source_Test5(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double inputx = coeff1_Test5 * x, inputp = coeff2_Test5 * p, inputt = coeff3_Test5 * t;
-	double T_xPart = sin(inputx), T_pPart = sin(inputp), T_tPart = cos(inputt);
-	ans[0] = - coeff3_Test5 * sin(inputt) * T_xPart * T_pPart +
-			T * uxDer_cache[j][k] +
-			T_tPart * (uFcn_cache[j][k] * coeff1_Test5 * cos(inputx) * T_pPart);
-	ans[0] = ans[0] * 1000;
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 6: Test 2 with uFcn == 0
- * ----- ----- ----- ----- ----- */
-
-double coeff1_Test6 = 4 * M_PI / xL;
-double coeff2_Test6 = M_PI / 200;
-double coeff3_Test6 = 2 * M_PI;
-
-void prep_Test6() {
-	u_omega_fillCache();
-}
-
-double soln_T_Test6(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test6 * t) * sin(coeff1_Test6 * x) * sin(coeff2_Test6 * p) * 1000;
-}
-
-void source_Test6(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double inputx = coeff1_Test6 * x, inputp = coeff2_Test6 * p, inputt = coeff3_Test6 * t;
-	double T_xPart = sin(inputx), T_pPart = sin(inputp), T_tPart = cos(inputt);
-	ans[0] = - coeff3_Test6 * sin(inputt) * T_xPart * T_pPart +
-			T * omegapDer_cache[j][k] +
-			T_tPart * (omegaFcn_cache[j][k] * coeff1_Test6 * cos(inputx) * T_pPart);
-	ans[0] = ans[0] * 1000;
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 7: Test 2 with uFcn == 1 and omegaFcn == 1
- * ----- ----- ----- ----- ----- */
-
-double coeff1_Test7 = 4 * M_PI / xL;
-double coeff2_Test7 = M_PI / 200;
-double coeff3_Test7 = 2 * M_PI;
-
-void prep_Test7() {
-}
-
-double soln_T_Test7(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test7 * t) * sin(coeff1_Test7 * x) * sin(coeff2_Test7 * p);
-}
-
-void source_Test7(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double inputx = coeff1_Test7 * x, inputp = coeff2_Test7 * p, inputt = coeff3_Test7 * t;
-	double T_xPart = sin(inputx), T_pPart = sin(inputp), T_tPart = cos(inputt);
-	ans[0] = - coeff3_Test7 * sin(inputt) * T_xPart * T_pPart +
-			T_tPart * (T_xPart + T_pPart);
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 8: Test 2 without cache values
- * ----- ----- ----- ----- ----- */
-
-double coeff1_Test8 = 4 * M_PI / xL;
-double coeff2_Test8 = M_PI / 200;
-double coeff3_Test8 = 2 * M_PI;
-
-void prep_Test8() {
-}
-
-double soln_T_Test8(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test8 * t) * sin(coeff1_Test8 * x) * sin(coeff2_Test8 * p) * 10;
-}
-
-void source_Test8(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double uxDerVal = - u_fcn_COEFF2 * cos(u_fcn_COEFF1 * p) * sin(u_fcn_COEFF2 * x),
-			omegapDerVal = u_fcn_COEFF1 * cos(u_fcn_COEFF1 * p) * cos(u_fcn_COEFF2 * x);
-	double TxVal = coeff1_Test8 * cos(coeff3_Test8 * t) * cos(coeff1_Test8 * x) * sin(coeff2_Test8 * p),
-			TpVal = coeff2_Test8 * cos(coeff3_Test8 * t) * sin(coeff1_Test8 * x) * cos(coeff2_Test8 * p);
-	ans[0] = -coeff3_Test8 * sin(coeff3_Test8 * t) * sin(coeff1_Test8 * x) *
-			sin(coeff2_Test8 * p) + T * (uxDerVal + omegapDerVal) +
-			u_fcn(x, p) * TxVal + omega_fcn(x, p) * TpVal;
-	ans[0] = ans[0] * 10;
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 9: Test 2 with u == 0 and omega == 0
- * ----- ----- ----- ----- ----- */
-
-double coeff1_Test9 = 4 * M_PI / xL;
-double coeff2_Test9 = M_PI / 200;
-double coeff3_Test9 = 2 * M_PI;
-
-void prep_Test9() {
-}
-
-double soln_T_Test9(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test9 * t) * sin(coeff1_Test9 * x) * sin(coeff2_Test9 * p) * 1000;
-}
-
-void source_Test9(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	ans[0] = -coeff3_Test9 * sin(coeff3_Test9 * t) * sin(coeff1_Test9 * x) *
-			sin(coeff2_Test9 * p);
-	ans[0] = ans[0] * 1000;
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Original Model
- * ----- ----- ----- ----- ----- */
-
-void prep_Orig() {
-	fillCache_Test1();
-}
-
-double initTOrig(double x, double p, double t, int j, int k) {
-	return soln_T_Test1(x, p, t, j, k);
-}
-
-double initqOrig(double x, double p, double t, int j, int k) {
-	return 0;
-	// return initTOrig(x, p, t, j, k);
-}
-
-void source_Orig(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double omegaVal = omega_fcn(x, p);
-	double qsVal = 0.622 / p * 6.112 * exp(17.67 * (T - 273.15) / (T - 29.65));
-	double deltaVal = 0.25 * (1 - sign(omegaVal)) * (1 + sign(q - qsVal));
-	double LVal = 2.5008e6 - 2300 * (T - 275);
-	double FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T) / (
-			Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
-	ans[0] = omegaVal * (R_CONST * T - deltaVal * LVal * FVal) / (p * Cp_CONST);
-	ans[1] = deltaVal * omegaVal * FVal / p;
 }
 
 #endif /* MODELS_H_ */

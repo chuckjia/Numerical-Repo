@@ -25,8 +25,8 @@ void showL2Errors() {
 			sum1 += pow(ExactVal - NumericalVal, 2);
 			sum2 += ExactVal * ExactVal;
 		}
-	printf("\n- L2 relative error = %1.15f\n", sqrt(sum1 / sum2));
-	printf("\n- L2 absolute error = %1.15f\n", sqrt(cellVol * sum1));
+	printf("\n- L2 relative error = %1.10f\n", sqrt(sum1 / sum2));
+	printf("\n- L2 absolute error = %1.10f\n", sqrt(cellVol * sum1));
 }
 
 void showL1Errors() {
@@ -41,8 +41,8 @@ void showL1Errors() {
 			sum1 += fabs(ExactVal - NumericalVal);
 			sum2 += fabs(ExactVal);
 		}
-	printf("\n- L1 relative error = %1.15f\n", sqrt(sum1 / sum2));
-	printf("\n- L1 absolute error = %1.15f\n", sqrt(cellVol * sum1));
+	printf("\n- L1 relative error = %1.10f\n", sqrt(sum1 / sum2));
+	printf("\n- L1 absolute error = %1.10f\n", sqrt(cellVol * sum1));
 }
 
 void middleDiff() {

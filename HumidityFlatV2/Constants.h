@@ -16,24 +16,17 @@
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Scheme selection
-const int numericalScheme = 0;  // 0 represents Godunov, 1 represents Central Upwind
 const int timeScheme = 2;  // 2 represents RK2, 4 represents RK4
 
-// Space step size selection
+// Step size selection
 const int numDivisions = 100;
-
-// Time step size selection
 const int numTimeSteps = 1000;  // Number of time steps
 
-
 // Test selection
-const int testNumber = 0;  // Test 1, 2, or 3. 0 represents the original model
+const int testNumber = 0;
 
 // Final Time
-const double finalTime = 200;
-const double Dt = finalTime / numTimeSteps;  // Size of time steps
-/*const double Dt = 0.01;  // Size of time steps
-const double finalTime = Dt * numTimeSteps;*/
+const double finalTime = 100;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Numerical Scheme Constants
@@ -56,6 +49,7 @@ const double x0 = 0;  // Leftmost x
 const double xL = 5e4;  // Rightmost x: model value 5e4
 const double pA = 2e2;  // Bottom p: model value 200
 const double pB = 10e2;  // Top p: model value 1000
+const double Dt = finalTime/numTimeSteps;  // Size of time steps
 
 /*
  * Auto-generated constants

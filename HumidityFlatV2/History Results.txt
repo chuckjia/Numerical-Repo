@@ -1,0 +1,51 @@
+History Results:
+
+Result 1:
+
+===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 
+Solving model equations using the Godnuv method
+===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 
+Parameters:
+  Nx = 200, Np = 200, numTimeSteps = 4000
+
+- Mesh successfully built. (0.60ms)
+
+- Initial conditions set. (0.7ms)
+
+- Using the 2nd order Runge-Kutta method.
+  [Completed]: 100%. (42.39s)
+
+L2 norm of error = 0.000134
+
+
+Result 2:
+
+===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 
+Godunov Method: Solving Model Equations
+===== ===== ===== ===== ===== ===== ===== ===== ===== ===== 
+
+Parameters:  Nx = 720, Np = 720, numTimeSteps = 500, finalTime = 1.0s
+Model Selection: Test 1
+
+----- ----- ----- -----
+
+Program Progress
+
+- Mesh successfully built. (5.62ms)
+
+- Initial conditions set. (10.2ms)
+
+- Using the 2nd order Runge-Kutta method.
+  [Completed]: 100%. (70.62s)
+
+----- ----- ----- -----
+
+Data by comparison
+
+- L2 norm of relative error = 0.0000267135
+
+- L2 norm of absolute error = 0.0244482844
+
+- Center value (peak) comparison
+    Error = 0.000005
+    Exact value = 0.367877

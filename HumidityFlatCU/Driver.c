@@ -27,11 +27,13 @@ int main() {
 	timeMethod();
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, sl);
 	// printMatrix2DTimes2_Comp1(numCellsX, numCellsP, Hx);
-	printf("\n----- ----- ----- -----\n");
-	printf("\nComparison Data\n");
-	showL2Errors();
-	showL1Errors();
-	middleDiff();
+	if (testNumber != 0) {
+		printf("\n----- ----- ----- -----\n");
+		printf("\nComparison Data\n");
+		showL2Errors();
+		showL1Errors();
+		middleDiff();
+	}
 	writeResToFile();
 	printf("\n");
 }

@@ -47,7 +47,7 @@ void calcRHS_RK(double ans[2], int j, int k) {
 
 const double timer_factor1_CONST = 100 / finalTime;
 
-void rk2_CU() {
+void rk2() {
 	// Initialize the intermediate solution
 	double slCurr[numCellsX][numCellsP][2];
 	// Some temporary constansts
@@ -57,8 +57,8 @@ void rk2_CU() {
 	for (int ii = 0; ii < numTimeSteps; ii++) {
 		double t = Dt * ii;
 		// Printing progress
-		printf("\r  [Progress]:%5.1f%%", t * timer_factor1_CONST);
-		fflush(stdout);
+		// printf("\r  [Progress]:%5.1f%%", t * timer_factor1_CONST);
+		//fflush(stdout);
 
 		// Runge-Kutta step 1
 		calcFluxes(sl);
@@ -84,8 +84,8 @@ void rk2_CU() {
 
 		// Runge-Kutta step 2
 		calcFluxes(sl);
-		for (int j = 1; j < numCellsX; j++)
-			for (int k = 1; k < numCellsP; k++) {
+		for (int j = 1; j < lastIndexX; j++)
+			for (int k = 1; k < lastIndexP; k++) {
 				// Current solution
 				double T = sl[j][k][0], q = sl[j][k][1];
 				double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
@@ -225,7 +225,7 @@ void timeMethod() {
 
 	// Main body
 	if (timeScheme == 2)
-		rk2_CU();
+		rk2();
 	else
 		rk4();
 

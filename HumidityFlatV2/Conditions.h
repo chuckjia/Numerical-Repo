@@ -31,11 +31,9 @@ void (*addBoundaryCondPtr)();
  */
 void neumannCond();
 void dirichletCond();
-double boundaryVal = 0;
 
 void setUpTests() {
 	if (testNumber == 0) {
-		prep_Orig();
 		initTFcnPtr = &initTOrig;
 		initqFcnPtr = &initqOrig;
 		sourceFcnPtr = &source_Orig;
@@ -51,56 +49,12 @@ void setUpTests() {
 		initTFcnPtr = &soln_T_Test2;
 		initqFcnPtr = &zeroInit;
 		sourceFcnPtr = &source_Test2;
-		boundaryVal = 0;
 		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 3){
+	} else {
 		prep_Test3();
 		initTFcnPtr = &soln_T_Test3;
 		initqFcnPtr = &zeroInit;
 		sourceFcnPtr = &source_Test3;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 4){
-		prep_Test4();
-		initTFcnPtr = &soln_T_Test4;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test4;
-		boundaryVal = 1;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 5){
-		prep_Test5();
-		initTFcnPtr = &soln_T_Test5;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test5;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 6) {
-		prep_Test6();
-		initTFcnPtr = &soln_T_Test6;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test6;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 7){
-		prep_Test7();
-		initTFcnPtr = &soln_T_Test7;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test7;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 8) {
-		prep_Test8();
-		initTFcnPtr = &soln_T_Test8;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test8;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 9) {
-		prep_Test8();
-		initTFcnPtr = &soln_T_Test9;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test9;
-		boundaryVal = 0;
 		addBoundaryCondPtr = &dirichletCond;
 	}
 }
@@ -141,22 +95,22 @@ void neumannCond() {
  */
 void dirichletCond() {
 	// When j = 0 or lastIndexX
-	for (int k = 0; k < numCellsP; k++) {
+	for (int k = 1; k < lastIndexP; k++) {
 		// When j = 0
-		sl[0][k][0] = boundaryVal;
-		sl[0][k][1] = boundaryVal;
+		sl[0][k][0] = 0;
+		sl[0][k][1] = 0;
 		// When j = lastIndexX
-		sl[lastIndexX][k][0] = boundaryVal;
-		sl[lastIndexX][k][1] = boundaryVal;
+		sl[lastIndexX][k][0] = 0;
+		sl[lastIndexX][k][1] = 0;
 	}
 	// When k = 0 or lastIndexP
-	for (int j = 0; j < numCellsX; j++) {
+	for (int j = 1; j < lastIndexX; j++) {
 		// When k = 0
-		sl[j][0][0] = boundaryVal;
-		sl[j][0][1] = boundaryVal;
+		sl[j][0][0] = 0;
+		sl[j][0][1] = 0;
 		// When k = lastIndexP
-		sl[j][lastIndexP][0] = boundaryVal;
-		sl[j][lastIndexP][1] = boundaryVal;
+		sl[j][lastIndexP][0] = 0;
+		sl[j][lastIndexP][1] = 0;
 	}
 }
 
