@@ -48,6 +48,9 @@ void calcRHS_RK(double ans[2], int j, int k) {
 const double timer_factor1_CONST = 100 / finalTime;
 
 void rk2() {
+	// If using Godunov, we need to cache the u and omega values on the sides
+	if (numericalScheme == 0)
+		fillCache_uomegaSideVals_Godunov();
 	// Initialize the intermediate solution
 	double slCurr[numCellsX][numCellsP][2];
 	// Some temporary constansts

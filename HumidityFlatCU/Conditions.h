@@ -96,10 +96,17 @@ void setUpTests() {
 		boundaryVal = 0;
 		addBoundaryCondPtr = &dirichletCond;
 	} else if (testNumber == 9) {
-		prep_Test8();
+		prep_Test9();
 		initTFcnPtr = &soln_T_Test9;
 		initqFcnPtr = &zeroInit;
 		sourceFcnPtr = &source_Test9;
+		boundaryVal = 0;
+		addBoundaryCondPtr = &dirichletCond;
+	} else if (testNumber == 10) {
+		prep_Test10();
+		initTFcnPtr = &soln_T_Test10;
+		initqFcnPtr = &zeroInit;
+		sourceFcnPtr = &source_Test10;
 		boundaryVal = 0;
 		addBoundaryCondPtr = &dirichletCond;
 	}

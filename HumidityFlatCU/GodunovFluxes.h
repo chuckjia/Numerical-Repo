@@ -17,12 +17,21 @@
 // FFlux[j][k] represents F_{i+1/2,j} and GFlux[j][k] represents G_{i,j+1/2}
 double FFlux[numCellsX][numCellsP][2];
 double GFlux[numCellsX][numCellsP][2];
+double uomega_Cache_Godunov[numCellsX][numCellsP][2];
+
+void fillCache_uomegaSideVals_Godunov() {
+	for (int i = 0; i < numCellsX; i++)
+		for (int j = 0; j < numCellsP; j++) {
+			uomega_Cache_Godunov[i][j][0] = Dp * u_fcn(getCellRightX(i, j), getCellCenterP(i, j));
+			uomega_Cache_Godunov[i][j][1] = Dx * omega_fcn(getCellCenterX(i, j), getCellTopP(i, j));
+		}
+}
 
 void calcFluxesGodunov(double sl[numCellsX][numCellsP][2]) {
 	// Calculate G fluxes
 	for (int i = 1; i < lastIndexX; i++)
 		for (int j = 0; j < lastIndexP; j++) {
-			double coeff = Dx * omega_fcn(getCellCenterX(i, j), getCellTopP(i, j));
+			double coeff = uomega_Cache_Godunov[i][j][1];
 			double slCheck[2] = {0, 0};
 			if (coeff >= 0) {
 				slCheck[0] = sl[i][j][0];
@@ -37,7 +46,7 @@ void calcFluxesGodunov(double sl[numCellsX][numCellsP][2]) {
 	// Calculate F fluxes
 	for (int i = 0; i < lastIndexX; i++)
 		for (int j = 1; j < lastIndexP; j++) {
-			double coeff = Dp * u_fcn(getCellRightX(i, j), getCellCenterP(i, j));
+			double coeff = uomega_Cache_Godunov[i][j][0];
 			double slCheck[2] = {0, 0};
 			if (coeff >= 0) {
 				slCheck[0] = sl[i][j][0];

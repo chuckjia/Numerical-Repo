@@ -94,7 +94,6 @@ void source_Test1(double ans[2], double T, double q, double x, double p, double 
 	if (x < x1_Test1 || x > x2_Test1 || p < p1_Test1 || p > p2_Test1)
 		ans[0] = 0;
 	else {
-		// double TVal = exp(t) * T_xpTerms_cache_Test1[j][k];
 		double xTerm = xTerm_cache_Test1[j][k], pTerm = pTerm_cache_Test1[j][k];
 		double TxVal_partial = - xTerm * xTerm * 4 * (2 * x - x1x2Sum_Test1) /
 				(x1x2Diff_Test1 * x1x2Diff_Test1);
@@ -309,6 +308,32 @@ double soln_T_Test9(double x, double p, double t, int j, int k) {
 void source_Test9(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
 	ans[0] = -coeff3_Test9 * sin(coeff3_Test9 * t) * sin(coeff1_Test9 * x) *
 			sin(coeff2_Test9 * p);
+	ans[0] = ans[0] * 1000;
+	ans[1] = 0;
+}
+
+/* ----- ----- ----- ----- -----
+ * Test 10: Test 2 with u == const and omega == const
+ * ----- ----- ----- ----- ----- */
+
+double coeff1_Test10 = 4 * M_PI / xL;
+double coeff2_Test10 = M_PI / 200;
+double coeff3_Test10 = 2 * M_PI;
+
+void prep_Test10() {
+}
+
+double soln_T_Test10(double x, double p, double t, int j, int k) {
+	return cos(coeff3_Test10 * t) * sin(coeff1_Test10 * x) * sin(coeff2_Test10 * p) * 1000;
+}
+
+void source_Test10(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
+	ans[0] = -coeff3_Test10 * sin(coeff3_Test10 * t) * sin(coeff1_Test10 * x) *
+			sin(coeff2_Test10 * p) +
+			u_fcn(x, p) * cos(coeff3_Test10 * t) * coeff1_Test10 *
+			cos(coeff1_Test10 * x) * sin(coeff2_Test10 * p) +
+			omega_fcn(x, p) * cos(coeff3_Test10 * t) * sin(coeff1_Test10 * x) *
+			coeff2_Test10 * cos(coeff2_Test10 * p);
 	ans[0] = ans[0] * 1000;
 	ans[1] = 0;
 }

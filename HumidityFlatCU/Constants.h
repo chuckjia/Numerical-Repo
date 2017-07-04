@@ -20,19 +20,19 @@ const int numericalScheme = 0;  // 0 represents Godunov, 1 represents Central Up
 const int timeScheme = 2;  // 2 represents RK2, 4 represents RK4
 
 // Space step size selection
-const int numDivisions = 100;
+const int numDivisions = 5;
 
 // Time step size selection
-const int numTimeSteps = 1000;  // Number of time steps
-
+const int numTimeSteps = 100;  // Number of time steps
 
 // Test selection
-const int testNumber = 0;  // Test 1, 2, or 3. 0 represents the original model
+const int testNumber = 10;  // Test 1, 2, or 3. 0 represents the original model
 
 // Final Time
-const double finalTime = 200;
+const double finalTime = 1;
 const double Dt = finalTime / numTimeSteps;  // Size of time steps
-/*const double Dt = 0.01;  // Size of time steps
+
+/*const double Dt = 0.1;
 const double finalTime = Dt * numTimeSteps;*/
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -91,6 +91,7 @@ const double u_fcn_COEFF1 = M_PI / p0_CONST,
  * The function u
  */
 double u_fcn(double x, double p) {
+	return -1;
 	return 7.5 + cos(u_fcn_COEFF1 * p) * cos(u_fcn_COEFF2 * x);
 }
 
@@ -104,6 +105,7 @@ const double omega_fcn_COEFF1 = M_PI / p0_CONST,
  * The function omega
  */
 double omega_fcn(double x, double p) {
+	return -1;
 	return sin(omega_fcn_COEFF1 * p) * cos(omega_fcn_COEFF2 * x);
 }
 
