@@ -8,7 +8,6 @@
 #ifndef TESTFCNS_H_
 #define TESTFCNS_H_
 #include "TimeSteps.h"
-#include "LaxWendroff.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Methods For Testing Purposes
@@ -18,10 +17,10 @@ void showL2Errors() {
 	double t = finalTime;
 	double sum1 = 0;
 	double sum2 = 0;
-	for (int j = 1; j < lastIndexX; j++)
-		for (int k = 1; k < lastIndexP; k++) {
+	for (int j = 1; j < lastGhostX; j++)
+		for (int k = 1; k < lastGhostP; k++) {
 			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			double ExactVal = (*initTFcnPtr)(x, p, t, j, k);
+			double ExactVal = exact_T_Test1(x, p, t, j, k);
 			double NumericalVal = sl[j][k][0];
 			sum1 += pow(ExactVal - NumericalVal, 2);
 			sum2 += ExactVal * ExactVal;
@@ -38,10 +37,10 @@ void showL1Errors() {
 	double t = finalTime;
 	double sum1 = 0;
 	double sum2 = 0;
-	for (int j = 1; j < lastIndexX; j++)
-		for (int k = 1; k < lastIndexP; k++) {
+	for (int j = 1; j < lastGhostX; j++)
+		for (int k = 1; k < lastGhostP; k++) {
 			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			double ExactVal = (*initTFcnPtr)(x, p, t, j, k);
+			double ExactVal = exact_T_Test1(x, p, t, j, k);
 			double NumericalVal = sl[j][k][0];
 			sum1 += fabs(ExactVal - NumericalVal);
 			sum2 += fabs(ExactVal);
@@ -53,7 +52,7 @@ void showL1Errors() {
 void middleDiff() {
 	double xMid = x0 + 0.5 * (xL - x0), pMid = pA + 0.5 * (pB - pA);
 	int j = Nx / 2, k = Np / 2;
-	double exactSolnCenter = (*initTFcnPtr)(xMid, pMid, finalTime, j, k),
+	double exactSolnCenter = exact_T_Test1(xMid, pMid, finalTime, j, k),
 			numericalSolnCenter = sl[j][k][0];
 	printf("\n- Center value comparison\n");
 	printf("    Error = %f\n", fabs(exactSolnCenter - numericalSolnCenter));

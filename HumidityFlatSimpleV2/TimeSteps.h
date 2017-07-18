@@ -7,7 +7,7 @@
 
 #ifndef TIMESTEPS_H_
 #define TIMESTEPS_H_
-#include "SetUpTests.h"
+#include "Fluxes.h"
 
 void forwardEuler() {
 	// Message on progress
@@ -22,7 +22,7 @@ void forwardEuler() {
 		fflush(stdout);
 
 		// Runge-Kutta step 1
-		calcFluxes();
+		calcFluxes_ClassFV_Dirichlet();
 		for (int j = 1; j < lastGhostX; j++)
 			for (int k = 1; k < lastGhostP; k++) {
 				// Current solution
@@ -31,7 +31,7 @@ void forwardEuler() {
 				// Initiate the RHS of the RK formula
 				double RHS_RK[2] = {0, 0};
 				// Add fluxes
-				addRHS_RK(RHS_RK, j, k);
+				addRHSofRK_FV(RHS_RK, j, k);
 				// Add the source values to RHS
 				addSourceFcn(RHS_RK, T, q, x, p, t, j, k);
 				// RK iteration
@@ -51,8 +51,7 @@ void timeMethod() {
 	startTime = clock();
 
 	// Main body
-	if (timeScheme == 1)
-		forwardEuler();
+	forwardEuler();
 
 	// Measure execution time
 	endTime = clock();

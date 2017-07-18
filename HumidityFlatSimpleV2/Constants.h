@@ -18,31 +18,21 @@
  * ----- ----- ----- ----- ----- ----- */
 
 // Number of space steps
-const int numDivisions = 50;
+const int numDivisions = 200;
 // Number of time steps
-const int numTimeSteps = 400;
+const int numTimeSteps = 100;
 // Size of time steps
-const double finalTime = 1;  // Final time of numerical scheme
-const double Dt = finalTime / numTimeSteps;
-
-/* ----- ----- ----- ----- ----- -----
- * Scheme and model selection
- * ----- ----- ----- ----- ----- ----- */
-
-// Scheme selection
-const int numericalScheme = 0;  // 0 == Godunov, 1 == Central Upwind
-const int timeScheme = 1;  // 1 == forward Euler, 2 == RK2
-// Model selection
-const int modelNumber = 1;  // 0 represents the original model
+const double Dt = 1e-4;
+const double finalTime = numTimeSteps * Dt;  // Final time of numerical scheme
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Geometrical Constants
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 const double x0 = 0;  // Leftmost x
-const double xL = 50000;  // Rightmost x: model value 5e4
-const double pA = 200;  // Bottom p: model value 200
-const double pB = 1000;  // Top p: model value 1000
+const double xL = 10;  // Rightmost x: model value 5e4
+const double pA = 0;  // Bottom p: model value 200
+const double pB = 10;  // Top p: model value 1000
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Auto-generated Variables
@@ -60,5 +50,7 @@ const int numSidesX = Nx + 1;  // The rightmost cell index on the x-direction (u
 const int numSidesP = Np + 1;  // The top cell index on the p-direction (used for convenience)
 const int lastGhostX = Nx + 1;  // The top cell index on the p-direction (used for convenience)
 const int lastGhostP = Np + 1;  // The top cell index on the p-direction (used for convenience)
+const int lastRealX = Nx + 1;
+const int lastRealP = Np + 1;
 
 #endif /* CONSTANTS_H_ */

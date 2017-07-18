@@ -9,7 +9,6 @@
 #define CONDITIONS_H_
 #include "Models.h"
 
-
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Initialize the solution
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -17,99 +16,31 @@
 double sl[numCellsX][numCellsP][2];
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Wrapper Functions for Tests
+ * Wrapper Functions for Model Selections
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double (*initTFcnPtr)(double x, double p, double t, int j, int k);
 double (*initqFcnPtr)(double x, double p, double t, int j, int k);
 void (*sourceFcnPtr)(double ans[2], double T, double q, double x, double p, double t,
 		int j, int k);
-void (*addBoundaryCondPtr)();
+void (*enforceBoundaryCondPtr)();
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Flux Functions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 /*
- * Pre-declaration for the boundary conditions
+ * The flux function f
  */
-void neumannCond();
-void dirichletCond();
-double boundaryVal = 0;
+double f_fcn(double input, double x, double p) {
+	return u_fcn(x, p) * input;
+}
 
-void setUpTests() {
-	if (testNumber == 0) {
-		prep_Orig();
-		initTFcnPtr = &initTOrig;
-		initqFcnPtr = &initqOrig;
-		sourceFcnPtr = &source_Orig;
-		addBoundaryCondPtr = &neumannCond;
-	} else if (testNumber == 1) {
-		prep_Test1();
-		initTFcnPtr = &soln_T_Test1;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test1;
-		addBoundaryCondPtr = &neumannCond;
-	} else if (testNumber == 2) {
-		prep_Test2();
-		initTFcnPtr = &soln_T_Test2;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test2;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 3){
-		prep_Test3();
-		initTFcnPtr = &soln_T_Test3;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test3;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 4){
-		prep_Test4();
-		initTFcnPtr = &soln_T_Test4;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test4;
-		boundaryVal = 1;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 5){
-		prep_Test5();
-		initTFcnPtr = &soln_T_Test5;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test5;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 6) {
-		prep_Test6();
-		initTFcnPtr = &soln_T_Test6;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test6;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 7){
-		prep_Test7();
-		initTFcnPtr = &soln_T_Test7;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test7;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 8) {
-		prep_Test8();
-		initTFcnPtr = &soln_T_Test8;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test8;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 9) {
-		prep_Test9();
-		initTFcnPtr = &soln_T_Test9;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test9;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	} else if (testNumber == 10) {
-		prep_Test10();
-		initTFcnPtr = &soln_T_Test10;
-		initqFcnPtr = &zeroInit;
-		sourceFcnPtr = &source_Test10;
-		boundaryVal = 0;
-		addBoundaryCondPtr = &dirichletCond;
-	}
+/*
+ * The flux function g
+ */
+double g_fcn(double input, double x, double p) {
+	return omega_fcn(x, p) * input;
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -124,7 +55,7 @@ const int secLastIndexP = lastIndexP - 1;  // Second last index (p-direction)
  */
 void neumannCond() {
 	// When j = 0 or lastIndexX
-	for (int k = 1; k < lastIndexP; k++) {
+	for (int k = 0; k < numCellsP; k++) {
 		// When j = 0
 		sl[0][k][0] = sl[1][k][0];
 		sl[0][k][1] = sl[1][k][1];
@@ -133,7 +64,7 @@ void neumannCond() {
 		sl[lastIndexX][k][1] = sl[secLastIndexX][k][1];
 	}
 	// When k = 0 or lastIndexP
-	for (int j = 1; j < lastIndexX; j++) {
+	for (int j = 0; j < numCellsX; j++) {
 		// When k = 0
 		sl[j][0][0] = sl[j][1][0];
 		sl[j][0][1] = sl[j][1][1];
@@ -144,8 +75,28 @@ void neumannCond() {
 }
 
 /*
+ * Neumann condition
+ */
+void neumannCondLeftRight() {
+	// When j = 0 or lastIndexX
+	for (int k = 0; k < numCellsP; k++) {
+		// When j = 0
+		sl[0][k][0] = sl[1][k][0];
+		sl[0][k][1] = sl[1][k][1];
+		// When j = lastIndexX
+		sl[lastIndexX][k][0] = sl[secLastIndexX][k][0];
+		sl[lastIndexX][k][1] = sl[secLastIndexX][k][1];
+	}
+}
+
+/*
  * Dirichlet condition
  */
+
+// Dirichlet condition constant
+double boundaryVal = 0;
+
+// Enforce the Dirichlet condition
 void dirichletCond() {
 	// When j = 0 or lastIndexX
 	for (int k = 0; k < numCellsP; k++) {
@@ -201,8 +152,56 @@ void setInitCond() {
 /*
  * Source function: wrapper
  */
-void calcSourceFcn(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
+void addSourceFcn(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
 	(*sourceFcnPtr)(ans, T, q, x, p, t, j, k);
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Set Up The Test Parameters
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void setUpTests() {
+	if (testNumber == 0) {
+		prep_Orig();
+		initTFcnPtr = &initTOrig;
+		initqFcnPtr = &initqOrig;
+		sourceFcnPtr = &source_Orig;
+		enforceBoundaryCondPtr = &neumannCond;
+	} else if (testNumber == 1) {
+		prep_Test1();
+		initTFcnPtr = &soln_T_Test1;
+		initqFcnPtr = &zeroInit;
+		sourceFcnPtr = &source_Test1;
+		enforceBoundaryCondPtr = &dirichletCond;
+	} else if (testNumber == 2) {
+		prep_Test2();
+		initTFcnPtr = &soln_T_Test2;
+		initqFcnPtr = &zeroInit;
+		sourceFcnPtr = &source_Test2;
+		boundaryVal = 0;
+		enforceBoundaryCondPtr = &dirichletCond;
+	} else if (testNumber == 3) {
+		prep_Test3();
+		initTFcnPtr = &soln_T_Test3;
+		initqFcnPtr = &soln_q_Test3;
+		sourceFcnPtr = &source_Test3;
+		boundaryVal = 0;
+		enforceBoundaryCondPtr = &dirichletCond;
+	} else if (testNumber == 4) {
+		prep_Test4();
+		initTFcnPtr = &soln_T_Test4;
+		initqFcnPtr = &soln_q_Test4;
+		sourceFcnPtr = &source_Test4;
+		boundaryVal = 0;
+		enforceBoundaryCondPtr = &neumannCond;
+	} else if (testNumber == 5) {
+		prep_Test5();
+		initTFcnPtr = &soln_T_Test5;
+		initqFcnPtr = &soln_q_Test5;
+		sourceFcnPtr = &source_Test5;
+		boundaryVal = 0;
+		enforceBoundaryCondPtr = &neumannCondLeftRight;
+	}
 }
 
 

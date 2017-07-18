@@ -1,7 +1,7 @@
 /*
  * Mesh.h
  *
- *  Created on: Jun 20, 2017
+ *  Created on: July 10, 2017
  *      Author: chuckjia
  *
  *  This file contains methods needed for creating the mesh.
@@ -11,44 +11,38 @@
 #define MESH_H_
 #include "Constants.h"
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Building the Mesh
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Building Mesh
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 /*
  * Initialize the space for the mesh
  */
-// Stores x-coords of the left (0) and right (1) sides of a cell
+// x-coordinates of the left (0) and right (1) sides of a cell
 double cellSidesX[numCellsX][2];
-// Stores p-coords of the bottom (0) and top (1) sides of a cell
+// p-coordinates of the bottom (0) and top (1) sides of a cell
 double cellSidesP[numCellsP][2];
-double cellCenters[numCellsX][numCellsP][2];  // Stores coords of centers of all cells
-double cellVol = Dx * Dp; // The volume of all cells (in this model, all have same volume)
+// Coordinates of centers of all cells
+double cellCenters[numCellsX][numCellsP][2];
+// The volume of all cells (in this model, all have same volume)
+double cellVol = Dx * Dp;
+// The reciprocal of cell volume
 double cellVolInv = DxInv * DpInv;
 
 /*
- * Constructs the grid: calculate cellSidesX and cellSidesP
+ * Construct the grid: calculate cellSidesX and cellSidesP
  */
 void buildGrid() {
 	// x direction
-	cellSidesX[0][0] = x0;
-	cellSidesX[0][1] = x0;
-	for (int i = 1; i < lastIndexX; i++) {
+	for (int i = 0; i < numSidesX; i++) {
 		cellSidesX[i][0] = x0 + (i - 1) * Dx;
 		cellSidesX[i][1] = x0 + i * Dx;
 	}
-	cellSidesX[lastIndexX][0] = xL;
-	cellSidesX[lastIndexX][1] = xL;
-
 	// p direction
-	cellSidesP[0][0] = pA;
-	cellSidesP[0][1] = pA;
-	for (int j = 1; j < lastIndexP; j++) {
+	for (int j = 0; j < numSidesP; j++) {
 		cellSidesP[j][0] = pA + (j - 1) * Dp;
 		cellSidesP[j][1] = pA + j * Dp;
 	}
-	cellSidesP[lastIndexP][0] = pB;
-	cellSidesP[lastIndexP][1] = pB;
 }
 
 /*
@@ -62,9 +56,9 @@ void calcCellCenter() {
 		}
 }
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Getters for cell coordinates and geometry
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Getters For Cell Coordinates and Geometry
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 /*
  * Get the x coordinate on the left side of a cell
@@ -112,8 +106,6 @@ double getCellCenterP(int i, int j) {
  * Get the volume of a cell
  */
 double getCellVol(int i, int j) {
-	if (i == 0 || j == 0 || i == lastIndexX || j == lastIndexP)
-		return 0;
 	return cellVol;
 }
 

@@ -19,11 +19,6 @@ double sl[numCellsX][numCellsP][2];
  * Initial Conditions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double (*initTFcnPtr)(double x, double p, double t, int i, int j);
-double (*initqFcnPtr)(double x, double p, double t, int i, int j);
-void (*addSourceFcnPtr)(double ans[2], double T, double q, double x, double p, double t,
-		int i, int j);
-
 /*
  * Set initial conditions
  */
@@ -36,8 +31,8 @@ void setInitCond() {
 	for (int i = 0; i < numCellsX; i++)
 		for (int j = 0; j < numCellsP; j++) {
 			double x = getCellCenterX(i, j), p = getCellCenterP(i, j);
-			sl[i][j][0] = (*initTFcnPtr)(x, p, 0, i, j);
-			sl[i][j][1] = (*initqFcnPtr)(x, p, 0, i, j);
+			sl[i][j][0] = exact_T_Test1(x, p, 0, i, j);
+			sl[i][j][1] = exact_q_Test1(x, p, 0, i, j);
 		}
 
 	// Measure execution time
@@ -55,7 +50,7 @@ void setInitCond() {
  * Source function: wrapper
  */
 void addSourceFcn(double ans[2], double T, double q, double x, double p, double t, int i, int j) {
-	(*addSourceFcnPtr)(ans, T, q, x, p, t, i, j);
+	addSource_Test1(ans, T, q, x, p, t, i, j);
 }
 
 #endif /* CONDITIONS_H_ */

@@ -1,7 +1,7 @@
 /*
  * Models.h
  *
- *  Created on: Jun 20, 2017
+ *  Created on: Jul 14, 2017
  *      Author: chuckjia
  */
 
@@ -10,36 +10,70 @@
 #include "Mesh.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Test Models
+ * Velocity Functions (Needed In Manufactured Source Functions)
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-/* ----- ----- ----- ----- -----
- * Cache: for efficiency
- * ----- ----- ----- ----- ----- */
+// The velocity u function
+double (*uFcnPtr)(double x, double p);
+// The velocity omega function
+double (*omegaFcnPtr)(double x, double p);
+
+/*
+ * The velocity u function
+ */
+double u_fcn(double x, double p) {
+	return (*uFcnPtr)(x, p);
+}
+
+/*
+ * The velocity omega function
+ */
+double omega_fcn(double x, double p) {
+	return (*omegaFcnPtr)(x, p);
+}
+
+/*
+ * Cache values for the u and omega functions
+ */
 
 double uFcn_cache[numCellsX][numCellsP];
 double omegaFcn_cache[numCellsX][numCellsP];
-double uxDer_cache[numCellsX][numCellsP];
-double omegapDer_cache[numCellsX][numCellsP];
 
-void u_omega_fillCache() {
-	for (int j = 0; j < numCellsX; j++)
-		for (int k = 0; k < numCellsP; k++) {
-			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			double input1 = u_fcn_COEFF1 * p, input2 = omega_fcn_COEFF2 * x;
-			double pTerm_uFcn = cos(input1), xTerm_omegaFcn = cos(input2);
-			uFcn_cache[j][k] = 7.5 + pTerm_uFcn * cos(input2);
-			omegaFcn_cache[j][k] = sin(input1) * xTerm_omegaFcn;
-			uxDer_cache[j][k] = - pTerm_uFcn * u_fcn_COEFF2 * sin(input2);
-			omegapDer_cache[j][k] = omega_fcn_COEFF1 * cos(input1) * xTerm_omegaFcn;
+/*
+ * Fill in the cache for u and omega, valued at cell centers
+ */
+void uomega_fillCache() {
+	for (int i = 0; i < numCellsX; i++)
+		for (int j = 0; j < numCellsP; j++) {
+			double x = getCellCenterX(i, j), p = getCellCenterP(i, j);
+			uFcn_cache[i][j] = u_fcn(x, p);
+			omegaFcn_cache[i][j] = omega_fcn(x, p);
 		}
 }
+
+/*
+ * Return the value of the u function in the (i, j) cell
+ */
+double getuFcnVal(int i, int j) {
+	return uFcn_cache[i][j];
+}
+
+/*
+ * Return the value of the omega function in the (i, j) cell
+ */
+double getomegaFcnVal(int i, int j) {
+	return omegaFcn_cache[i][j];
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Test Models
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 /* ----- ----- ----- ----- -----
  * Zero initial condition
  * ----- ----- ----- ----- ----- */
 
-double zeroInit(double x, double p, double t, int j, int k) {
+double zeroInit(double x, double p, double t, int i, int j) {
 	return 0;
 }
 
@@ -47,154 +81,133 @@ double zeroInit(double x, double p, double t, int j, int k) {
  * Original Model
  * ----- ----- ----- ----- ----- */
 
-double initTOrig(double x, double p, double t, int j, int k) {
-	return 300 - (1 - p / p0_CONST) * 50;
+/*
+ * Preset constants from the original model: constants used in the model functions
+ */
+const double theta_CONST = 1.25; // Parameter used in the van Leer's minmod limiters
+const double p0_CONST = 200;
+const double R_CONST = 287;
+const double Cp_CONST = 1004;
+const double Rv_CONST = 461.50;
+
+/*
+ * Coefficients for defining the function u and omega (for efficiency)
+ */
+const double c1_uomega_fcn_orig = M_PI / p0_CONST,
+		c2_uomega_fcn_orig = 2 * M_PI / xL;
+/*
+ * The function u from the original model
+ */
+double u_fcn_orig(double x, double p) {
+	return 7.5 + cos(c1_uomega_fcn_orig * p) * cos(c2_uomega_fcn_orig * x);
 }
 
-double initqOrig(double x, double p, double t, int j, int k) {
-	double T = initTOrig(x, p, t, j, k);
-	return 0.622 / p * 6.112 * exp(17.67 * (T - 273.15) / (T - 29.65)) - 0.0052;
+/*
+ * The function omega from the original model
+ */
+double omega_fcn_orig(double x, double p) {
+	return sin(c1_uomega_fcn_orig * p) * cos(c2_uomega_fcn_orig * x);
 }
 
-void source_Orig(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double omegaVal = omega_fcn(x, p);
+/*
+ * Cache for the derivatives of the u and omega functions from the original model
+ */
+double uxDer_Orig_cache[numCellsX][numCellsP];
+double omegapDer_Orig_cache[numCellsX][numCellsP];
+
+/*
+ * Calculate the derivatives of the u and omega functions from the original model
+ * and store them in the cache
+ */
+void uomegaDer_Orig_fillCache() {
+	for (int i = 0; i < numCellsX; i++)
+		for (int j = 0; j < numCellsP; j++) {
+			double x = getCellCenterX(i, j), p = getCellCenterP(i, j);
+			double input1 = c1_uomega_fcn_orig * p, input2 = c2_uomega_fcn_orig * x;
+			double pTerm_uFcn = cos(input1), xTerm_omegaFcn = cos(input2);
+			uxDer_Orig_cache[i][j] = - pTerm_uFcn * c2_uomega_fcn_orig * sin(input2);
+			omegapDer_Orig_cache[i][j] = c1_uomega_fcn_orig * cos(input1) * xTerm_omegaFcn;
+		}
+}
+
+/*
+ * Set up the original model
+ */
+void prep_Orig() {
+	uFcnPtr = &u_fcn_orig;
+	omegaFcnPtr = &omega_fcn_orig;
+	uomega_fillCache();
+	uomegaDer_Orig_fillCache();
+}
+
+double initT_Orig(double x, double p, double t, int j, int k) {
+	return 0;
+}
+
+double initq_Orig(double x, double p, double t, int j, int k) {
+	return 0;
+}
+
+void addSource_Orig(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
+	double omegaVal = omegaFcn_cache[j][k];
 	double qsVal = 0.622 / p * 6.112 * exp(17.67 * (T - 273.15) / (T - 29.65));
 	double deltaVal = 0.25 * (1 - sign(omegaVal)) * (1 + sign(q - qsVal));
 	double LVal = 2.5008e6 - 2300 * (T - 275);
 	double FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T) / (
 			Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
-	ans[0] = omegaVal * (R_CONST * T - deltaVal * LVal * FVal) / (p * Cp_CONST);
-	ans[1] = deltaVal * omegaVal * FVal / p;
+	ans[0] += omegaVal * (R_CONST * T - deltaVal * LVal * FVal) / (p * Cp_CONST);
+	ans[1] += deltaVal * omegaVal * FVal / p;
 }
 
 /* ----- ----- ----- ----- -----
  * Test 1
  * ----- ----- ----- ----- ----- */
 
-const double x1_Test1 = x0 + (xL - x0) * 0.1;
-const double x2_Test1 = x0 + (xL - x0) * 0.9;
-const double p1_Test1 = pA + (pB - pA) * 0.1;
-const double p2_Test1 = pA + (pB - pA) * 0.9;
-const double x1x2Sum_Test1 = x1_Test1 + x2_Test1;
-// const double x1x2DiffInv_Test1 = 1 / (x2_Test1 - x1_Test1);
-const double x1x2Diff_Test1 = x2_Test1 - x1_Test1;
-const double p1p2Sum_Test1 = p1_Test1 + p2_Test1;
-// const double p1p2DiffInv_Test1 = 1 / (p2_Test1 - p1_Test1);
-const double p1p2Diff_Test1 = p2_Test1 - p1_Test1;
+// Coefficients to be used in the test
+const double oscillationFactor_Test1 = 1;
+double c1_Test1 = oscillationFactor_Test1 * 4 * M_PI / xL;
+double c2_Test1 = oscillationFactor_Test1 * M_PI / 200;
+double c3_Test1 = 2 * M_PI;
 
-double T_xpTerms_cache_Test1[numCellsX][numCellsP];
-double xTerm_cache_Test1[numCellsX][numCellsP];
-double pTerm_cache_Test1[numCellsX][numCellsP];
-
-void fillCache_Test1() {
-	for (int j = 0; j < numCellsX; j++)
-		for (int k = 0; k < numCellsP; k++) {
-			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			if (x > x1_Test1 && x < x2_Test1 && p > p1_Test1 && p < p2_Test1) {
-				double xTerm1 = (2 * x - x1x2Sum_Test1) / x1x2Diff_Test1;
-				double pTerm1 = (2 * p - p1p2Sum_Test1) / p1p2Diff_Test1;
-				double xTerm = -1 / (1 - xTerm1 * xTerm1);
-				double pTerm = -1 / (1 - pTerm1 * pTerm1);
-				xTerm_cache_Test1[j][k] = xTerm;
-				pTerm_cache_Test1[j][k] = pTerm;
-				T_xpTerms_cache_Test1[j][k] = exp(xTerm) * exp(pTerm);
-			}
-		}
-}
-
+/*
+ * Filling the cache for the test
+ */
 void prep_Test1() {
-	u_omega_fillCache();
-	fillCache_Test1();
+	uFcnPtr = &u_fcn_orig;
+	omegaFcnPtr = &omega_fcn_orig;
+	uomega_fillCache();
+	uomegaDer_Orig_fillCache();
 }
 
-double soln_T_Test1(double x, double p, double t, int j, int k) {
-	if (x < x1_Test1 || x > x2_Test1 || p < p1_Test1 || p > p2_Test1)
-		return 0;
-	return exp(t) * T_xpTerms_cache_Test1[j][k];
+// Scale variable
+double scale_Test1 = 1;
+
+/*
+ * Manufactured solution for T
+ */
+double exact_T_Test1(double x, double p, double t, int j, int k) {
+	return sin(c1_Test1 * x) * sin(c2_Test1 * p) * cos(c3_Test1 * t) * scale_Test1;
 }
 
-void source_Test1(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	ans[1] = 0;
-	if (x < x1_Test1 || x > x2_Test1 || p < p1_Test1 || p > p2_Test1)
-		ans[0] = 0;
-	else {
-		// double TVal = exp(t) * T_xpTerms_cache_Test1[j][k];
-		double xTerm = xTerm_cache_Test1[j][k], pTerm = pTerm_cache_Test1[j][k];
-		double TxVal_partial = - xTerm * xTerm * 4 * (2 * x - x1x2Sum_Test1) /
-				(x1x2Diff_Test1 * x1x2Diff_Test1);
-		double TpVal_partial = - pTerm * pTerm * 4 * (2 * p - p1p2Sum_Test1) /
-				(p1p2Diff_Test1 * p1p2Diff_Test1);
-		ans[0] = T * (1 + uxDer_cache[j][k] + uFcn_cache[j][k] * TxVal_partial +
-				omegapDer_cache[j][k] + omegaFcn_cache[j][k] * TpVal_partial);
-	}
+/*
+ * Manufactured solution for q
+ */
+double exact_q_Test1(double x, double p, double t, int j, int k) {
+	return 0;
 }
 
-/* ----- ----- ----- ----- -----
- * Test 2
- * ----- ----- ----- ----- ----- */
-
-double coeff1_Test2 = 4 * M_PI / xL;
-double coeff2_Test2 = M_PI / 200;
-double coeff3_Test2 = 2 * M_PI;
-
-void prep_Test2() {
-	u_omega_fillCache();
-}
-
-double soln_T_Test2(double x, double p, double t, int j, int k) {
-	return cos(coeff3_Test2 * t) * sin(coeff1_Test2 * x) * sin(coeff2_Test2 * p) * 100;
-}
-
-void source_Test2(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double inputx = coeff1_Test2 * x, inputp = coeff2_Test2 * p, inputt = coeff3_Test2 * t;
+/*
+ * Manufactured source function
+ */
+void addSource_Test1(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
+	double inputx = c1_Test1 * x, inputp = c2_Test1 * p, inputt = c3_Test1 * t;
 	double T_xPart = sin(inputx), T_pPart = sin(inputp), T_tPart = cos(inputt);
-	ans[0] = - coeff3_Test2 * sin(inputt) * T_xPart * T_pPart +
-			T * (uxDer_cache[j][k] + omegapDer_cache[j][k]) +
-			T_tPart * (uFcn_cache[j][k] * coeff1_Test2 * cos(inputx) * T_pPart +
-					omegaFcn_cache[j][k] * coeff2_Test2 * T_xPart * cos(inputp));
-	ans[0] = ans[0] * 100;
-	ans[1] = 0;
-}
-
-/* ----- ----- ----- ----- -----
- * Test 3
- * ----- ----- ----- ----- ----- */
-
-double solnCache_Test3[numCellsX][numCellsP][2];
-
-void solnParts_fillCache_Test3() {
-	for (int j = 0; j < numCellsX; j++)
-		for (int k = 0; k < numCellsP; k++) {
-			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
-			solnCache_Test3[j][k][0] = (x - x0) * (x - xL);
-			solnCache_Test3[j][k][1] = log(p) * (p - pA) * (p - pB);
-		}
-}
-
-void prep_Test3() {
-	u_omega_fillCache();
-	solnParts_fillCache_Test3();
-}
-
-double coeff_Test3 = 2 * M_PI;
-double x0xLSum_Test3 = x0 + xL;
-double pApBSum_Test3 = pA + pB;
-double scaleCoeff_Test3 = 1e8;
-
-double soln_T_Test3(double x, double p, double t, int j, int k) {
-	return cos(coeff_Test3 * t) * solnCache_Test3[j][k][0] * solnCache_Test3[j][k][1] / scaleCoeff_Test3;
-}
-
-void source_Test3(double ans[2], double T, double q, double x, double p, double t, int j, int k) {
-	double solnPartX = solnCache_Test3[j][k][0], solnPartP = solnCache_Test3[j][k][1],
-			inputt = coeff_Test3 * t, solnPartT = cos(inputt);
-	ans[0] = (-coeff_Test3 * sin(inputt) * solnPartX * solnPartP +
-			T * (uxDer_cache[j][k] + omegapDer_cache[j][k]) +
-			uFcn_cache[j][k] * solnPartT * solnPartP * (2 * x - x0xLSum_Test3) +
-			omegaFcn_cache[j][k] * solnPartT * solnPartX * (
-					(p - pA) * (p - pB) / p + log(p) * (2 * p - pApBSum_Test3))) /
-			scaleCoeff_Test3;
-	ans[1] = 0;
+	double res1 = - c3_Test1 * sin(inputt) * T_xPart * T_pPart +
+			T * (uxDer_Orig_cache[j][k] + omegapDer_Orig_cache[j][k]) +
+			T_tPart * (uFcn_cache[j][k] * c1_Test1 * cos(inputx) * T_pPart +
+					omegaFcn_cache[j][k] * c2_Test1 * T_xPart * cos(inputp));
+	ans[0] += res1 * scale_Test1;
+	ans[1] += 0 * scale_Test1;
 }
 
 #endif /* MODELS_H_ */
