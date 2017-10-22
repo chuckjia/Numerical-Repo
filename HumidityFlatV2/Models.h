@@ -94,7 +94,7 @@ const double Rv_CONST = 461.50;
  * Coefficients for defining the function u and omega (for efficiency)
  */
 const double c1_uomega_fcn_orig = M_PI / p0_CONST,
-		c2_uomega_fcn_orig = 2 * M_PI / xL;
+		c2_uomega_fcn_orig = 2 * M_PI / xf;
 /*
  * The function u from the original model
  */
@@ -165,7 +165,7 @@ void addSource_Orig(double ans[2], double T, double q, double x, double p, doubl
 
 // Coefficients to be used in the test
 const double oscillationFactor_Test1 = 1;
-double c1_Test1 = oscillationFactor_Test1 * 4 * M_PI / xL;
+double c1_Test1 = oscillationFactor_Test1 * 4 * M_PI / xf;
 double c2_Test1 = oscillationFactor_Test1 * M_PI / 200;
 double c3_Test1 = 2 * M_PI;
 

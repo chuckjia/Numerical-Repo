@@ -40,7 +40,7 @@ const int modelNumber = 1;  // 0 represents the original model
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 const double x0 = 0;  // Leftmost x
-const double xL = 50000;  // Rightmost x: model value 5e4
+const double xf = 50000;  // Rightmost x: model value 5e4
 const double pA = 200;  // Bottom p: model value 200
 const double pB = 1000;  // Top p: model value 1000
 
@@ -50,8 +50,8 @@ const double pB = 1000;  // Top p: model value 1000
 
 const int Nx = numDivisions;  // Number of divisions on the x-direction
 const int Np = numDivisions;  // Number of divisions on the p-direction
-const double Dx = (xL - x0) / Nx;  // Size of each x step
-const double DxInv = Nx / (xL - x0);
+const double Dx = (xf - x0) / Nx;  // Size of each x step
+const double DxInv = Nx / (xf - x0);
 const double Dp = (pB - pA) / Np;  // Size of each p step
 const double DpInv = Np / (pB - pA);
 const int numCellsX = Nx + 2;  // Number of cells in the x direction (including flat control volumes)

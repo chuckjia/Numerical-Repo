@@ -25,9 +25,9 @@ void calcFluxes_ClassFV_Dirichlet() {
 		for (int j = 1; j < secLastIndexP; j++)
 			for (int ii = 0; ii < 2; ii++) {
 				double x = getCellRightX(i, j), p = getCellCenterP(i, j);
-				FF[i][j][ii] = 0.5 * (sl[i][j][ii] + sl[i + 1][j][ii]) * u_fcn(x, p) * Dp;
+				FF[i][j][ii] = 0.5 * (soln[i][j][ii] + soln[i + 1][j][ii]) * u_fcn(x, p) * Dp;
 				x = getCellCenterX(i, j), p = getCellTopP(i, j);
-				GG[i][j][ii] = 0.5 * (sl[i][j][ii] + sl[i][j + 1][ii]) * omega_fcn(x, p) * Dx;
+				GG[i][j][ii] = 0.5 * (soln[i][j][ii] + soln[i][j + 1][ii]) * omega_fcn(x, p) * Dx;
 			}
 	for (int j = 0; j < lastGhostP; j++)
 		for (int ii = 0; ii < 2; ii++) {

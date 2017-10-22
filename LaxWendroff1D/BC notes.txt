@@ -1,0 +1,1 @@
+In Lax-Wendroff, the boundary condition on the right boundary is not Neumann condition if the solution is just a translation of the initial condition.

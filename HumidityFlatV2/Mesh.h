@@ -113,7 +113,7 @@ double getCellVol(int i, int j) {
  * Wrapper function to build the Mesh
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void buildMesh() {
+void setMesh() {
 	// Measure execution time
 	clock_t startTime, endTime;
 	startTime = clock();

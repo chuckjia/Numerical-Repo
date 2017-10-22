@@ -12,10 +12,5 @@ int main() {
 	printMsg();
 	showL2Errors();
 	writeResToFile();
-	/*
-	printf("\n");
-	printFlux(FF_Left);
-	printf("\n");
-	printFlux(FF_Right);
-	*/
+	//printFlux(GG_Top);
 }

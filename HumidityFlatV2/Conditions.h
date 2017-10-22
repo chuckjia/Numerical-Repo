@@ -13,7 +13,7 @@
  * Initialize the Solution
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double sl[numCellsX][numCellsP][2];
+double soln[numCellsX][numCellsP][2];
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Initial Conditions
@@ -36,8 +36,8 @@ void setInitCond() {
 	for (int i = 0; i < numCellsX; i++)
 		for (int j = 0; j < numCellsP; j++) {
 			double x = getCellCenterX(i, j), p = getCellCenterP(i, j);
-			sl[i][j][0] = (*initTFcnPtr)(x, p, 0, i, j);
-			sl[i][j][1] = (*initqFcnPtr)(x, p, 0, i, j);
+			soln[i][j][0] = (*initTFcnPtr)(x, p, 0, i, j);
+			soln[i][j][1] = (*initqFcnPtr)(x, p, 0, i, j);
 		}
 
 	// Measure execution time

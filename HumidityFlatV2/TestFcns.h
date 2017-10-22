@@ -21,7 +21,7 @@ void showL2Errors() {
 		for (int k = 1; k < lastGhostP; k++) {
 			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
 			double ExactVal = (*initTFcnPtr)(x, p, t, j, k);
-			double NumericalVal = sl[j][k][0];
+			double NumericalVal = soln[j][k][0];
 			sum1 += pow(ExactVal - NumericalVal, 2);
 			sum2 += ExactVal * ExactVal;
 		}
@@ -41,7 +41,7 @@ void showL1Errors() {
 		for (int k = 1; k < lastGhostP; k++) {
 			double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
 			double ExactVal = (*initTFcnPtr)(x, p, t, j, k);
-			double NumericalVal = sl[j][k][0];
+			double NumericalVal = soln[j][k][0];
 			sum1 += fabs(ExactVal - NumericalVal);
 			sum2 += fabs(ExactVal);
 		}
@@ -50,10 +50,10 @@ void showL1Errors() {
 }
 
 void middleDiff() {
-	double xMid = x0 + 0.5 * (xL - x0), pMid = pA + 0.5 * (pB - pA);
+	double xMid = x0 + 0.5 * (xf - x0), pMid = pA + 0.5 * (pB - pA);
 	int j = Nx / 2, k = Np / 2;
 	double exactSolnCenter = (*initTFcnPtr)(xMid, pMid, finalTime, j, k),
-			numericalSolnCenter = sl[j][k][0];
+			numericalSolnCenter = soln[j][k][0];
 	printf("\n- Center value comparison\n");
 	printf("    Error = %f\n", fabs(exactSolnCenter - numericalSolnCenter));
 	printf("    Exact value = %f", exactSolnCenter);
@@ -63,7 +63,7 @@ void writeResToFile() {
 	FILE *f = fopen("resT.txt", "wb");
 	for (int i = 0; i < numCellsX; i++) {
 		for (int j = 0; j < numCellsP; j++) {
-			double val = sl[i][j][0];
+			double val = soln[i][j][0];
 			if (fabs(val) < 0.00001)
 				val = 0;
 			fprintf(f, "%f ", val);
@@ -74,7 +74,7 @@ void writeResToFile() {
 	FILE *g = fopen("resq.txt", "wb");
 	for (int i = 0; i < numCellsX; i++) {
 		for (int j = 0; j < numCellsP; j++) {
-			double val = sl[i][j][1];
+			double val = soln[i][j][1];
 			if (fabs(val) < 0.00001)
 				val = 0;
 			fprintf(g, "%f ", val);

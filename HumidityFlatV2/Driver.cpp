@@ -21,7 +21,7 @@ void math() {
 	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
 
 	printf("\nProgram Progress\n");
-	buildMesh();
+	setMesh();
 	setUpTests();
 	setInitCond();
 	timeMethod();

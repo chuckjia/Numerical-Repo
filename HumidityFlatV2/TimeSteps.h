@@ -26,7 +26,7 @@ void forwardEuler() {
 		for (int j = 1; j < lastGhostX; j++)
 			for (int k = 1; k < lastGhostP; k++) {
 				// Current solution
-				double T = sl[j][k][0], q = sl[j][k][1];
+				double T = soln[j][k][0], q = soln[j][k][1];
 				double x = getCellCenterX(j, k), p = getCellCenterP(j, k);
 				// Initiate the RHS of the RK formula
 				double RHS_RK[2] = {0, 0};
@@ -36,7 +36,7 @@ void forwardEuler() {
 				addSourceFcn(RHS_RK, T, q, x, p, t, j, k);
 				// RK iteration
 				for (int ii = 0; ii < 2; ii++)
-					sl[j][k][ii] += Dt * RHS_RK[ii];;
+					soln[j][k][ii] += Dt * RHS_RK[ii];;
 			}
 	}
 }

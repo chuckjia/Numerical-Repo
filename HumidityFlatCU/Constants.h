@@ -16,8 +16,8 @@
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Step size selection
-const int numDivisions = 50;  // Number of space steps
-const int numTimeSteps = 1000;  // Number of time steps
+const int numDivisions = 200;  // Number of space steps
+const int numTimeSteps = 100;  // Number of time steps
 
 // Test selection
 const int testNumber = 1;  // Test 1, 2, or 3. 0 represents the original model
