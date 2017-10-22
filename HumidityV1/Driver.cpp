@@ -7,9 +7,14 @@
 
 #include "Testing.h"
 
+void testing() {
+	// printMeshToFile();
+	// printPar();
+	// printDiagnostics();
+	 test_GaussElimProj();
+}
+
 int main() {
 	setMesh();
-	printMeshToFile();
-	printPar();
-	printDiagnostics();
+	testing();
 }

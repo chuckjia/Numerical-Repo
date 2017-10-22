@@ -55,7 +55,6 @@ void enforceBC_MDL1() {
 
 	// Right boundary: Neumann BC
 	for (int j = 1; j <= lastRealIndexP; ++j) {
-		double p = getCellCenterP(1, j);
 		T[lastGhostIndexX][j] = T[lastRealIndexX][j];
 		q[lastGhostIndexX][j] = q[lastRealIndexX][j];
 		u[lastGhostIndexX][j] = u[lastRealIndexX][j];

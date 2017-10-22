@@ -27,7 +27,7 @@ void fillCache_r_uInterp_upwind() {
 		}
 }
 
-double get_r_uInterp_upwind(double i, double j) {
+double get_r_uInterp_upwind(int i, int j) {
 	return r_uInterp_cache[i][j];
 }
 

@@ -16,6 +16,8 @@
 const int Nx = numDivisions;  // Number of divisions in x direction in space
 const int Np = numDivisions;  // Number of divisions in p direction in space
 
+double NxInv = 1. / Nx, NpInv = 1. / Np;
+
 // Following constants are set up for code readability
 const int numCellsX = Nx + 2;  // Number of cells in the x direction
 const int numCellsP = Np + 2;  // Number of cells in the p direction
@@ -30,18 +32,19 @@ const int numGridPtsP = numCellsP + 1;  // Number of grid points in p direction 
  * Grid Points
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double Dx;  // x step size
-double DpVec[numGridPtsX];
+double Dx, DxInv;  // x step size, defined in calcGridPts()
+double cellLeftDpVec[numGridPtsX];
 double meshgridX[numGridPtsX];
 double meshgridP[numGridPtsX][numGridPtsP];
 
 void calcGridPts() {
 	Dx = (xf - x0) / Nx;
+	DxInv = Nx / (xf - x0);
 	for (int i = 0; i < numGridPtsX; ++i) {
 		double x = x0 + (i - 1) * Dx;
 		meshgridX[i] = x;
 		double Dp = ((*pB_fcnPtr)(x) - pA) / Np;
-		DpVec[i] = Dp;
+		cellLeftDpVec[i] = Dp;
 		for (int j = 0; j < numGridPtsP; ++j)
 			meshgridP[i][j] = pA + (j - 1) * Dp;
 	}
@@ -64,35 +67,35 @@ double getCellTopSideLen() {
 }
 
 double getCellLeftDp(int i, int j) {
-	return DpVec[i];
+	return cellLeftDpVec[i];
 }
 
 double getCellLeftDp(int i) {
-	return DpVec[i];
+	return cellLeftDpVec[i];
 }
 
 double getCellLeftSideLen(int i, int j) {
-	return DpVec[i];
+	return cellLeftDpVec[i];
 }
 
 double getCellLeftSideLen(int i) {
-	return DpVec[i];
+	return cellLeftDpVec[i];
 }
 
 double getCellRightDp(int i, int j) {
-	return DpVec[i + 1];
+	return cellLeftDpVec[i + 1];
 }
 
 double getCellRightDp(int i) {
-	return DpVec[i + 1];
+	return cellLeftDpVec[i + 1];
 }
 
 double getCellRightSideLen(int i, int j) {
-	return DpVec[i + 1];
+	return cellLeftDpVec[i + 1];
 }
 
 double getCellRightSideLen(int i) {
-	return DpVec[i + 1];
+	return cellLeftDpVec[i + 1];
 }
 
 double getCellLeftX(int i, int j) {
@@ -213,6 +216,23 @@ double getCellBottSideNormP(int i, int j) {
 	return cellTopSideNormP[i][j - 1];
 }
 
+double cellCenterDpVec[numCellsX];
+
+void calcCellCenterDp() {
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		cellCenterDpVec[i] = (*pB_fcnPtr(x) - pA) * NpInv;
+	}
+}
+
+double getCellCenterDp(int i, int j) {
+	return cellCenterDpVec[i];
+}
+
+double getCellCenterDp(int i) {
+	return cellCenterDpVec[i];
+}
+
 // Wrapper function to build all mesh values
 void setMesh() {
 	setModels();
@@ -220,6 +240,7 @@ void setMesh() {
 	calcBaryCenters();
 	calcCellVol();
 	calcCellSideNorm();
+	calcCellCenterDp();
 }
 
 #endif /* MESH_H_ */
