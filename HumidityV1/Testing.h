@@ -8,7 +8,7 @@
 #ifndef TESTING_H_
 #define TESTING_H_
 #include <iostream>
-#include "w.h"
+#include "phix.h"
 using namespace std;
 
 void printMeshToFile() {
