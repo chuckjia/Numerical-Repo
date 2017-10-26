@@ -9,6 +9,8 @@
 #define ANALYSIS_H_
 #include "TimeSteps.h"
 
+const int GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Print all parameters for diagnostics
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -41,9 +43,9 @@ double cellErr_helper(int i, int j, double exactVal, double vol) {
 }
 
 double relativeL2Err_helper(double num, double denom) {
-	if (denom > 1e-15)
+	if (denom > GRTD_PREC_CONST)
 		return sqrt(num / denom);
-	else if (num < 1e-15)
+	else if (num < GRTD_PREC_CONST)
 		return 0;
 	return -99;
 }
