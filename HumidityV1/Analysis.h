@@ -53,9 +53,9 @@ void showL2Errors() {
 	double t = finalTime;
 	double num_T = 0, num_q = 0, num_u = 0, num_w = 0,
 			denom_T = 0, denom_q = 0, denom_u = 0, denom_w = 0;
-	for (int i = 1; i < lastGhostIndexX; i++) {
+	for (int i = 1; i < lastGhostIndexX; ++i) {
 		double x = getCellCenterX(i);
-		for (int j = 1; j < lastGhostIndexP; j++) {
+		for (int j = 1; j < lastGhostIndexP; ++j) {
 			double p = getCellCenterP(i, j), vol = getCellVol(i, j);
 			double exactVal_T = (*IC_T_fcnPtr)(x, p, t),
 					exactVal_q = (*IC_q_fcnPtr)(x, p, t),
@@ -91,6 +91,17 @@ void printParToFile() {
 	fclose(f);
 }
 
+void writeCellCentersToFile() {
+	FILE *fCellCenterX = fopen("Results/cellCentersX.txt", "wb");
+	FILE *fCellCenterP = fopen("Results/cellCentersP.txt", "wb");
+	for (int i = 1; i <= Nx; ++i)
+		for (int j = 1; j <= Np; ++j) {
+			fprintf(fCellCenterX, "%f ", getCellCenterX(i, j));
+			fprintf(fCellCenterP, "%f ", getCellCenterP(i, j));
+		}
+	fclose(fCellCenterX); fclose(fCellCenterP);
+}
+
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in ploting the solution and the error
 void writeResToFile() {
@@ -113,9 +124,9 @@ void writeResToFile() {
 	FILE *err_q = fopen("Results/err_q.txt", "wb");
 	FILE *err_u = fopen("Results/err_u.txt", "wb");
 	FILE *err_w = fopen("Results/err_w.txt", "wb");
-	for (int i = 1; i < lastGhostIndexX; i++) {
+	for (int i = 1; i < lastGhostIndexX; ++i) {
 		double x = getCellCenterX(i);
-		for (int j = 1; j < lastGhostIndexP; j++) {
+		for (int j = 1; j < lastGhostIndexP; ++j) {
 			double p = getCellCenterP(i, j);
 			double exactSoln_T = (*IC_T_fcnPtr)(x, p, finalTime),
 					exactSoln_q = (*IC_q_fcnPtr)(x, p, finalTime),
@@ -134,6 +145,7 @@ void peformAnalysis() {
 	printDiagnostics();
 	showL2Errors();
 	printParToFile();
+	writeCellCentersToFile();
 	writeResToFile();
 }
 
