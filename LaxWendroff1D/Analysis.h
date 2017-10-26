@@ -12,7 +12,7 @@
 void writeResToFile() {
 	FILE *f = fopen("res.txt", "wb");
 	for (int i = 1; i < lastGhostIndex; i++)
-		fprintf(f, "%f ", u[i]);
+		fprintf(f, "%f ", u_sl[i]);
 	fclose(f);
 	FILE *g = fopen("par.txt", "wb");
 	fprintf(g, "%f ", Dt);
@@ -25,7 +25,7 @@ void writeResToFileForMovie(int tt) {
 	sprintf(filename, "res%d.txt", tt);
 	FILE *f = fopen(filename, "wb");
 	for (int i = 1; i < lastGhostIndex; i++)
-		fprintf(f, "%f ", u[i]);
+		fprintf(f, "%f ", u_sl[i]);
 	fclose(f);
 }
 
@@ -34,7 +34,7 @@ double calcL2Err() {
 	for (int i = 1; i < lastGhostIndex; i++) {
 		double x = getCellCenter(i);
 		double exactSolnVal = (*exactSolnPtr)(x, finalTime);
-		l2Err += pow(u[i] - exactSolnVal, 2);
+		l2Err += pow(u_sl[i] - exactSolnVal, 2);
 	}
 	l2Err = sqrt(Dx * l2Err);
 	return l2Err;

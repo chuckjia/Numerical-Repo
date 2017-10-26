@@ -35,8 +35,8 @@ double exactSoln_Test2(double x, double t) {
 }
 
 void enforceBC_Test2() {
-	u[0] = 1;
-	u[lastGhostIndex] = u[lastRealIndex];
+	u_sl[0] = 1;
+	u_sl[lastGhostIndex] = u_sl[lastRealIndex];
 }
 
 /* ===== ===== ===== ===== ===== =====
@@ -48,7 +48,7 @@ double (*exactSolnPtr)(double x, double t);
 void enforceIC() {
 	for (int i = 0; i < numCells; i++) {
 		double x = getCellCenter(i);
-		u[i] = (*exactSolnPtr)(x, 0);
+		u_sl[i] = (*exactSolnPtr)(x, 0);
 	}
 }
 
@@ -59,8 +59,8 @@ void enforceIC() {
 void (*enforceBCPtr)();
 
 void enforcePeriodicBC() {
-	u[0] = u[lastRealIndex];
-	u[lastGhostIndex] = u[1];
+	u_sl[0] = u_sl[lastRealIndex];
+	u_sl[lastGhostIndex] = u_sl[1];
 }
 
 /* ===== ===== ===== ===== ===== =====

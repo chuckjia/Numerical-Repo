@@ -27,6 +27,8 @@ int lastGhostIndexX = Nx + 1;  // x direction index of ghost cells on right side
 int lastGhostIndexP = Np + 1;  // p direction index of ghost cells on top side of domain
 const int numGridPtsX = numCellsX + 1;  // Number of grid points in x direction (including ghosts)
 const int numGridPtsP = numCellsP + 1;  // Number of grid points in p direction (including ghosts)
+const int NxPlusOne = Nx + 1;
+const int NpPlusOne = Np + 1;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Grid Points
@@ -172,7 +174,7 @@ double getCellCenterP(int i, int j) {
  * Cell Volumes
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double cellVol[numCellsX][numCellsP];
+double cellVol[numCellsX][numCellsP];  // Made 2D to accommodate flat control volumes
 
 void calcCellVol() {
 	for (int i = 0; i < numCellsX; ++i)
@@ -221,7 +223,7 @@ double cellCenterDpVec[numCellsX];
 void calcCellCenterDp() {
 	for (int i = 0; i < numCellsX; ++i) {
 		double x = getCellCenterX(i);
-		cellCenterDpVec[i] = (*pB_fcnPtr(x) - pA) * NpInv;
+		cellCenterDpVec[i] = ((*pB_fcnPtr)(x) - pA) * NpInv;
 	}
 }
 
@@ -235,7 +237,6 @@ double getCellCenterDp(int i) {
 
 // Wrapper function to build all mesh values
 void setMesh() {
-	setModels();
 	calcGridPts();
 	calcBaryCenters();
 	calcCellVol();

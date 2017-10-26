@@ -11,7 +11,7 @@
 
 double aInv_proj_cache[Nx], b_proj_cache[Nx];  // Only values from 1 to Nx-1 are used
 double d_proj_cache[Nx + 1]; // Only values from 1 to Nx are used
-double lambda_x[Nx + 1];  // Only values from 1 to Nx are used
+double lambda_x_proj[Nx + 1];  // Only values from 1 to Nx are used
 
 void fillCache_ab_proj() {
 	for (int i = 1; i < Nx; ++i) {
@@ -41,25 +41,33 @@ void calc_c_proj() {
 	// this is not a concern.
 	for (int i = 1; i <= Nx; ++i) {
 		double sum = 0;
-		double x = getCellCenterX(i);
 		for (int j = 1; j <= lastRealIndexP; j++)
-			sum += u[i][j];
+			sum += u_sl[i][j];
 		sum *= getCellCenterDp(i);
-		lambda_x[i] = sum;
+		lambda_x_proj[i] = sum;
 	}
 	// Now calculate the real c_proj values
 	for (int i = 1; i < Nx; ++i)
-		lambda_x[i] = (lambda_x[i + 1] - lambda_x[i]) * DxInv;
+		lambda_x_proj[i] = (lambda_x_proj[i + 1] - lambda_x_proj[i]) * DxInv;
 }
 
 void gaussElim_proj() {
 	calc_c_proj();
 	double sum = 0;
 	for (int i = 1; i < Nx; ++i)
-		sum += lambda_x[i] * d_proj_cache[i];
-	lambda_x[Nx] = -sum / d_proj_cache[Nx];
+		sum += lambda_x_proj[i] * d_proj_cache[i];
+	lambda_x_proj[Nx] = -sum / d_proj_cache[Nx];
 	for (int i = Nx - 1; i >= 1; --i)
-		lambda_x[i] = (lambda_x[i] - b_proj_cache[i] * lambda_x[i + 1]) * aInv_proj_cache[i];
+		lambda_x_proj[i] = (lambda_x_proj[i] - b_proj_cache[i] * lambda_x_proj[i + 1]) * aInv_proj_cache[i];
+}
+
+void projU() {
+	gaussElim_proj();
+	for (int i = 1; i < lastRealIndexX; ++i) {
+		double lambda_x = lambda_x_proj[i];
+		for (int j = 1; j < lastRealIndexP; ++j)
+			u_sl[i][j] -= lambda_x;
+	}
 }
 
 void setProjection() {

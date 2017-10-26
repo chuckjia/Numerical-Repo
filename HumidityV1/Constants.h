@@ -15,8 +15,8 @@
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Selection of finite volume method and model
-int fluxMethod = 1;  // 0: Godunov
-int modelNo = 1;  // Model number
+int modelNo = 2;  // Model number
+int fluxMethod = 0;  // 0: Godunov
 
 /* ----- ----- ----- ----- ----- -----
  * Scheme specifications
@@ -25,10 +25,16 @@ int modelNo = 1;  // Model number
 // Number of space divisions in both x and p directions in space
 const int numDivisions = 10;
 // Number of time steps
-int numTimeSteps = 10;
+int numTimeSteps = 0;
 // Size of one time step
 double Dt = 1e-5;
 // Final time of numerical scheme
 double finalTime = numTimeSteps * Dt;
+
+
+void msg() {
+	printf("===== ===== ===== ===== ===== \n");
+	printf("The program passed here.\n===== ===== ===== ===== =====\n");
+}
 
 #endif /* CONSTANTS_H_ */

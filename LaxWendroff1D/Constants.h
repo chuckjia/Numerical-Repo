@@ -38,7 +38,7 @@ const int lastRealIndex = numCells - 2;
 const int lastGhostIndex = numCells - 1;
 
 // Numerical solution
-double u[numCells];
+double u_sl[numCells];
 
 double getCellCenter(int i) {
 	return x0 + (i - 0.5) * Dx;

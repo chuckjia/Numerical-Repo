@@ -5,16 +5,19 @@
  *      Author: chuckjia
  */
 
-#include "TimeSteps.h"
+#include "Testing.h"
 
-void testing() {
-	// printMeshToFile();
-	// printPar();
-	// printDiagnostics();
-	 test_GaussElimProj();
+void setAll() {
+	setModels();
+	setMesh();
+	setConditions();
+	setGodunov();
+	setProjection();
+	setQuadCells();
+	setTimeSteps();
 }
 
 int main() {
-	setMesh();
+	setAll();
 	testing();
 }

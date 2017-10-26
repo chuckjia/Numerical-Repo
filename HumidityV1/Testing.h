@@ -8,8 +8,12 @@
 #ifndef TESTING_H_
 #define TESTING_H_
 #include <iostream>
-#include "WPhix.h"
+#include "Analysis.h"
 using namespace std;
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Testing Mesh Methods
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void printMeshToFile() {
 	FILE *fGridX = fopen("gridX.txt", "wb");
@@ -36,32 +40,16 @@ void printMeshToFile() {
 	fclose(fCellVol);
 }
 
-void printPar() {
+void printMeshPar() {
 	FILE *f = fopen("par.txt", "wb");
 	fprintf(f, "%f %f %f %f %f %d %d",
 			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np);
 	fclose(f);
 }
 
-void printDiagnostics() {
-	printf(">> DIAGNOSTIC INFORMATION\n");
-	printf("\nParameters: \n");
-
-	printf("\n - Domain geometry\n");
-	printf("    [1] x0 = %1.2f, xf = %1.2f \n", x0, xf);
-	printf("    [2] pA = %1.2f, pB(x0) = %1.2f, pB[(x0+xf)/2] = %1.2f, pB(xf) = %1.2f\n",
-			pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(0.5 * (x0 + xf)), (*pB_fcnPtr)(xf));
-
-	printf("\n - Mesh specifications\n");
-	printf("    [1] Nx = %d, Np = %d\n", Nx, Np);
-	printf("    [2] Dx = %1.2f\n", Dx);
-	printf("    [3] Dp(x0) = %1.2f, Dp[(x0+xf)/2] = %1.2f, Dp(xf) = %1.2f",
-			getCellLeftDp(1), getCellLeftDp(lastRealIndexX / 2), getCellLeftDp(lastRealIndexX));
-}
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing the Gaussian Elimination in the Projection Method
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Set test case 1: Nx = 6
 void setTest1_gaussElimProj() {
@@ -73,7 +61,7 @@ void setTest1_gaussElimProj() {
 	for (int i = 1; i < Nx; ++i) {
 		aInv_proj_cache[i] = 1 / test_a[i - 1];
 		b_proj_cache[i] = test_b[i - 1];
-		lambda_x[i] = test_c[i - 1];
+		lambda_x_proj[i] = test_c[i - 1];
 	}
 }
 
@@ -87,7 +75,7 @@ void setTest2_gaussElimProj() {
 	for (int i = 1; i < Nx; ++i) {
 		aInv_proj_cache[i] = 1 / test_a[i - 1];
 		b_proj_cache[i] = test_b[i - 1];
-		lambda_x[i] = test_c[i - 1];
+		lambda_x_proj[i] = test_c[i - 1];
 	}
 }
 
@@ -101,7 +89,7 @@ void setTest3_gaussElimProj() {
 	for (int i = 1; i <= Nx; ++i) {
 		aInv_proj_cache[i] = 1 / test_a[i - 1];
 		b_proj_cache[i] = test_b[i - 1];
-		lambda_x[i] = test_c[i - 1];
+		lambda_x_proj[i] = test_c[i - 1];
 	}
 }
 
@@ -128,7 +116,7 @@ void test_GaussElimProj() {
 				printf("  %1.2f", b_proj_cache[i]);
 			else
 				printf("  %1.2f", 0.);
-		printf("  %1.2f\n", lambda_x[i]);
+		printf("  %1.2f\n", lambda_x_proj[i]);
 	}
 	for (int j = 1; j <= Nx; ++j)
 		printf("  %1.2f", 1.);
@@ -141,8 +129,53 @@ void test_GaussElimProj() {
 	// Print result
 	printf("\n- Result of the the Gaussian Elimination is\n[");
 	for (int i = 1; i <= Nx; ++i)
-		printf(" %1.15f;", lambda_x[i]);
+		printf(" %1.15f;", lambda_x_proj[i]);
 	printf(" ]\n");
 }
 
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Testing the Source Functions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void testSourceFcns_helper(int numTestTimeSteps,
+		double (*source_fcnPtr)(double, double, double, double, double, double)) {
+	for (int tt = 0; tt < numTestTimeSteps; ++tt) {
+		for (int i = 0; i <= Nx; ++i) {
+			for (int j = 0; j < Np; ++j) {
+				double T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j];
+				double x = getCellCenterX(i, j), p = getCellCenterP(i, j), t = tt * Dt;
+				printf("%1.2f ", (*source_T_fcnPtr)(T, q, u, x, p, t));
+			}
+			printf("\n");
+		}
+		printf("\n\n");
+	}
+}
+
+void testSourceFcns() {
+	int numTestTimeSteps = 5;
+	printf("Testing on source function T:\n\n");
+	testSourceFcns_helper(numTestTimeSteps, source_T_fcnPtr);
+	printf("Testing on source function q:\n\n");
+	testSourceFcns_helper(numTestTimeSteps, source_q_fcnPtr);
+	printf("Testing on source function u:\n\n");
+	testSourceFcns_helper(numTestTimeSteps, source_u_fcnPtr);
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Testing the Initial Conditions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void testIC() {
+	enforceIC();
+	peformAnalysis();
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Testing
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void testing() {
+	testIC();
+}
 #endif /* TESTING_H_ */

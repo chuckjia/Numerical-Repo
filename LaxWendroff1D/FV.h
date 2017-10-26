@@ -18,16 +18,16 @@ void upwind_right() {
 	for (int tt = 1; tt <= numTimeSteps; tt++) {
 		double t = Dt * tt;
 		double norm = 0, err = 0, normExact = 0;
-		double uLeft = u[0];
+		double uLeft = u_sl[0];
 		for (int i = 1; i <= lastRealIndex; i++) {
-			double uLeftNext = u[i];
-			u[i] += -a * lambda * (u[i] - uLeft);
+			double uLeftNext = u_sl[i];
+			u_sl[i] += -a * lambda * (u_sl[i] - uLeft);
 			uLeft = uLeftNext;
 			// Generating statistics
-			norm += pow(u[i], 2);
+			norm += pow(u_sl[i], 2);
 			double x = getCellCenter(i);
 			double exactSolnVal = (*exactSolnPtr)(x, t);
-			err += pow(u[i] - exactSolnVal, 2);
+			err += pow(u_sl[i] - exactSolnVal, 2);
 			normExact += exactSolnVal * exactSolnVal;
 		}
 		(*enforceBCPtr)();
@@ -51,17 +51,17 @@ void laxWendroff() {
 	for (int tt = 1; tt <= numTimeSteps; tt++) {
 		double t = Dt * tt;
 		double norm = 0, err = 0, normExact = 0;
-		double uLeft = u[0];
+		double uLeft = u_sl[0];
 		for (int i = 1; i <= lastRealIndex; i++) {
-			double uPrev = u[i];
-			u[i] += (-a * lambda * (u[i + 1] - uLeft) +
-					a * a * lambda * lambda * (u[i + 1] - 2 * u[i] + uLeft)) / 2;
+			double uPrev = u_sl[i];
+			u_sl[i] += (-a * lambda * (u_sl[i + 1] - uLeft) +
+					a * a * lambda * lambda * (u_sl[i + 1] - 2 * u_sl[i] + uLeft)) / 2;
 			uLeft = uPrev;
 			// Generating statistics
-			norm += pow(u[i], 2);
+			norm += pow(u_sl[i], 2);
 			double x = getCellCenter(i);
 			double exactSolnVal = (*exactSolnPtr)(x, t);
-			err += pow(u[i] - exactSolnVal, 2);
+			err += pow(u_sl[i] - exactSolnVal, 2);
 			normExact += exactSolnVal * exactSolnVal;
 		}
 		norm = sqrt(Dx * norm);
@@ -101,25 +101,25 @@ void laxWendroff_limiter() {
 	for (int tt = 1; tt <= numTimeSteps; tt++) {
 		double t = Dt * tt;
 		double norm = 0, err = 0, normExact = 0;
-		double uLeft = u[0], u2Left = u[0];
+		double uLeft = u_sl[0], u2Left = u_sl[0];
 		for (int i = 1; i <= lastRealIndex; i++) {
-			double uLeftNext = u[i];
+			double uLeftNext = u_sl[i];
 			double slope = maxmod(
-					minmod((u[i + 1] - u[i]) / Dx, 2 * (u[i] - uLeft) / Dx),
-					minmod(2 * (u[i + 1] - u[i]) / Dx, (u[i] - uLeft) / Dx));
+					minmod((u_sl[i + 1] - u_sl[i]) / Dx, 2 * (u_sl[i] - uLeft) / Dx),
+					minmod(2 * (u_sl[i + 1] - u_sl[i]) / Dx, (u_sl[i] - uLeft) / Dx));
 			double slopeLeft = maxmod(
-					minmod((u[i] - uLeft) / Dx, 2 * (uLeft - u2Left) / Dx),
-					minmod(2 * (u[i] - uLeft) / Dx, (uLeft - u2Left) / Dx)
+					minmod((u_sl[i] - uLeft) / Dx, 2 * (uLeft - u2Left) / Dx),
+					minmod(2 * (u_sl[i] - uLeft) / Dx, (uLeft - u2Left) / Dx)
 			);
-			u[i] += - a * lambda * (u[i] - uLeft) -
+			u_sl[i] += - a * lambda * (u_sl[i] - uLeft) -
 					lambda / 2 * a * (Dx - a * Dt) * (slope - slopeLeft);
 			u2Left = uLeft;
 			uLeft = uLeftNext;
 			// Generating statistics
-			norm += pow(u[i], 2);
+			norm += pow(u_sl[i], 2);
 			double x = getCellCenter(i);
 			double exactSolnVal = (*exactSolnPtr)(x, t);
-			err += pow(u[i] - exactSolnVal, 2);
+			err += pow(u_sl[i] - exactSolnVal, 2);
 			normExact += exactSolnVal * exactSolnVal;
 		}
 		norm = sqrt(Dx * norm);

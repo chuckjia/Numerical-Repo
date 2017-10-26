@@ -55,31 +55,31 @@ void fillCache_diagMatInv_quadCell() {
 }
 
 double getCellTopRightU(int i, int j) {
-	return a1_quadCell_cache * u[i][j] + a2_quadCell_cache[i][j] * u[i + 1][j] +
-			a3_quadCell_cache[i][j] * u[i][j + 1] + a4_quadCell_cache[i][j] * u[i + 1][j + 1];
+	return a1_quadCell_cache * u_sl[i][j] + a2_quadCell_cache[i][j] * u_sl[i + 1][j] +
+			a3_quadCell_cache[i][j] * u_sl[i][j + 1] + a4_quadCell_cache[i][j] * u_sl[i + 1][j + 1];
 }
 
 double getGradhU_x(int i, int j) {
 	return e11_diagMatInv_quadCell_cache * (getCellTopRightU(i, j) - getCellTopRightU(i - 1, j)) +
-			e12_diagMatInv_quadCell_cache[i][j] * (u[i][j + 1] - u[i][j]);
+			e12_diagMatInv_quadCell_cache[i][j] * (u_sl[i][j + 1] - u_sl[i][j]);
 }
 
 double getGradhU_p(int i, int j) {
-	return e22_diagMatInv_quadCell_cache[i][j] * (u[i][j + 1] - u[i][j]);
+	return e22_diagMatInv_quadCell_cache[i][j] * (u_sl[i][j + 1] - u_sl[i][j]);
 }
 
 double getCellTopRightT(int i, int j) {
-	return a1_quadCell_cache * u[i][j] + a2_quadCell_cache[i][j] * u[i + 1][j] +
-			a3_quadCell_cache[i][j] * u[i][j + 1] + a4_quadCell_cache[i][j] * u[i + 1][j + 1];
+	return a1_quadCell_cache * u_sl[i][j] + a2_quadCell_cache[i][j] * u_sl[i + 1][j] +
+			a3_quadCell_cache[i][j] * u_sl[i][j + 1] + a4_quadCell_cache[i][j] * u_sl[i + 1][j + 1];
 }
 
 double getGradhT_x(int i, int j) {
 	return e11_diagMatInv_quadCell_cache * (getCellTopRightT(i, j) - getCellTopRightT(i - 1, j)) +
-			e12_diagMatInv_quadCell_cache[i][j] * (T[i][j + 1] - T[i][j]);
+			e12_diagMatInv_quadCell_cache[i][j] * (T_sl[i][j + 1] - T_sl[i][j]);
 }
 
 double getGradhT_p(int i, int j) {
-	return e22_diagMatInv_quadCell_cache[i][j] * (T[i][j + 1] - T[i][j]);
+	return e22_diagMatInv_quadCell_cache[i][j] * (T_sl[i][j + 1] - T_sl[i][j]);
 }
 
 void setQuadCells() {
