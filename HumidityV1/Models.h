@@ -131,21 +131,26 @@ double pBxDer_fcn_MDL2(double x) {
 // Exact T function
 double exact_T_fcn_MDL2(double x, double p, double t) {
 	return 1;
+	// return sin(TWOPI_CONST * x / (xf - x0));
+	// return sin(TWOPI_CONST * p / (pB_fcn_MDL2(x0) - pA));
 }
 
 // Exact q function
 double exact_q_fcn_MDL2(double x, double p, double t) {
-	return 0;
+	return 1;
+	// return sin(TWOPI_CONST * x / (xf - x0));
 }
 
 // Exact u function
 double exact_u_fcn_MDL2(double x, double p, double t) {
 	return 1;
+	// return sin(TWOPI_CONST * x / (xf - x0));
 }
 
 // Exact w function
 double exact_w_fcn_MDL2(double x, double p, double t) {
-	return 1;
+	return 0;
+	// return sin(TWOPI_CONST * x / (xf - x0));
 }
 
 double source_T_fcn_MDL2(double T, double q, double u, double x, double p, double t) {

@@ -23,14 +23,13 @@ int fluxMethod = 0;  // 0: Godunov
  * ----- ----- ----- ----- ----- ----- */
 
 // Number of space divisions in both x and p directions in space
-const int numDivisions = 10;
+const int numDivisions = 100;
 // Number of time steps
-int numTimeSteps = 0;
+int numTimeSteps = 100;
 // Size of one time step
 double Dt = 1e-5;
 // Final time of numerical scheme
 double finalTime = numTimeSteps * Dt;
-
 
 void msg() {
 	printf("===== ===== ===== ===== ===== \n");

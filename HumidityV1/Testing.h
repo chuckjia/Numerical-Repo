@@ -176,6 +176,7 @@ void testIC() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	testIC();
+	timeSteps();
+	peformAnalysis();
 }
 #endif /* TESTING_H_ */

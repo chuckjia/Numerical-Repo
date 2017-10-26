@@ -15,8 +15,10 @@ double calcFluxOneCell(int i, int j,
 }
 
 void forwardEuler() {
+	enforceIC();
 	for (int tt = 0; tt < numTimeSteps; tt++) {
 		double t = Dt * tt;
+		printf("Current progress: %1.0f%%\n", t / finalTime * 100);
 		for (int i = 1; i <= lastRealIndexX; ++i) {
 			double x = getCellCenterX(i);
 			for (int j = 1; j <= lastRealIndexP; ++j) {
@@ -41,7 +43,7 @@ void forwardEuler() {
 				projU();
 			}
 		}
-
+		(*enforceBC_fcnPtr)();
 	}
 }
 

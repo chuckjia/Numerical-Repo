@@ -9,7 +9,7 @@
 #define ANALYSIS_H_
 #include "TimeSteps.h"
 
-const int GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
+const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Print all parameters for diagnostics
@@ -38,8 +38,8 @@ void printDiagnostics() {
  * Calculate and Print Errors
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double cellErr_helper(int i, int j, double exactVal, double vol) {
-	return vol * pow(exactVal - T_sl[i][j], 2);
+double cellErr_helper(double numericalVal, double exactVal, double vol) {
+	return vol * pow(exactVal - numericalVal, 2);
 }
 
 double relativeL2Err_helper(double num, double denom) {
@@ -64,10 +64,10 @@ void showL2Errors() {
 					exactVal_u = (*IC_u_fcnPtr)(x, p, t),
 					exactVal_w = (*IC_w_fcnPtr)(x, p, t);
 			// Calculate errors
-			num_T += cellErr_helper(i, j, exactVal_T, vol);
-			num_q += cellErr_helper(i, j, exactVal_q, vol);
-			num_u += cellErr_helper(i, j, exactVal_u, vol);
-			num_w += cellErr_helper(i, j, exactVal_w, vol);
+			num_T += cellErr_helper(exactVal_T, T_sl[i][j], vol);
+			num_q += cellErr_helper(exactVal_q, q_sl[i][j], vol);
+			num_u += cellErr_helper(exactVal_u, u_sl[i][j], vol);
+			num_w += cellErr_helper(exactVal_w, w_sl[i][j], vol);
 			denom_T += vol * pow(exactVal_T, 2);
 			denom_q += vol * pow(exactVal_q, 2);
 			denom_u += vol * pow(exactVal_u, 2);
@@ -80,9 +80,9 @@ void showL2Errors() {
 			relativeL2Err_q = relativeL2Err_helper(num_q, denom_q),
 			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
 			relativeL2Err_w = relativeL2Err_helper(num_w, denom_w);
-	printf("\n- L2 relative error for T, q, u = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("\n- L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
-	printf("\n- L2 absolute error for T, q, u = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("\n- L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
 }
 
@@ -108,10 +108,10 @@ void writeCellCentersToFile() {
 // This function is used in ploting the solution and the error
 void writeResToFile() {
 	// Write final numerical solution to files
-	FILE *res_T = fopen("Results/res_T.txt", "wb");
-	FILE *res_q = fopen("Results/res_q.txt", "wb");
-	FILE *res_u = fopen("Results/res_u.txt", "wb");
-	FILE *res_w = fopen("Results/res_w.txt", "wb");
+	FILE *res_T = fopen("Results/T_soln.txt", "wb");
+	FILE *res_q = fopen("Results/q_soln.txt", "wb");
+	FILE *res_u = fopen("Results/u_soln.txt", "wb");
+	FILE *res_w = fopen("Results/w_soln.txt", "wb");
 	for (int i = 1; i < lastGhostIndexX; ++i)
 		for (int j = 1; j < lastGhostIndexP; ++j) {
 			fprintf(res_T, "%f ", T_sl[i][j]);
@@ -122,10 +122,10 @@ void writeResToFile() {
 	fclose(res_T); fclose(res_q); fclose(res_u); fclose(res_w);
 
 	// Write final numerical errors to files
-	FILE *err_T = fopen("Results/err_T.txt", "wb");
-	FILE *err_q = fopen("Results/err_q.txt", "wb");
-	FILE *err_u = fopen("Results/err_u.txt", "wb");
-	FILE *err_w = fopen("Results/err_w.txt", "wb");
+	FILE *err_T = fopen("Results/T_err.txt", "wb");
+	FILE *err_q = fopen("Results/q_err.txt", "wb");
+	FILE *err_u = fopen("Results/u_err.txt", "wb");
+	FILE *err_w = fopen("Results/w_err.txt", "wb");
 	for (int i = 1; i < lastGhostIndexX; ++i) {
 		double x = getCellCenterX(i);
 		for (int j = 1; j < lastGhostIndexP; ++j) {
