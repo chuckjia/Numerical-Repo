@@ -41,9 +41,9 @@ double cellErr_helper(int i, int j, double exactVal, double vol) {
 }
 
 double relativeL2Err_helper(double num, double denom) {
-	if (denom > 1e-16)
+	if (denom > 1e-15)
 		return sqrt(num / denom);
-	else if (num < 1e-16)
+	else if (num < 1e-15)
 		return 0;
 	return -99;
 }
