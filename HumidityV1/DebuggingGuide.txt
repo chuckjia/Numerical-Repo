@@ -1,9 +1,0 @@
-Common mistakes to check
-
-1. Type of variables:
-	Check if the type of a variable is correct: int or double
-2. Type in arithmetics: 
-	Check if using int / int calculation
-3. Synchronization in time:
-	Did you change a variable at the same time step before its value 
-	is used again in the same time step?

@@ -9,22 +9,25 @@
 #define CONDITIONS_H_
 #include "Mesh.h"
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Solutions as 2D Array
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Numerical Solutions: 2D Arrays
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double T_sl[numCellsX][numCellsP], q_sl[numCellsX][numCellsP];
-double u_sl[numCellsX][numCellsP];
-double w_sl[numCellsX][numCellsP];
+double u_sl[numCellsX][numCellsP], w_sl[numCellsX][numCellsP];
 double phix_sl[numCellsX][numCellsP];
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Enforce Initial Conditions
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Initial Conditions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double (*IC_T_fcnPtr)(double x, double p, double t), (*IC_q_fcnPtr)(double x, double p, double t),
-		(*IC_u_fcnPtr)(double x, double p, double t), (*IC_w_fcnPtr)(double x, double p, double t);
+// Function pointers: mathematical functions to calculate initial conditions
+double (*IC_T_fcnPtr)(double x, double p, double t),
+		(*IC_q_fcnPtr)(double x, double p, double t),
+		(*IC_u_fcnPtr)(double x, double p, double t),
+		(*IC_w_fcnPtr)(double x, double p, double t);
 
+// Enforce initial conditions at cell centers
 void enforceIC() {
 	for (int i = 0; i < numCellsX; ++i)
 		for (int j = 0; j < numCellsP; ++j) {
@@ -36,49 +39,64 @@ void enforceIC() {
 		}
 }
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Enforce Boundary Conditions
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Boundary Conditions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+// Function pointer: function to enforce all boundary conditions in one model
 void (*enforceBC_fcnPtr)();
 
+/* ----- ----- ----- ----- ----- -----
+ * Common boundary conditions
+ * ----- ----- ----- ----- ----- ----- */
+
+/*
+ * In implementing all the BCs, we assume pB is sufficiently flat on the left and right domain
+ * sides. This guarantees the left and right ghost cells are not distorted.
+ */
+
+// Enforce Neumann BCs on the right boundary
 void enforceNeumann_rightBD(double sl[numCellsX][numCellsP]) {
 	for (int j = 1; j <= lastRealIndexP; ++j)
 		sl[lastGhostIndexX][j] = sl[lastRealIndexX][j];
 }
 
-void enforceDirichlet_leftBD(double (*bdVal_fcnPtr)(double), double sl[numCellsX][numCellsP]) {
+// Enforce Dirichlet BCs on the left boundary: with boundary values specified by a function,
+// defined by (*bdVal_fcnPtr)(p)
+void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double (*bdVal_fcnPtr)(double)) {
 	for (int j = 1; j <= lastRealIndexP; ++j) {
-		double p = getCellCenterP(1, j);
+		// This interpolation on p only works for pB() that are sufficiently flat on the left
+		// side of domain
+		double p = 0.5 * (getCellBottLeftP(1, j) + getCellTopLeftP(1, j));
 		sl[0][j] = 2 * (*bdVal_fcnPtr)(p) - sl[1][j];
 	}
 }
 
-void enforceDirichlet_leftBD(double bdVal, double sl[numCellsX][numCellsP]) {
+// Enforce Dirichlet BCs on the left boundary: with constant boundary value, specified by bdVal
+void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double bdVal) {
 	for (int j = 1; j <= lastRealIndexP; ++j)
 		sl[0][j] = 2 * bdVal - sl[1][j];
 }
 
+// Enforce Dirichlet BCs on the left side of domain: with boundary value 0
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP]) {
 	for (int j = 1; j <= lastRealIndexP; ++j)
 		sl[0][j] = - sl[1][j];
 }
 
 /* ----- ----- ----- ----- ----- -----
- * Test 1 BC
+ * Test Case 1 BCs
  * ----- ----- ----- ----- ----- ----- */
 
-double leftBdVal_T_fcnPtr_MDL1(double p) {
+double leftBdVal_T_fcn_MDL1(double p) {
 	return exact_T_fcn_MDL1(0, p, 0);
 }
 
 void enforceBC_MDL1() {
 	// Left boundary: Dirichlet BC
-	for (int j = 1; j <= lastRealIndexP; ++j) {
-		enforceDirichlet_leftBD(leftBdVal_T_fcnPtr_MDL1, T_sl);
-		enforceDirichlet_leftBD(q_sl);
-		enforceDirichlet_leftBD(u_sl);
-	}
+	enforceDirichlet_leftBD(T_sl, leftBdVal_T_fcn_MDL1);
+	enforceDirichlet_leftBD(q_sl);
+	enforceDirichlet_leftBD(u_sl);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
@@ -91,31 +109,32 @@ void enforceBC_MDL1() {
 
 void enforceBC_MDL2() {
 	// Left boundary: Dirichlet BC
-	for (int j = 1; j <= lastRealIndexP; ++j) {
-		enforceDirichlet_leftBD(1, T_sl);
-		enforceDirichlet_leftBD(1, q_sl);
-		enforceDirichlet_leftBD(1, u_sl);
-	}
+	enforceDirichlet_leftBD(T_sl, 1);
+	enforceDirichlet_leftBD(q_sl, 1);
+	enforceDirichlet_leftBD(u_sl, 1);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
 	enforceNeumann_rightBD(u_sl);
 }
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Source Functions
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+// Function pointers: mathematical functions to calculate source term values
 double (*source_T_fcnPtr)(double T, double q, double u, double x, double p, double t),
 		(*source_q_fcnPtr)(double T, double q, double u, double x, double p, double t),
 		(*source_u_fcnPtr)(double T, double q, double u, double x, double p, double t);
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Set All Conditions
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Set All Conditions: IC, BC and Source
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setConditions() {
-	// if (modelNo == 1) {
+	/* ----- ----- ----- -----
+	 * Default: Model 1
+	 * ----- ----- ----- ----- */
 	// Initial conditions
 	IC_T_fcnPtr = &exact_T_fcn_MDL1;
 	IC_q_fcnPtr = &exact_q_fcn_MDL1;
@@ -127,6 +146,10 @@ void setConditions() {
 	source_T_fcnPtr = &source_T_fcn_MDL1;
 	source_q_fcnPtr = &source_q_fcn_MDL1;
 	source_u_fcnPtr = &source_u_fcn_MDL1;
+
+	/* ----- ----- ----- -----
+	 * Model 2
+	 * ----- ----- ----- ----- */
 	if (modelNo == 2) {
 		// Initial conditions
 		IC_T_fcnPtr = &exact_T_fcn_MDL2;

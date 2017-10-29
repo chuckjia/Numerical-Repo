@@ -1,0 +1,31 @@
+
+===== ===== ===== ===== ===== 
+* To do list
+===== ===== ===== ===== ===== 
+
+1.
+
+===== ===== ===== ===== ===== 
+* Notes
+===== ===== ===== ===== ===== 
+
+1. calcBaryCenter() is not mathematically checked
+2. The cell side lengths and norm vectors are not thoroughly tested
+3. The projection method seems to have errors in the paper. We use
+        u + lambda_x = uTilde
+   for our calculation
+
+
+===== ===== ===== ===== ===== ===== 
+* Common mistakes to check
+===== ===== ===== ===== ===== ===== 
+
+1. Type of variables:
+	Check if the type of a variable is correct: int or double
+	
+2. Type in arithmetics: 
+	Check if using int / int calculation
+	
+3. Synchronization in time:
+	Did you change a variable at the same time step before its value 
+	is used again in the same time step?

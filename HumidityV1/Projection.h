@@ -9,20 +9,41 @@
 #define PROJECTION_H_
 #include "Godunov.h"
 
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Projection Method For u
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+// Coefficients for the linear system (3.33) + (3.35) in the projection method. To get the
+// corresponding matrix, we choose to put (3.35) as the last row. First, we directly reduce
+// the last row to make the matrix upper triangular. Then we solve the system backwards.
+
+// Our a and b are different from those in the article:
+// a_this[i][j] = a_orig[i][j] - b_orig[i][j] / Dx, b_this[i][j] = b_orig[i][j] / Dx.
+// In our program here, a and b are chosen to be exactly the matrix entries in (3.33).
+// Note: we only store the inverse of a.
+
+// d values represent the last row of the matrix, corresponding to (3.35). They store the
+// original last matrix row and the intermediate values in the calculation of a and b. More
+// importantly, d stores the linear transformation on c to directly make the matrix upper
+// triangular.
+
+// Refer to notes for details.
+
 double aInv_proj_cache[Nx], b_proj_cache[Nx];  // Only values from 1 to Nx-1 are used
 double d_proj_cache[Nx + 1]; // Only values from 1 to Nx are used
 double lambda_x_proj[Nx + 1];  // Only values from 1 to Nx are used
 
+// Calculate a and b values
 void fillCache_ab_proj() {
 	for (int i = 1; i < Nx; ++i) {
 		double x = getCellCenterX(i);
-		double temp = (*pB_fcnPtr)(x) * DxInv;
-		b_proj_cache[i] = temp;
-		aInv_proj_cache[i] = 1 / ((*pBxDer_fcnPtr)(x) - temp);
+		double bThis = ((*pB_fcnPtr)(x) - pA) * DxInv;
+		b_proj_cache[i] = bThis;
+		aInv_proj_cache[i] = 1 / ((*pBxDer_fcnPtr)(x) - bThis);
 	}
 }
 
-// Calculate d values, separated for testing reasons
+// Calculate d values. It is separated from the calculation of a and b for testing reasons
 void fillCache_d_proj() {
 	d_proj_cache[1] = 1;
 	for (int i = 1; i < Nx; ++i) {
@@ -32,13 +53,33 @@ void fillCache_d_proj() {
 	}
 }
 
-// Calculate the c_i's for the Gaussian elimination. For notations, see (3.33) and (3.34). In
-// this program, lambda_x[] holds the c values at first. After applying Gaussian elimination, the
-// lambda_x[] will hold the real lambda_x values.
+
+
+
+/*
+ *
+ *
+ * 2017-10-29
+ *
+ *
+ */
+
+
+
+
+
+
+
+
+
+// Calculate the c_i's as in (3.34).
+// In this program, we do not have an array for c_i. Instead, we use lambda_x[] to hold the c_i
+// values. Later after applying Gaussian elimination, lambda_x[] will naturally hold the
+// lambda_x values as the solution of the linear system.
 void calc_c_proj() {
 	// Temporarily store the integer int_pA^pB(x_i)\tilde{u}dp in c_i. The last c_Nx will not
 	// be updated to 0, but since we directly assign value to c_Nx in the Gaussian elimination,
-	// this is not a concern.
+	// this will not affect the calculation.
 	for (int i = 1; i <= Nx; ++i) {
 		double sum = 0;
 		for (int j = 1; j <= lastRealIndexP; j++)
@@ -51,7 +92,8 @@ void calc_c_proj() {
 		lambda_x_proj[i] = (lambda_x_proj[i + 1] - lambda_x_proj[i]) * DxInv;
 }
 
-void gaussElim_proj() {
+// Perform Gaussian elimination to calculate lambda_x
+void calcLambdax_gaussElim_proj() {
 	calc_c_proj();
 	double sum = 0;
 	for (int i = 1; i < Nx; ++i)
@@ -62,13 +104,17 @@ void gaussElim_proj() {
 }
 
 void projU() {
-	gaussElim_proj();
+	calcLambdax_gaussElim_proj();
 	for (int i = 1; i < lastRealIndexX; ++i) {
 		double lambda_x = lambda_x_proj[i];
 		for (int j = 1; j < lastRealIndexP; ++j)
 			u_sl[i][j] -= lambda_x;
 	}
 }
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Set All Conditions: IC, BC and Source
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setProjection() {
 	fillCache_ab_proj();

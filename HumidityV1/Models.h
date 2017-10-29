@@ -13,18 +13,14 @@
  * Geometry of the Domain
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-// Geometry of domain
-double x0;  // x0 from model: x coordinate of left side of domain
-double xf;  // xL from model: x coordinate of right side of domain
-double pA;  // pA from model: p coordinate of bottom side of domain
-double (*pB_fcnPtr)(double x);  // Function pointer for the pB function
-double (*pBxDer_fcnPtr)(double x);  // Function pointer for the pB_x function
+double x0, xf, pA;
+double (*pB_fcnPtr)(double x);  // Function pointer: pB function
+double (*pBxDer_fcnPtr)(double x);  // Function pointer: derivative of pB function
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Common Constants
+ * Mathematical and Physical Constants
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-// Common constants used in the model, which are physical or mathematical constants
 double TWOPI_CONST = 2 * M_PI;
 double R_CONST = 287;
 double Rv_CONST = 461.50;
@@ -32,9 +28,14 @@ double Cp_CONST = 1004;
 double g_CONST = 9.8, gInv_CONST = 1 / 9.8;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Test Case 1
+ * Test Case 1: Test Case from the Section 4.1
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+/* ----- ----- ----- ----- ----- -----
+ * Coefficients
+ * ----- ----- ----- ----- ----- ----- */
+
+// Coefficients used in the model
 double xfCubed_coef_MDL1, xf6thPow_coef_MDL1;
 double c1_pBxDer_coef_MDL1;
 double pBx0_coef_MDL1;  // pB(x0)
@@ -42,37 +43,45 @@ double c1_exT_coef_MDL1;
 double c1_exu_coef_MDL1;
 double c1_exw_coef_MDL1;
 
-// pB: the boundary on top side of domain
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// pB function
 double pB_fcn_MDL1(double x) {
 	return 1000 - 200 * exp(-pow((x - 25000) / 3000, 2));
 }
 
-// The derivative of pB
+// The derivative of pB function
 double pBxDer_fcn_MDL1(double x) {
 	double a = (x - 25000) / 3000;
 	return -c1_pBxDer_coef_MDL1 * a * exp(-a * a);
 }
 
-// Exact T function
+/* ----- ----- ----- ----- ----- -----
+ * Manufacture solutions / IC
+ * ----- ----- ----- ----- ----- ----- */
+
+// Manufactured solution: exact T function
 double exact_T_fcn_MDL1(double x, double p, double t) {
 	return -p / R_CONST * cos(TWOPI_CONST * t) * x * pow(x - xf, 2) / xfCubed_coef_MDL1 * (
 			c1_exT_coef_MDL1 * pow(p - (*pB_fcnPtr)(x), 2)
 	);
 }
 
-// Exact q function
+// Manufactured solution: exact q function
 double exact_q_fcn_MDL1(double x, double p, double t) {
 	return 0;
 }
 
-// Exact u function
+// Manufactured solution: exact u function
 double exact_u_fcn_MDL1(double x, double p, double t) {
 	double a = p - pA, b = p - pBx0_coef_MDL1;
 	return -c1_exu_coef_MDL1 * pow(x * (x - xf), 3) * (cos(TWOPI_CONST * t) + 20) *
 			pow(a * b, 2) * (a + b);
 }
 
-// Exact w function
+// Manufactured solution: exact w function
 double exact_w_fcn_MDL1(double x, double p, double t) {
 	double a1 = x - xf,
 			b1 = p - pB_fcn_MDL1(x); // b1 should be defined by pB_fcn_MDL1, NOT the pointer
@@ -84,27 +93,35 @@ double exact_w_fcn_MDL1(double x, double p, double t) {
 	);
 }
 
+/* ----- ----- ----- ----- ----- -----
+ * Source solutions
+ * ----- ----- ----- ----- ----- ----- */
+
+// Source function for the T equation
 double source_T_fcn_MDL1(double T, double q, double u, double x, double p, double t) {
 	return 0;
 }
 
+// Source function for the q equation
 double source_q_fcn_MDL1(double T, double q, double u, double x, double p, double t) {
 	return 0;
 }
 
+// Source function for the u equation
 double source_u_fcn_MDL1(double T, double q, double u, double x, double p, double t) {
 	return 0;
 }
 
+// Set all parameters in model 1
 void setPar_MDL1() {
-	// Parameters on the geometry of the domain
+	// Parameters on the domain geometry
 	x0 = 0;
 	xf = 50000;
 	pA = 200;
 	pB_fcnPtr = &pB_fcn_MDL1;
 	pBxDer_fcnPtr = &pBxDer_fcn_MDL1;
 
-	// Other coefficients in computations
+	// Function coefficients
 	xfCubed_coef_MDL1 = pow(xf, 3);
 	xf6thPow_coef_MDL1 = pow(xf, 6);
 	c1_pBxDer_coef_MDL1 = 4. / 3.;
@@ -115,18 +132,26 @@ void setPar_MDL1() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Test Case 2
+ * Test Case 2: Constant Manufactured Solutions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-// pB: the boundary on top side of domain
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// pB function
 double pB_fcn_MDL2(double x) {
 	return 1000;
 }
 
-// The derivative of pB
+// Derivative of pB function
 double pBxDer_fcn_MDL2(double x) {
 	return 0;
 }
+
+/* ----- ----- ----- ----- ----- -----
+ * Manufactured solutions / IC
+ * ----- ----- ----- ----- ----- ----- */
 
 // Exact T function
 double exact_T_fcn_MDL2(double x, double p, double t) {
@@ -153,6 +178,10 @@ double exact_w_fcn_MDL2(double x, double p, double t) {
 	// return sin(TWOPI_CONST * x / (xf - x0));
 }
 
+/* ----- ----- ----- ----- ----- -----
+ * Source functions
+ * ----- ----- ----- ----- ----- ----- */
+
 double source_T_fcn_MDL2(double T, double q, double u, double x, double p, double t) {
 	return 0;
 }
@@ -175,13 +204,13 @@ void setPar_MDL2() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Wrapper Function to Set Parameters
+ * Set All Parameters
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-// This is the wrapper function used to set parameters for the model.
+// Wrapper function to set all parameters for the selected model
 void setModels() {
 	// Default: if (modelNo == 1)
-	setPar_MDL1();
+		setPar_MDL1();
 	if (modelNo == 2)
 		setPar_MDL2();
 }

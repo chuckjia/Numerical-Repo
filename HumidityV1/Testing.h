@@ -16,8 +16,8 @@ using namespace std;
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void printMeshToFile() {
-	FILE *fGridX = fopen("gridX.txt", "wb");
-	FILE *fGridP = fopen("gridP.txt", "wb");
+	FILE *fGridX = fopen("MeshPrintOut/gridX.txt", "wb");
+	FILE *fGridP = fopen("MeshPrintOut/gridP.txt", "wb");
 	for (int i = 0; i < numGridPtsX; ++i)
 		for (int j = 0; j < numGridPtsP; ++j) {
 			fprintf(fGridX, "%f ", getCellLeftX(i, j));
@@ -26,25 +26,31 @@ void printMeshToFile() {
 	fclose(fGridX);
 	fclose(fGridP);
 
-	FILE *fCellCenterX = fopen("cellCenterX.txt", "wb");
-	FILE *fCellCenterP = fopen("cellCenterP.txt", "wb");
-	FILE *fCellVol = fopen("cellVol.txt", "wb");
+	FILE *fCellCenterX = fopen("MeshPrintOut/cellCenterX.txt", "wb");
+	FILE *fCellCenterP = fopen("MeshPrintOut/cellCenterP.txt", "wb");
+	FILE *fCellVol = fopen("MeshPrintOut/cellVol.txt", "wb");
+	FILE *fCellSideLen = fopen("MeshPrintOut/cellSideLen.txt", "wb");
 	for (int i = 0; i < numCellsX; ++i)
 		for (int j = 0; j < numCellsP; ++j) {
 			fprintf(fCellCenterX, "%f ", getCellCenterX(i, j));
 			fprintf(fCellCenterP, "%f ", getCellCenterP(i, j));
 			fprintf(fCellVol, "%f ", getCellVol(i, j));
+			fprintf(fCellSideLen, "%f ", getCellBottSideLen(i, j));
 		}
 	fclose(fCellCenterX);
 	fclose(fCellCenterP);
 	fclose(fCellVol);
-}
+	fclose(fCellSideLen);
 
-void printMeshPar() {
-	FILE *f = fopen("par.txt", "wb");
-	fprintf(f, "%f %f %f %f %f %d %d",
-			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np);
-	fclose(f);
+	FILE *fCellTopNormX = fopen("MeshPrintOut/cellTopNormX.txt", "wb");
+	FILE *fCellTopNormP = fopen("MeshPrintOut/cellTopNormP.txt", "wb");
+	for (int i = 1; i <= Nx; ++i)
+		for (int j = 0; j <= Np; ++j) {
+			fprintf(fCellTopNormX, "%e ", getCellTopSideNormX(i, j));
+			fprintf(fCellTopNormP, "%e ", getCellTopSideNormP(i, j));
+		}
+	fclose(fCellTopNormX);
+	fclose(fCellTopNormP);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -124,7 +130,7 @@ void test_GaussElimProj() {
 
 	// Perform Gaussian elimination
 	fillCache_d_proj();
-	gaussElim_proj();
+	calcLambdax_gaussElim_proj();
 
 	// Print result
 	printf("\n- Result of the the Gaussian Elimination is\n[");
@@ -176,7 +182,8 @@ void testIC() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	timeSteps();
-	peformAnalysis();
+	// timeSteps();
+	// peformAnalysis();
+	printMeshToFile();
 }
 #endif /* TESTING_H_ */

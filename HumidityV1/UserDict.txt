@@ -1,2 +1,15 @@
 fluxes
 gaussian
+dirichlet
+neumann
+upwind
+godunov
+num
+barycenters
+coord
+dp
+flux
+nx
+np
+aritcle
+dx

@@ -12,7 +12,16 @@
 const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Print all parameters for diagnostics
+ * Print Messages
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void printMsg() {
+	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
+	printf("Solving Atmospherical Model Using Upwind-type Godunov Scheme\n");
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Print All Parameters For Diagnostics
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void printDiagnostics() {
