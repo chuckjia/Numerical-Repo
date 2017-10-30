@@ -7,7 +7,7 @@
 
 #ifndef ANALYSIS_H_
 #define ANALYSIS_H_
-#include "TimeSteps.h"
+#include "WPhix.h"
 
 const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
 
@@ -45,6 +45,48 @@ void printDiagnostics() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Print The Mesh To File
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void printMeshToFile() {
+	FILE *fGridX = fopen("Results/meshGridX.txt", "wb");
+	FILE *fGridP = fopen("Results/meshGridP.txt", "wb");
+	for (int i = 0; i < numGridPtsX; ++i)
+		for (int j = 0; j < numGridPtsP; ++j) {
+			fprintf(fGridX, "%1.20e ", getCellLeftX(i, j));
+			fprintf(fGridP, "%1.20e ", getCellBottLeftP(i, j));
+		}
+	fclose(fGridX);
+	fclose(fGridP);
+
+	FILE *fCellCenterX = fopen("Results/cellCentersX.txt", "wb");
+	FILE *fCellCenterP = fopen("Results/cellCentersP.txt", "wb");
+	FILE *fCellVol = fopen("Results/cellVol.txt", "wb");
+	FILE *fCellSideLen = fopen("Results/cellSideLen.txt", "wb");
+	for (int i = 0; i < numCellsX; ++i)
+		for (int j = 0; j < numCellsP; ++j) {
+			fprintf(fCellCenterX, "%1.20e ", getCellCenterX(i, j));
+			fprintf(fCellCenterP, "%1.20e ", getCellCenterP(i, j));
+			fprintf(fCellVol, "%1.20e ", getCellVol(i, j));
+			fprintf(fCellSideLen, "%1.20e ", getCellBottSideLen(i, j));
+		}
+	fclose(fCellCenterX);
+	fclose(fCellCenterP);
+	fclose(fCellVol);
+	fclose(fCellSideLen);
+
+	FILE *fCellTopNormX = fopen("Results/cellTopNormX.txt", "wb");
+	FILE *fCellTopNormP = fopen("Results/cellTopNormP.txt", "wb");
+	for (int i = 1; i <= Nx; ++i)
+		for (int j = 0; j <= Np; ++j) {
+			fprintf(fCellTopNormX, "%1.20e ", getCellTopSideNormX(i, j));
+			fprintf(fCellTopNormP, "%1.20e ", getCellTopSideNormP(i, j));
+		}
+	fclose(fCellTopNormX);
+	fclose(fCellTopNormP);
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Calculate and Print Errors
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
@@ -61,8 +103,7 @@ double relativeL2Err_helper(double num, double denom) {
 }
 
 // Print the L2 relative and absolute errors
-void showL2Errors() {
-	double t = finalTime;
+void showL2Errors(double t) {
 	double num_T = 0, num_q = 0, num_u = 0, num_w = 0,
 			denom_T = 0, denom_q = 0, denom_u = 0, denom_w = 0;
 	for (int i = 1; i < lastGhostIndexX; ++i) {
@@ -84,17 +125,24 @@ void showL2Errors() {
 			denom_w += vol * pow(exactVal_w, 2);
 		}
 	}
-	double absL2Err_T = sqrt(num_T), absL2Err_q = sqrt(num_q),
-			absL2Err_u = sqrt(num_u), absL2Err_w(num_w);
+	// double absL2Err_T = sqrt(num_T), absL2Err_q = sqrt(num_q),
+	// absL2Err_u = sqrt(num_u), absL2Err_w(num_w);
 	double relativeL2Err_T = relativeL2Err_helper(num_T, denom_T),
 			relativeL2Err_q = relativeL2Err_helper(num_q, denom_q),
 			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
 			relativeL2Err_w = relativeL2Err_helper(num_w, denom_w);
-	printf("\n>> NUMERICAL ERRORS\n");
-	printf("\n  - L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+
+	printf("\n  - L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]",
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
-	printf("\n  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
-			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
+	printf("  - L2 discrete nom for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+			sqrt(denom_T), sqrt(denom_q), sqrt(denom_u), sqrt(denom_w));
+	// printf("\n  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	// absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
+}
+
+void showL2Errors() {
+	printf("\n>> NUMERICAL ERRORS\n");
+	showL2Errors(finalTime);
 }
 
 void printParToFile() {
@@ -102,17 +150,6 @@ void printParToFile() {
 	fprintf(f, "%1.15f %1.15f %1.15f %1.15f %1.15f %d %d %1.15f %d",
 			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps);
 	fclose(f);
-}
-
-void writeCellCentersToFile() {
-	FILE *fCellCenterX = fopen("Results/cellCentersX.txt", "wb");
-	FILE *fCellCenterP = fopen("Results/cellCentersP.txt", "wb");
-	for (int i = 0; i < numCellsX; ++i)
-		for (int j = 0; j < numCellsP; ++j) {
-			fprintf(fCellCenterX, "%f ", getCellCenterX(i, j));
-			fprintf(fCellCenterP, "%f ", getCellCenterP(i, j));
-		}
-	fclose(fCellCenterX); fclose(fCellCenterP);
 }
 
 // Write the result to file: res.txt for the solution and err.txt for the error
@@ -155,11 +192,16 @@ void writeResToFile() {
 }
 
 void peformAnalysis() {
+	clock_t start = clock();
+
 	printDiagnostics();
 	showL2Errors();
 	printParToFile();
-	writeCellCentersToFile();
+	printMeshToFile();
 	writeResToFile();
+
+	printf("\n- Analysis complete. Time used = %1.2fs.\n",
+			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }
 
 #endif /* ANALYSIS_H_ */

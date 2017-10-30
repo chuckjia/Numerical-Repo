@@ -8,7 +8,7 @@
 #ifndef TESTING_H_
 #define TESTING_H_
 #include <iostream>
-#include "Analysis.h"
+#include "TimeSteps.h"
 using namespace std;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -22,44 +22,6 @@ void printCellCenterCoord(int i, int j) {
 void printCellTopRightCoord(int i, int j) {
 	printf("Cell (%d, %d) Top Right Vertex = (%f, %f)\n",
 			i, j, getCellRightX(i, j), getCellTopRightP(i, j));
-}
-
-void printMeshToFile() {
-	FILE *fGridX = fopen("Results/meshGridX.txt", "wb");
-	FILE *fGridP = fopen("Results/meshGridP.txt", "wb");
-	for (int i = 0; i < numGridPtsX; ++i)
-		for (int j = 0; j < numGridPtsP; ++j) {
-			fprintf(fGridX, "%1.20e ", getCellLeftX(i, j));
-			fprintf(fGridP, "%1.20e ", getCellBottLeftP(i, j));
-		}
-	fclose(fGridX);
-	fclose(fGridP);
-
-	FILE *fCellCenterX = fopen("Results/cellCenterX.txt", "wb");
-	FILE *fCellCenterP = fopen("Results/cellCenterP.txt", "wb");
-	FILE *fCellVol = fopen("Results/cellVol.txt", "wb");
-	FILE *fCellSideLen = fopen("Results/cellSideLen.txt", "wb");
-	for (int i = 0; i < numCellsX; ++i)
-		for (int j = 0; j < numCellsP; ++j) {
-			fprintf(fCellCenterX, "%1.20e ", getCellCenterX(i, j));
-			fprintf(fCellCenterP, "%1.20e ", getCellCenterP(i, j));
-			fprintf(fCellVol, "%1.20e ", getCellVol(i, j));
-			fprintf(fCellSideLen, "%1.20e ", getCellBottSideLen(i, j));
-		}
-	fclose(fCellCenterX);
-	fclose(fCellCenterP);
-	fclose(fCellVol);
-	fclose(fCellSideLen);
-
-	FILE *fCellTopNormX = fopen("Results/cellTopNormX.txt", "wb");
-	FILE *fCellTopNormP = fopen("Results/cellTopNormP.txt", "wb");
-	for (int i = 1; i <= Nx; ++i)
-		for (int j = 0; j <= Np; ++j) {
-			fprintf(fCellTopNormX, "%1.20e ", getCellTopSideNormX(i, j));
-			fprintf(fCellTopNormP, "%1.20e ", getCellTopSideNormP(i, j));
-		}
-	fclose(fCellTopNormX);
-	fclose(fCellTopNormP);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -226,12 +188,73 @@ void testQuadCell() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Testing On the Manufactured Solutions in Test Case 1
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void testExactSolnInMDL1_helper(double x, double p, double t) {
+	double T_exactVal = exact_T_fcn_MDL1(x, p, t),
+			T_xDer_exactVal = exact_T_xDer_fcn_MDL1(x, p, t),
+			T_pDer_exactVal = exact_T_pDer_fcn_MDL1(x, p, t),
+			T_tDer_exactVal = exact_T_tDer_fcn_MDL1(x, p, t),
+			u_exactVal = exact_u_fcn_MDL1(x, p, t),
+			u_xDer_exactVal = exact_u_xDer_fcn_MDL1(x, p, t),
+			u_pDer_exactVal = exact_u_pDer_fcn_MDL1(x, p, t),
+			u_tDer_exactVal = exact_u_tDer_fcn_MDL1(x, p, t),
+			w_exactVal = exact_w_fcn_MDL1(x, p, t),
+			w_pDer_exactVal = exact_w_pDer_fcn_MDL1(x, p, t);
+
+	printf("\n>> Testing On the Manufactured Solutions in Test Case 1\n");
+	printf("\nAt (x, p, t) = (%1.2f, %1.2f, %1.2f), the exact solutions are evaluated as\n",
+			x, p, t);
+	printf("\n- T = %1.5e, T_x = %1.5e, T_p = %1.5e, T_t = %1.5e\n",
+			T_exactVal, T_xDer_exactVal, T_pDer_exactVal, T_tDer_exactVal);
+	printf("- u = %1.5e, u_x = %1.5e, u_p = %1.5e, u_t = %1.5e\n",
+			u_exactVal, u_xDer_exactVal, u_pDer_exactVal, u_tDer_exactVal);
+	printf("- w = %1.5e, w_p = %1.5e\n", w_exactVal, w_pDer_exactVal);
+
+	FILE *f = fopen("Results/test_exactSoln_MDL1.txt", "wb");
+	fprintf(f,
+			"%1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e %1.20e ",
+			x, p, t,
+			T_exactVal, T_xDer_exactVal, T_pDer_exactVal, T_tDer_exactVal,
+			u_exactVal, u_xDer_exactVal, u_pDer_exactVal, u_tDer_exactVal,
+			w_exactVal, w_pDer_exactVal);
+	fclose(f);
+}
+
+void testExactSolnInMDL1() {
+	double x = 34560.7273, p = 521.35, t = 132.35;
+	testExactSolnInMDL1_helper(x, p, t);
+}
+
+void writeExactSolnToFile() {
+	// Write final numerical solution to files
+	FILE *exact_T = fopen("Results/T_exact.txt", "wb");
+	FILE *exact_q = fopen("Results/q_exact.txt", "wb");
+	FILE *exact_u = fopen("Results/u_exact.txt", "wb");
+	FILE *exact_w = fopen("Results/w_exact.txt", "wb");
+	double t = finalTime;
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < numCellsP; ++j) {
+			double p = getCellCenterP(i, j);
+			fprintf(exact_T, "%f ", exact_T_fcn_MDL1(x, p, t));
+			fprintf(exact_q, "%f ", exact_q_fcn_MDL1(x, p, t));
+			fprintf(exact_u, "%f ", exact_u_fcn_MDL1(x, p, t));
+			fprintf(exact_w, "%f ", exact_w_fcn_MDL1(x, p, t));
+		}
+	}
+	fclose(exact_T); fclose(exact_q); fclose(exact_u); fclose(exact_w);
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
 	timeSteps();
 	peformAnalysis();
-	printMeshToFile();
+	writeExactSolnToFile();
+	// testExactSolnInMDL1();
 }
 #endif /* TESTING_H_ */

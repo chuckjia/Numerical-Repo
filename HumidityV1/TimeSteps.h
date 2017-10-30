@@ -7,7 +7,7 @@
 
 #ifndef TIMESTEPS_H_
 #define TIMESTEPS_H_
-#include "WPhix.h"
+#include "Analysis.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Forward Euler Method On Time
@@ -21,9 +21,16 @@ double calcFluxOneCell(int i, int j,
 void forwardEuler() {
 	enforceIC();
 	printf("\n- Running forward Euler method on time\n");
+	int prog = 0;
 	for (int tt = 0; tt < numTimeSteps; tt++) {
 		double t = Dt * tt;
-		printf("\r  - Current progress: %1.0f%%", t / finalTime * 100);
+
+		int progNew = tt * 100 / numTimeSteps;
+		if (progNew > prog) {
+			prog = progNew;
+			printf("\r  - Current progress: %d%%", prog);
+			fflush(stdout);
+		}
 
 		// Calculate phi_x value at the beginning of each time step
 		calc_phix();
@@ -60,6 +67,7 @@ void forwardEuler() {
 
 		// Enforce boundary conditions
 		(*enforceBC_fcnPtr)();
+		showL2Errors(t);
 	}
 	printf("\r  - Forward Euler method complete\n");
 }
@@ -74,7 +82,7 @@ void timeSteps() {
 	forwardEuler();
 
 	printf("\n- Calculation complete. Time used = %1.2fs.\n\n",
-				((double) (clock() - start)) / CLOCKS_PER_SEC);
+			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
