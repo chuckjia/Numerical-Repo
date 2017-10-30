@@ -15,9 +15,10 @@ const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
  * Print Messages
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void printMsg() {
+void printTitle() {
 	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	printf("Solving Atmospherical Model Using Upwind-type Godunov Scheme\n");
+	printf(">> Solving Atmospherical Model Using Upwind-type Godunov Scheme\n");
+	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n\n");
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -25,7 +26,7 @@ void printMsg() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void printDiagnostics() {
-	printf(">> DIAGNOSTIC INFORMATION\n");
+	printf("\n>> DIAGNOSTIC INFORMATION\n");
 	printf("\nParameters: \n");
 
 	printf("\n - Time\n");
@@ -89,9 +90,10 @@ void showL2Errors() {
 			relativeL2Err_q = relativeL2Err_helper(num_q, denom_q),
 			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
 			relativeL2Err_w = relativeL2Err_helper(num_w, denom_w);
-	printf("\n- L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("\n>> NUMERICAL ERRORS\n");
+	printf("\n  - L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
-	printf("\n- L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("\n  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
 }
 
@@ -105,8 +107,8 @@ void printParToFile() {
 void writeCellCentersToFile() {
 	FILE *fCellCenterX = fopen("Results/cellCentersX.txt", "wb");
 	FILE *fCellCenterP = fopen("Results/cellCentersP.txt", "wb");
-	for (int i = 1; i <= Nx; ++i)
-		for (int j = 1; j <= Np; ++j) {
+	for (int i = 0; i < numCellsX; ++i)
+		for (int j = 0; j < numCellsP; ++j) {
 			fprintf(fCellCenterX, "%f ", getCellCenterX(i, j));
 			fprintf(fCellCenterP, "%f ", getCellCenterP(i, j));
 		}
@@ -114,15 +116,15 @@ void writeCellCentersToFile() {
 }
 
 // Write the result to file: res.txt for the solution and err.txt for the error
-// This function is used in ploting the solution and the error
+// This function is used in plotting the solution and the error
 void writeResToFile() {
 	// Write final numerical solution to files
 	FILE *res_T = fopen("Results/T_soln.txt", "wb");
 	FILE *res_q = fopen("Results/q_soln.txt", "wb");
 	FILE *res_u = fopen("Results/u_soln.txt", "wb");
 	FILE *res_w = fopen("Results/w_soln.txt", "wb");
-	for (int i = 1; i < lastGhostIndexX; ++i)
-		for (int j = 1; j < lastGhostIndexP; ++j) {
+	for (int i = 0; i < numCellsX; ++i)
+		for (int j = 0; j < numCellsP; ++j) {
 			fprintf(res_T, "%f ", T_sl[i][j]);
 			fprintf(res_q, "%f ", q_sl[i][j]);
 			fprintf(res_u, "%f ", u_sl[i][j]);
@@ -135,9 +137,9 @@ void writeResToFile() {
 	FILE *err_q = fopen("Results/q_err.txt", "wb");
 	FILE *err_u = fopen("Results/u_err.txt", "wb");
 	FILE *err_w = fopen("Results/w_err.txt", "wb");
-	for (int i = 1; i < lastGhostIndexX; ++i) {
+	for (int i = 0; i < numCellsX; ++i) {
 		double x = getCellCenterX(i);
-		for (int j = 1; j < lastGhostIndexP; ++j) {
+		for (int j = 0; j < numCellsP; ++j) {
 			double p = getCellCenterP(i, j);
 			double exactSoln_T = (*IC_T_fcnPtr)(x, p, finalTime),
 					exactSoln_q = (*IC_q_fcnPtr)(x, p, finalTime),

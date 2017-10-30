@@ -22,7 +22,7 @@ int fluxMethod = 0;  // 0: Godunov
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 10;  // Number of space divisions in both x and p directions
+const int numDivisions = 100;  // Number of space divisions in both x and p directions
 int numTimeSteps = 100;  // Number of time steps
 double Dt = 1e-5;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
@@ -32,7 +32,7 @@ double finalTime = numTimeSteps * Dt;  // Final time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Print out messages for testing purposes
-void msg() {
+void testmsg() {
 	printf("===== ===== ===== ===== ===== \n");
 	printf("The program passed here.\n===== ===== ===== ===== =====\n");
 }

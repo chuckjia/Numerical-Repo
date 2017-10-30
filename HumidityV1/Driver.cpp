@@ -8,12 +8,14 @@
 #include "Testing.h"
 
 void setAll() {
+	printTitle();
 	setModels();
 	setMesh();
 	setConditions();
 	setGodunov();
 	setProjection();
 	setQuadCells();
+	setWPhix();
 	setTimeSteps();
 }
 

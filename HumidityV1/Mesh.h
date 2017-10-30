@@ -38,8 +38,8 @@ double cellLeftDpVec[numGridPtsX];  // Stores the Dp values on cell left sides
 
 // The following two arrays store the grid point coordinates. meshgridX stores x coord on cell
 // left sides, and meshgridP stores p coord on cell bottom-left sides
-double meshgridX[numGridPtsX];  // Stores x_{i-1/2,j}
-double meshgridP[numGridPtsX][numGridPtsP];  // Stores p_{i-1/2,j-1/2}
+double meshGridX[numGridPtsX];  // Stores x_{i-1/2,j}
+double meshGridP[numGridPtsX][numGridPtsP];  // Stores p_{i-1/2,j-1/2}
 
 // Calculate and store grid points coordinates in cache
 void calcGridPts() {
@@ -47,11 +47,11 @@ void calcGridPts() {
 	DxInv = Nx / (xf - x0);
 	for (int i = 0; i < numGridPtsX; ++i) {
 		double x = x0 + (i - 1) * Dx;
-		meshgridX[i] = x;
+		meshGridX[i] = x;
 		double Dp = ((*pB_fcnPtr)(x) - pA) * NpInv;
 		cellLeftDpVec[i] = Dp;
 		for (int j = 0; j < numGridPtsP; ++j)
-			meshgridP[i][j] = pA + (j - 1) * Dp;
+			meshGridP[i][j] = pA + (j - 1) * Dp;
 	}
 }
 
@@ -76,37 +76,37 @@ double getCellRightDp(int i) {
 // Getters for x coordinates on grid points
 
 double getCellLeftX(int i, int j) {
-	return meshgridX[i];
+	return meshGridX[i];
 }
 
 double getCellLeftX(int i) {
-	return meshgridX[i];
+	return meshGridX[i];
 }
 
 double getCellRightX(int i, int j) {
-	return meshgridX[i + 1];
+	return meshGridX[i + 1];
 }
 
 double getCellRightX(int i) {
-	return meshgridX[i + 1];
+	return meshGridX[i + 1];
 }
 
 // Getters for p coordinates on grid points
 
 double getCellBottLeftP(int i, int j) {
-	return meshgridP[i][j];
+	return meshGridP[i][j];
 }
 
 double getCellBottRightP(int i, int j) {
-	return meshgridP[i + 1][j];
+	return meshGridP[i + 1][j];
 }
 
 double getCellTopLeftP(int i, int j) {
-	return meshgridP[i][j + 1];
+	return meshGridP[i][j + 1];
 }
 
 double getCellTopRightP(int i, int j) {
-	return meshgridP[i + 1][j + 1];
+	return meshGridP[i + 1][j + 1];
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -236,7 +236,6 @@ void calcCellSideNorm() {
 			double topSideVecSizeInv = 1 / sqrt(pDiff * pDiff + Dx * Dx);
 			cellTopSideNormX[i][j] = -pDiff * topSideVecSizeInv;
 			cellTopSideNormP[i][j] = Dx * topSideVecSizeInv;
-			printf("(%d, %d): %f\n", i, j, cellTopSideNormP[i][j]);
 		}
 }
 

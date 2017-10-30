@@ -14,8 +14,8 @@
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Coefficients for the linear system (3.33) + (3.35) in the projection method. To get the
-// corresponding matrix, we choose to put (3.35) as the last row. First, we directly reduce
-// the last row to make the matrix upper triangular. Then we solve the system backwards.
+// corresponding matrix, we choose to put (3.35) as the last row. Then we directly reduce
+// the last row to make the matrix upper triangular, and we solve the system backwards.
 
 // Our a and b are different from those in the article:
 // a_this[i][j] = a_orig[i][j] - b_orig[i][j] / Dx, b_this[i][j] = b_orig[i][j] / Dx.
@@ -26,6 +26,9 @@
 // original last matrix row and the intermediate values in the calculation of a and b. More
 // importantly, d stores the linear transformation on c to directly make the matrix upper
 // triangular.
+
+// During the life of this program, the cache values of a, b, and d will remain the same once
+// calculated.
 
 // Refer to notes for details.
 
@@ -52,25 +55,6 @@ void fillCache_d_proj() {
 		d_proj_cache[i + 1] = 1 - b_proj_cache[i] * temp;
 	}
 }
-
-
-
-
-/*
- *
- *
- * 2017-10-29
- *
- *
- */
-
-
-
-
-
-
-
-
 
 // Calculate the c_i's as in (3.34).
 // In this program, we do not have an array for c_i. Instead, we use lambda_x[] to hold the c_i
@@ -103,6 +87,7 @@ void calcLambdax_gaussElim_proj() {
 		lambda_x_proj[i] = (lambda_x_proj[i] - b_proj_cache[i] * lambda_x_proj[i + 1]) * aInv_proj_cache[i];
 }
 
+// Perform the projection method on uTilde to calculate u
 void projU() {
 	calcLambdax_gaussElim_proj();
 	for (int i = 1; i < lastRealIndexX; ++i) {
@@ -113,7 +98,7 @@ void projU() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Set All Conditions: IC, BC and Source
+ * Set Projection Parameters and Fill Cache Values
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setProjection() {

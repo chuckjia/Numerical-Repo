@@ -15,39 +15,48 @@ using namespace std;
  * Testing Mesh Methods
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+void printCellCenterCoord(int i, int j) {
+	printf("Cell (%d, %d) center = (%f, %f)\n", i, j, getCellCenterX(i, j), getCellCenterP(i, j));
+}
+
+void printCellTopRightCoord(int i, int j) {
+	printf("Cell (%d, %d) Top Right Vertex = (%f, %f)\n",
+			i, j, getCellRightX(i, j), getCellTopRightP(i, j));
+}
+
 void printMeshToFile() {
-	FILE *fGridX = fopen("MeshPrintOut/gridX.txt", "wb");
-	FILE *fGridP = fopen("MeshPrintOut/gridP.txt", "wb");
+	FILE *fGridX = fopen("Results/meshGridX.txt", "wb");
+	FILE *fGridP = fopen("Results/meshGridP.txt", "wb");
 	for (int i = 0; i < numGridPtsX; ++i)
 		for (int j = 0; j < numGridPtsP; ++j) {
-			fprintf(fGridX, "%f ", getCellLeftX(i, j));
-			fprintf(fGridP, "%f ", getCellBottLeftP(i, j));
+			fprintf(fGridX, "%1.20e ", getCellLeftX(i, j));
+			fprintf(fGridP, "%1.20e ", getCellBottLeftP(i, j));
 		}
 	fclose(fGridX);
 	fclose(fGridP);
 
-	FILE *fCellCenterX = fopen("MeshPrintOut/cellCenterX.txt", "wb");
-	FILE *fCellCenterP = fopen("MeshPrintOut/cellCenterP.txt", "wb");
-	FILE *fCellVol = fopen("MeshPrintOut/cellVol.txt", "wb");
-	FILE *fCellSideLen = fopen("MeshPrintOut/cellSideLen.txt", "wb");
+	FILE *fCellCenterX = fopen("Results/cellCenterX.txt", "wb");
+	FILE *fCellCenterP = fopen("Results/cellCenterP.txt", "wb");
+	FILE *fCellVol = fopen("Results/cellVol.txt", "wb");
+	FILE *fCellSideLen = fopen("Results/cellSideLen.txt", "wb");
 	for (int i = 0; i < numCellsX; ++i)
 		for (int j = 0; j < numCellsP; ++j) {
-			fprintf(fCellCenterX, "%f ", getCellCenterX(i, j));
-			fprintf(fCellCenterP, "%f ", getCellCenterP(i, j));
-			fprintf(fCellVol, "%f ", getCellVol(i, j));
-			fprintf(fCellSideLen, "%f ", getCellBottSideLen(i, j));
+			fprintf(fCellCenterX, "%1.20e ", getCellCenterX(i, j));
+			fprintf(fCellCenterP, "%1.20e ", getCellCenterP(i, j));
+			fprintf(fCellVol, "%1.20e ", getCellVol(i, j));
+			fprintf(fCellSideLen, "%1.20e ", getCellBottSideLen(i, j));
 		}
 	fclose(fCellCenterX);
 	fclose(fCellCenterP);
 	fclose(fCellVol);
 	fclose(fCellSideLen);
 
-	FILE *fCellTopNormX = fopen("MeshPrintOut/cellTopNormX.txt", "wb");
-	FILE *fCellTopNormP = fopen("MeshPrintOut/cellTopNormP.txt", "wb");
+	FILE *fCellTopNormX = fopen("Results/cellTopNormX.txt", "wb");
+	FILE *fCellTopNormP = fopen("Results/cellTopNormP.txt", "wb");
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			fprintf(fCellTopNormX, "%e ", getCellTopSideNormX(i, j));
-			fprintf(fCellTopNormP, "%e ", getCellTopSideNormP(i, j));
+			fprintf(fCellTopNormX, "%1.20e ", getCellTopSideNormX(i, j));
+			fprintf(fCellTopNormP, "%1.20e ", getCellTopSideNormP(i, j));
 		}
 	fclose(fCellTopNormX);
 	fclose(fCellTopNormP);
@@ -178,12 +187,51 @@ void testIC() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Testing the Quadrilateral Cell Interpolation Methods
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void printQuadCellCoefToFile() {
+	FILE *f_a2 = fopen("Results/a2_quadCell.txt", "wb");
+	FILE *f_a3 = fopen("Results/a3_quadCell.txt", "wb");
+	FILE *f_a4 = fopen("Results/a4_quadCell.txt", "wb");
+	for (int i = 0; i <= Nx; ++i)
+		for (int j = 0; j <= Np; ++j) {
+			fprintf(f_a2, "%1.20e ", a2_quadCell_cache[i][j]);
+			fprintf(f_a3, "%1.20e ", a3_quadCell_cache[i][j]);
+			fprintf(f_a4, "%1.20e ", a4_quadCell_cache[i][j]);
+		}
+	fclose(f_a2); fclose(f_a3); fclose(f_a4);
+}
+
+void printQuadCellDiagMatToFile() {
+	FILE *f_e12 = fopen("Results/e12_diagMat_quadCell.txt", "wb");
+	FILE *f_e22 = fopen("Results/e22_diagMat_quadCell.txt", "wb");
+	for (int i = 0; i <= Nx; ++i)
+		for (int j = 0; j <= Np; ++j) {
+			fprintf(f_e12, "%1.20e ", e12_diagMatInv_quadCell_cache[i][j]);
+			fprintf(f_e22, "%1.20e ", e22_diagMatInv_quadCell_cache[i][j]);
+		}
+	fclose(f_e12); fclose(f_e22);
+	FILE *f = fopen("Results/e11e21_diagMat_quadCell.txt", "wb");
+	fprintf(f, "%1.20e %1.20e ", e11_diagMatInv_quadCell_cache, e21_diagMatInv_quadCell_cache);
+	fclose(f);
+}
+
+void testQuadCell() {
+	printParToFile();
+	writeResToFile();
+	printMeshToFile();
+	printQuadCellCoefToFile();
+	printQuadCellDiagMatToFile();
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	// timeSteps();
-	// peformAnalysis();
+	timeSteps();
+	peformAnalysis();
 	printMeshToFile();
 }
 #endif /* TESTING_H_ */
