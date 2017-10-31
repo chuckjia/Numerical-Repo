@@ -17,7 +17,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 3;  // Model number
+int modelNo = 1;  // Model number
 int fluxMethod = 0;  // 0: Godunov
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -26,7 +26,7 @@ int fluxMethod = 0;  // 0: Godunov
 
 const int numDivisions = 100;  // Number of space divisions in both x and p directions
 int numTimeSteps = 100;  // Number of time steps
-double Dt = 1e-5;  // Size of one time step
+double Dt = 1e-2;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

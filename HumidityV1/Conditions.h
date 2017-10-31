@@ -130,8 +130,8 @@ void enforceBC_MDL2() {
 
 void enforceBC_MDL3() {
 	// Left boundary: Dirichlet BC
-	enforceDirichlet_leftBD(T_sl, 1);
-	enforceDirichlet_leftBD(q_sl, 1);
+	enforceDirichlet_leftBD(T_sl);
+	enforceDirichlet_leftBD(q_sl);
 	// Right boundary: Dirichlet BC
 	enforceDirichlet_rightBD(T_sl);
 	enforceDirichlet_rightBD(q_sl);

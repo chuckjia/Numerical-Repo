@@ -166,40 +166,64 @@ void writeParToFile() {
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in plotting the solution and the error
 void writeResToFile() {
-	// Write final numerical solution to files
+	// Numerical solution files
 	FILE *res_T = fopen("Results/T_soln.txt", "wb");
 	FILE *res_q = fopen("Results/q_soln.txt", "wb");
 	FILE *res_u = fopen("Results/u_soln.txt", "wb");
 	FILE *res_w = fopen("Results/w_soln.txt", "wb");
-	for (int i = 0; i < numCellsX; ++i)
-		for (int j = 0; j < numCellsP; ++j) {
-			fprintf(res_T, "%f ", T_sl[i][j]);
-			fprintf(res_q, "%f ", q_sl[i][j]);
-			fprintf(res_u, "%f ", u_sl[i][j]);
-			fprintf(res_w, "%f ", w_sl[i][j]);
-		}
-	fclose(res_T); fclose(res_q); fclose(res_u); fclose(res_w);
-
-	// Write final numerical errors to files
+	// Numerical errors files
 	FILE *err_T = fopen("Results/T_err.txt", "wb");
 	FILE *err_q = fopen("Results/q_err.txt", "wb");
 	FILE *err_u = fopen("Results/u_err.txt", "wb");
 	FILE *err_w = fopen("Results/w_err.txt", "wb");
+
+	// Write data to files
 	for (int i = 0; i < numCellsX; ++i) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellsP; ++j) {
 			double p = getCellCenterP(i, j);
-			double exactSoln_T = (*IC_T_fcnPtr)(x, p, finalTime),
-					exactSoln_q = (*IC_q_fcnPtr)(x, p, finalTime),
-					exactSoln_u = (*IC_u_fcnPtr)(x, p, finalTime),
-					exactSoln_w = (*IC_w_fcnPtr)(x, p, finalTime);
-			fprintf(err_T, "%f ", T_sl[i][j] - exactSoln_T);
-			fprintf(err_q, "%f ", q_sl[i][j] - exactSoln_q);
-			fprintf(err_u, "%f ", u_sl[i][j] - exactSoln_u);
-			fprintf(err_w, "%f ", w_sl[i][j] - exactSoln_w);
+
+			double numer_T = T_sl[i][j], numer_q = q_sl[i][j],
+					numer_u = u_sl[i][j], numer_w = w_sl[i][j];
+			fprintf(res_T, "%f ", numer_T);
+			fprintf(res_q, "%f ", numer_q);
+			fprintf(res_u, "%f ", numer_u);
+			fprintf(res_w, "%f ", numer_w);
+
+			double exact_T = (*IC_T_fcnPtr)(x, p, finalTime),
+					exact_q = (*IC_q_fcnPtr)(x, p, finalTime),
+					exact_u = (*IC_u_fcnPtr)(x, p, finalTime),
+					exact_w = (*IC_w_fcnPtr)(x, p, finalTime);
+			fprintf(err_T, "%f ", numer_T - exact_T);
+			fprintf(err_q, "%f ", numer_q - exact_q);
+			fprintf(err_u, "%f ", numer_u - exact_u);
+			fprintf(err_w, "%f ", numer_w - exact_w);
 		}
 	}
+
+	fclose(res_T); fclose(res_q); fclose(res_u); fclose(res_w);
 	fclose(err_T); fclose(err_q); fclose(err_u); fclose(err_w);
+}
+
+// Write the result to file: res.txt for the solution and err.txt for the error
+// This function is used in plotting the solution and the error
+void writeResToFileForMovie_T(int tt) {
+	char filename[20];
+	sprintf(filename, "MovieFrames/T_soln_%d.txt", tt);
+	FILE *res = fopen(filename, "wb");
+	sprintf(filename, "MovieFrames/T_err_%d.txt", tt);
+	FILE *err = fopen(filename, "wb");
+	double t = tt * Dt;
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < numCellsP; ++j) {
+			double p = getCellCenterP(i, j);
+			double numerVal = T_sl[i][j], exactVal = (*IC_T_fcnPtr)(x, p, t);
+			fprintf(res, "%f ", numerVal);
+			fprintf(err, "%f ", numerVal - exactVal);
+		}
+	}
+	fclose(res); fclose(err);
 }
 
 void peformAnalysis() {

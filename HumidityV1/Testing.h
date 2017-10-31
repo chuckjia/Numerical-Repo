@@ -263,6 +263,10 @@ void emptyFcn() {
 	// Empty
 }
 
+/*
+ * Test A on upwind: fixed u and w
+ */
+
 void elimFluxes_u() {
 	for (int i = 0; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
@@ -286,8 +290,56 @@ void timeSteps_upwind_MDL3_test() {
 	forwardEuler();
 }
 
+/**
+ * Test B on upwind: fixed u and w and reduced problem with no interpolation of u and w
+ */
+
+// Calculate all fluxes by upwind type Godunov scheme
+void calcFluxes_upwind_reduced_MDL3_test() {
+	// GG: fluxes on the TOP sides of cells
+	for (int i = 1; i <= Nx; ++i)
+		for (int j = 0; j <= Np; ++j) {
+			double x = getCellCenterX(i, j), p = getCellTopLeftP(i, j);
+			double wTopSideVal = exact_w_fcn_MDL3(x, p, 0);
+			double velocity = Dx * wTopSideVal;
+			if (velocity >= 0) {
+				GG_T[i][j] =	 velocity * T_sl[i][j];
+				GG_q[i][j] =	 velocity * q_sl[i][j];
+			} else {
+				GG_T[i][j] =	 velocity * T_sl[i][j + 1];
+				GG_q[i][j] =	 velocity * q_sl[i][j + 1];
+			}
+		}
+
+	// FF: fluxes on the RIGHT sides of cells
+	for (int i = 0; i <= Nx; ++i)
+		for (int j = 1; j <= Np; ++j) {
+			double x = getCellRightX(i, j), p = getCellCenterP(i, j);
+			double uRightSideVal = exact_u_fcn_MDL3(x, p, 0);
+			double velocity = getCellRightDp(i, j) * uRightSideVal;
+			if (velocity >= 0) {
+				FF_T[i][j] =	 velocity * T_sl[i][j];
+				FF_q[i][j] =	 velocity * q_sl[i][j];
+			} else {
+				FF_T[i][j] =	 velocity * T_sl[i + 1][j];
+				FF_q[i][j] =	 velocity * q_sl[i + 1][j];
+			}
+		}
+}
+
+void timeSteps_upwind_reduced_MDL3_test() {
+	if (modelNo != 3)
+		throw "Error: This test only works with Model 3!";
+	calc_phix_fcnPtr = &emptyFcn;
+	projU_fcnPtr = &emptyFcn;
+	calc_w_fcnPtr = &emptyFcn;
+	calcFluxes = &calcFluxes_upwind_reduced_MDL3_test;
+	forwardEuler();
+}
+
 void test_upwind_MDL3() {
 	try {
+		// timeSteps_upwind_reduced_MDL3_test();
 		timeSteps_upwind_MDL3_test();
 	} catch (const char* msg) {
 		cerr << msg << endl;
@@ -301,8 +353,8 @@ void test_upwind_MDL3() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	// timeSteps();
-	test_upwind_MDL3();
+	timeSteps();
+	// test_upwind_MDL3();
 	peformAnalysis();
 	// print_r_uInterp_upwind_toFile();
 	//writeExactSolnToFile();

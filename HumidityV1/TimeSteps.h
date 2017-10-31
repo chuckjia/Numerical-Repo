@@ -25,6 +25,8 @@ void forwardEuler() {
 	for (int tt = 0; tt < numTimeSteps; tt++) {
 		double t = Dt * tt;
 
+		(*calcFluxes)();
+
 		int progNew = tt * 100 / numTimeSteps;
 		if (progNew > prog) {
 			prog = progNew;
@@ -68,6 +70,7 @@ void forwardEuler() {
 		// Enforce boundary conditions
 		(*enforceBC_fcnPtr)();
 		//showL2Errors(t);
+		writeResToFileForMovie_T(tt + 1);
 	}
 	printf("\r  - Forward Euler method complete\n");
 }
