@@ -61,7 +61,7 @@ void enforceNeumann_rightBD(double sl[numCellsX][numCellsP]) {
 		sl[lastGhostIndexX][j] = sl[lastRealIndexX][j];
 }
 
-// Enforce Dirichlet BCs on the left boundary: with boundary values specified by a function,
+// Enforce Dirichlet BCs on the LEFT boundary: with boundary values specified by a function,
 // defined by (*bdVal_fcnPtr)(p)
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double (*bdVal_fcnPtr)(double)) {
 	for (int j = 1; j <= lastRealIndexP; ++j) {
@@ -72,16 +72,22 @@ void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double (*bdVal_fcn
 	}
 }
 
-// Enforce Dirichlet BCs on the left boundary: with constant boundary value, specified by bdVal
+// Enforce Dirichlet BCs on the LEFT boundary: with constant boundary value, specified by bdVal
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double bdVal) {
 	for (int j = 1; j <= lastRealIndexP; ++j)
 		sl[0][j] = 2 * bdVal - sl[1][j];
 }
 
-// Enforce Dirichlet BCs on the left side of domain: with boundary value 0
+// Enforce Dirichlet BCs on the LEFT boundary: with boundary value 0
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP]) {
 	for (int j = 1; j <= lastRealIndexP; ++j)
 		sl[0][j] = - sl[1][j];
+}
+
+// Enforce Dirichlet BCs on the RIGHT boundary: with boundary value 0
+void enforceDirichlet_rightBD(double sl[numCellsX][numCellsP]) {
+	for (int j = 1; j <= lastRealIndexP; ++j)
+		sl[lastGhostIndexX][j] = - sl[lastRealIndexX][j];
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -118,6 +124,19 @@ void enforceBC_MDL2() {
 	enforceNeumann_rightBD(u_sl);
 }
 
+/* ----- ----- ----- ----- ----- -----
+ * Test 3 BC
+ * ----- ----- ----- ----- ----- ----- */
+
+void enforceBC_MDL3() {
+	// Left boundary: Dirichlet BC
+	enforceDirichlet_leftBD(T_sl, 1);
+	enforceDirichlet_leftBD(q_sl, 1);
+	// Right boundary: Dirichlet BC
+	enforceDirichlet_rightBD(T_sl);
+	enforceDirichlet_rightBD(q_sl);
+}
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Source Functions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -132,24 +151,21 @@ double (*source_T_fcnPtr)(double T, double q, double u, double x, double p, doub
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setConditions() {
-	/* ----- ----- ----- -----
-	 * Default: Model 1
-	 * ----- ----- ----- ----- */
-	// Initial conditions
-	IC_T_fcnPtr = &exact_T_fcn_MDL1;
-	IC_q_fcnPtr = &exact_q_fcn_MDL1;
-	IC_u_fcnPtr = &exact_u_fcn_MDL1;
-	IC_w_fcnPtr = &exact_w_fcn_MDL1;
-	// Boundary conditions
-	enforceBC_fcnPtr = &enforceBC_MDL1;
-	// Source functions
-	source_T_fcnPtr = &source_T_fcn_MDL1;
-	source_q_fcnPtr = &source_q_fcn_MDL1;
-	source_u_fcnPtr = &source_u_fcn_MDL1;
+	if (modelNo == 1) {
+		// Initial conditions
+		IC_T_fcnPtr = &exact_T_fcn_MDL1;
+		IC_q_fcnPtr = &exact_q_fcn_MDL1;
+		IC_u_fcnPtr = &exact_u_fcn_MDL1;
+		IC_w_fcnPtr = &exact_w_fcn_MDL1;
+		// Boundary conditions
+		enforceBC_fcnPtr = &enforceBC_MDL1;
+		// Source functions
+		source_T_fcnPtr = &source_T_fcn_MDL1;
+		source_q_fcnPtr = &source_q_fcn_MDL1;
+		source_u_fcnPtr = &source_u_fcn_MDL1;
+		return;
+	}
 
-	/* ----- ----- ----- -----
-	 * Model 2
-	 * ----- ----- ----- ----- */
 	if (modelNo == 2) {
 		// Initial conditions
 		IC_T_fcnPtr = &exact_T_fcn_MDL2;
@@ -162,6 +178,22 @@ void setConditions() {
 		source_T_fcnPtr = &source_T_fcn_MDL2;
 		source_q_fcnPtr = &source_q_fcn_MDL2;
 		source_u_fcnPtr = &source_u_fcn_MDL2;
+		return;
+	}
+
+	if (modelNo == 3) {
+		// Initial conditions
+		IC_T_fcnPtr = &exact_T_fcn_MDL3;
+		IC_q_fcnPtr = &exact_q_fcn_MDL3;
+		IC_u_fcnPtr = &exact_u_fcn_MDL3;
+		IC_w_fcnPtr = &exact_w_fcn_MDL3;
+		// Boundary conditions
+		enforceBC_fcnPtr = &enforceBC_MDL3;
+		// Source functions
+		source_T_fcnPtr = &source_T_fcn_MDL3;
+		source_q_fcnPtr = &source_q_fcn_MDL3;
+		source_u_fcnPtr = &source_u_fcn_MDL3;
+		return;
 	}
 }
 

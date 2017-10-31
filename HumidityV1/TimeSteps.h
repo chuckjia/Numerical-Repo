@@ -7,13 +7,13 @@
 
 #ifndef TIMESTEPS_H_
 #define TIMESTEPS_H_
-#include "Analysis.h"
+#include "WPhix.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Forward Euler Method On Time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double calcFluxOneCell(int i, int j,
+double calcFluxes_OneCell(int i, int j,
 		double GG[Nx + 1][Np + 1], double FF[Nx + 1][Np + 1]) {
 	return GG[i][j] - GG[i][j - 1] + FF[i][j] - FF[i - 1][j];
 }
@@ -21,7 +21,7 @@ double calcFluxOneCell(int i, int j,
 void forwardEuler() {
 	enforceIC();
 	printf("\n- Running forward Euler method on time\n");
-	int prog = 0;
+	int prog = -1;
 	for (int tt = 0; tt < numTimeSteps; tt++) {
 		double t = Dt * tt;
 
@@ -33,7 +33,7 @@ void forwardEuler() {
 		}
 
 		// Calculate phi_x value at the beginning of each time step
-		calc_phix();
+		(*calc_phix_fcnPtr)();
 
 		// Godunov upwind
 		for (int i = 1; i <= Nx; ++i) {
@@ -44,30 +44,30 @@ void forwardEuler() {
 				double RHS;
 
 				// Updating T
-				RHS = -volInv * calcFluxOneCell(i, j, GG_T, FF_T) +
+				RHS = -volInv * calcFluxes_OneCell(i, j, GG_T, FF_T) +
 						(*source_T_fcnPtr)(T, q, u, x, p, t);
 				T_sl[i][j] += RHS * Dt;
 				// Updating q
-				RHS = -volInv * calcFluxOneCell(i, j, GG_q, FF_q) +
+				RHS = -volInv * calcFluxes_OneCell(i, j, GG_q, FF_q) +
 						(*source_q_fcnPtr)(T, q, u, x, p, t);
 				q_sl[i][j] += RHS * Dt;
 
 				// Updating u
-				RHS = -volInv * calcFluxOneCell(i, j, GG_u, FF_u) - phix_sl[i][j] +
+				RHS = -volInv * calcFluxes_OneCell(i, j, GG_u, FF_u) - phix_sl[i][j] +
 						(*source_u_fcnPtr)(T, q, u, x, p, t);
 				u_sl[i][j] += RHS * Dt;
 			}
 		}
 
 		// Projection method on u
-		projU();
+		(*projU_fcnPtr)();
 
 		// Calculate w
-		calc_w();
+		(*calc_w_fcnPtr)();
 
 		// Enforce boundary conditions
 		(*enforceBC_fcnPtr)();
-		showL2Errors(t);
+		//showL2Errors(t);
 	}
 	printf("\r  - Forward Euler method complete\n");
 }

@@ -7,7 +7,7 @@
 
 #ifndef GODUNOV_H_
 #define GODUNOV_H_
-#include "Conditions.h"
+#include "Analysis.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Interpolation for u
@@ -51,7 +51,7 @@ double GG_T[Nx + 1][Np + 1], GG_q[Nx + 1][Np + 1], GG_u[Nx + 1][Np + 1];  // GG_
 void (*calcFluxes)();
 
 // Calculate all fluxes by upwind type Godunov scheme
-void upwind() {
+void calcFluxes_upwind() {
 	// GG: fluxes on the TOP sides of cells
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
@@ -96,7 +96,7 @@ void upwind() {
 void setGodunov() {
 	// if (fluxMethod == 0) {
 	fillCache_r_uInterp();
-	calcFluxes = &upwind;
+	calcFluxes = &calcFluxes_upwind;
 }
 
 #endif /* GODUNOV_H_ */

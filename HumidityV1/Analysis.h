@@ -7,7 +7,7 @@
 
 #ifndef ANALYSIS_H_
 #define ANALYSIS_H_
-#include "WPhix.h"
+#include "Conditions.h"
 
 const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
 
@@ -42,6 +42,17 @@ void printDiagnostics() {
 	printf("    [2] Dx = %1.2f\n", Dx);
 	printf("    [3] Dp(x0) = %1.2f, Dp[(x0+xf)/2] = %1.2f, Dp(xf) = %1.2f\n",
 			getCellLeftDp(1), getCellLeftDp(lastRealIndexX / 2), getCellLeftDp(lastRealIndexX));
+}
+
+void printSchemeDescription() {
+	printf("\n>> SCHEME DESCRIPTION\n");
+	printf("\n  MODEL %d:  \n", modelNo);
+
+	printf("  [1] Time:  ");
+	printf("Dt = %1.2e, finalTime = %1.2es, numTimeSteps = %d\n", Dt, finalTime, numTimeSteps);
+
+	printf("  [2] Mesh Specs:  ");
+	printf("Nx = %d, Np = %d\n", Nx, Np);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -132,9 +143,9 @@ void showL2Errors(double t) {
 			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
 			relativeL2Err_w = relativeL2Err_helper(num_w, denom_w);
 
-	printf("\n  - L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]",
+	printf("\n  - L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
-	printf("  - L2 discrete nom for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("  - L2 discrete norm for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			sqrt(denom_T), sqrt(denom_q), sqrt(denom_u), sqrt(denom_w));
 	// printf("\n  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 	// absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
@@ -145,7 +156,7 @@ void showL2Errors() {
 	showL2Errors(finalTime);
 }
 
-void printParToFile() {
+void writeParToFile() {
 	FILE *f = fopen("Results/par.txt", "wb");
 	fprintf(f, "%1.15f %1.15f %1.15f %1.15f %1.15f %d %d %1.15f %d",
 			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps);
@@ -194,9 +205,9 @@ void writeResToFile() {
 void peformAnalysis() {
 	clock_t start = clock();
 
-	printDiagnostics();
+	printSchemeDescription();
 	showL2Errors();
-	printParToFile();
+	writeParToFile();
 	printMeshToFile();
 	writeResToFile();
 

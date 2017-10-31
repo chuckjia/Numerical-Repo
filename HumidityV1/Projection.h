@@ -88,7 +88,10 @@ void calcLambdax_gaussElim_proj() {
 }
 
 // Perform the projection method on uTilde to calculate u
-void projU() {
+void (*projU_fcnPtr)();
+
+// Perform the projection method on uTilde to calculate u
+void projU_orig() {
 	calcLambdax_gaussElim_proj();
 	for (int i = 1; i < lastRealIndexX; ++i) {
 		double lambda_x = lambda_x_proj[i];
@@ -104,6 +107,7 @@ void projU() {
 void setProjection() {
 	fillCache_ab_proj();
 	fillCache_d_proj();
+	projU_fcnPtr = &projU_orig;
 }
 
 

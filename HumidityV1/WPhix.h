@@ -13,7 +13,9 @@
  * Calculate the w Function
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void calc_w() {
+void (*calc_w_fcnPtr)();
+
+void calc_w_orig() {
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 0; j < Np; ++j)
 			w_sl[i][j + 1] = w_sl[i][j] - (getCellCenterP(i, j + 1) - getCellCenterP(i, j)) *
@@ -24,8 +26,10 @@ void calc_w() {
  * Calculate the phi_x Function
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+void (*calc_phix_fcnPtr)();
+
 // This function uses formula in (3.42): questionable calculation
-void calc_phix() {
+void calc_phix_orig() {
 	for (int i = 1; i <= Nx; ++i) {
 		double sum = 0;
 		// factor = -R * (p_{i,j+1/2} - p_{i,j-1/2})
@@ -42,7 +46,8 @@ void calc_phix() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setWPhix() {
-	// Empty for now
+	calc_w_fcnPtr = &calc_w_orig;
+	calc_phix_fcnPtr = &calc_phix_orig;
 }
 
 #endif /* WPHIX_H_ */

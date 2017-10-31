@@ -7,12 +7,11 @@
 
 #ifndef TESTING_H_
 #define TESTING_H_
-#include <iostream>
 #include "TimeSteps.h"
-using namespace std;
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing Mesh Methods
+ * Tests: Mesh Methods
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void printCellCenterCoord(int i, int j) {
@@ -25,7 +24,7 @@ void printCellTopRightCoord(int i, int j) {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing the Gaussian Elimination in the Projection Method
+ * Tests: Gaussian Elimination in the Projection Method
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Set test case 1: Nx = 6
@@ -111,7 +110,7 @@ void test_GaussElimProj() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing the Source Functions
+ * Tests: the Source Functions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testSourceFcns_helper(int numTestTimeSteps,
@@ -140,7 +139,7 @@ void testSourceFcns() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing the Initial Conditions
+ * Tests: the Initial Conditions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testIC() {
@@ -149,7 +148,7 @@ void testIC() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing the Quadrilateral Cell Interpolation Methods
+ * Tests: the Quadrilateral Cell Interpolation Methods
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void printQuadCellCoefToFile() {
@@ -180,7 +179,7 @@ void printQuadCellDiagMatToFile() {
 }
 
 void testQuadCell() {
-	printParToFile();
+	writeParToFile();
 	writeResToFile();
 	printMeshToFile();
 	printQuadCellCoefToFile();
@@ -188,7 +187,7 @@ void testQuadCell() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing On the Manufactured Solutions in Test Case 1
+ * Tests: Manufactured Solutions in Test Case 1
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testExactSolnInMDL1_helper(double x, double p, double t) {
@@ -247,14 +246,67 @@ void writeExactSolnToFile() {
 	fclose(exact_T); fclose(exact_q); fclose(exact_u); fclose(exact_w);
 }
 
+
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Tests: Upwind Method
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void print_r_uInterp_upwind_toFile() {
+	FILE *f = fopen("Results/r_uInterp_upwind.txt", "wb");
+	for (int i = 0; i <= Nx; ++i)
+		fprintf(f, "%f ", r_uInterp_cache[i]);
+	fclose(f);
+}
+
+void emptyFcn() {
+	// Empty
+}
+
+void elimFluxes_u() {
+	for (int i = 0; i <= Nx; ++i)
+		for (int j = 0; j <= Np; ++j) {
+			GG_u[i][j] = 0;
+			FF_u[i][j] = 0;
+		}
+}
+
+void calcFluxes_upwind_MDL3_test() {
+	calcFluxes_upwind();
+	elimFluxes_u();
+}
+
+void timeSteps_upwind_MDL3_test() {
+	if (modelNo != 3)
+		throw "Error: This test only works with Model 3!";
+	calc_phix_fcnPtr = &emptyFcn;
+	projU_fcnPtr = &emptyFcn;
+	calc_w_fcnPtr = &emptyFcn;
+	calcFluxes = &calcFluxes_upwind_MDL3_test;
+	forwardEuler();
+}
+
+void test_upwind_MDL3() {
+	try {
+		timeSteps_upwind_MDL3_test();
+	} catch (const char* msg) {
+		cerr << msg << endl;
+		return;
+	}
+}
+
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	timeSteps();
+	// timeSteps();
+	test_upwind_MDL3();
 	peformAnalysis();
-	writeExactSolnToFile();
+	// print_r_uInterp_upwind_toFile();
+	//writeExactSolnToFile();
 	// testExactSolnInMDL1();
+	//printMeshToFile();
 }
 #endif /* TESTING_H_ */

@@ -293,15 +293,177 @@ void setPar_MDL2() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Set All Parameters
+ * Test Case 3: Simple Solutions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+// This test is made for the Godunov method. The u and w are fixed.
+
+/* ----- ----- ----- ----- ----- -----
+ * Coefficients
+ * ----- ----- ----- ----- ----- ----- */
+
+// Coefficients used in the model
+double pBVal_MDL3;
+double c1_exT_coef_MDL3, c2_exT_coef_MDL3, c3_exT_coef_MDL3;
+double c2_exu_coef_MDL3, c1_exu_coef_MDL3;
+double c2_exw_coef_MDL3, c1_exw_coef_MDL3;
+
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// pB function
+double pB_fcn_MDL3(double x) {
+	return pBVal_MDL3;
+}
+
+// Derivative of pB function
+double pBxDer_fcn_MDL3(double x) {
+	return 0;
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Manufactured solutions / IC
+ * ----- ----- ----- ----- ----- ----- */
+
+// Exact T function
+double exact_T_fcn_MDL3(double x, double p, double t) {
+	return sin(c1_exT_coef_MDL3 * x) * sin(c2_exT_coef_MDL3 * p) * cos(c3_exT_coef_MDL3 * t);
+}
+
+// The x-derivative of exact T function
+double exact_T_xDer_fcn_MDL3(double x, double p, double t) {
+	return c1_exT_coef_MDL3 * cos(c1_exT_coef_MDL3 * x) * sin(c2_exT_coef_MDL3 * p)
+			* cos(c3_exT_coef_MDL3 * t);
+}
+
+// The p-derivative of exact T function
+double exact_T_pDer_fcn_MDL3(double x, double p, double t) {
+	return c2_exT_coef_MDL3 * sin(c1_exT_coef_MDL3 * x) * cos(c2_exT_coef_MDL3 * p)
+			* cos(c3_exT_coef_MDL3 * t);
+}
+
+// The t-derivative of exact T function
+double exact_T_tDer_fcn_MDL3(double x, double p, double t) {
+	return -c3_exT_coef_MDL3 * sin(c1_exT_coef_MDL3 * x) * sin(c2_exT_coef_MDL3 * p)
+			* sin(c3_exT_coef_MDL3 * t);
+}
+
+// Exact q function: same with the exact T function
+double exact_q_fcn_MDL3(double x, double p, double t) {
+	return exact_T_fcn_MDL3(x, p, t);
+}
+
+// The x-derivative of exact q function
+double exact_q_xDer_fcn_MDL3(double x, double p, double t) {
+	return exact_T_xDer_fcn_MDL3(x, p, t);
+}
+
+// The p-derivative of exact q function
+double exact_q_pDer_fcn_MDL3(double x, double p, double t) {
+	return exact_T_pDer_fcn_MDL3(x, p, t);
+}
+
+// The t-derivative of exact q function
+double exact_q_tDer_fcn_MDL3(double x, double p, double t) {
+	return exact_T_tDer_fcn_MDL3(x, p, t);
+}
+
+// Exact u function
+double exact_u_fcn_MDL3(double x, double p, double t) {
+	return 7.5 + cos(c1_exu_coef_MDL3 * x) * cos(c2_exu_coef_MDL3 * p) ;
+}
+
+// The x-derivative of exact u function
+double exact_u_xDer_fcn_MDL3(double x, double p, double t) {
+	return -c1_exu_coef_MDL3 * sin(c1_exu_coef_MDL3 * x) * cos(c2_exu_coef_MDL3 * p) ;
+}
+
+// Exact w function
+double exact_w_fcn_MDL3(double x, double p, double t) {
+	return cos(c1_exw_coef_MDL3 * x) * sin(c2_exw_coef_MDL3 * p) ;
+}
+
+// The p derivative exact w function
+double exact_w_pDer_fcn_MDL3(double x, double p, double t) {
+	return c2_exw_coef_MDL3 * cos(c1_exw_coef_MDL3 * x) * cos(c2_exw_coef_MDL3 * p);
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Source functions
+ * ----- ----- ----- ----- ----- ----- */
+
+double source_T_fcn_MDL3(double T, double q, double u, double x, double p, double t) {
+	return exact_T_tDer_fcn_MDL3(x, p, t)
+			+ T * (exact_u_xDer_fcn_MDL3(x, p, t) + exact_w_pDer_fcn_MDL3(x, p, t))
+			+ exact_u_fcn_MDL3(x, p, t) * exact_T_xDer_fcn_MDL3(x, p, t)
+			+ exact_w_fcn_MDL3(x, p, t) * exact_T_pDer_fcn_MDL3(x, p, t);
+}
+
+double source_q_fcn_MDL3(double T, double q, double u, double x, double p, double t) {
+	return exact_q_tDer_fcn_MDL3(x, p, t)
+			+ q * (exact_u_xDer_fcn_MDL3(x, p, t) + exact_w_pDer_fcn_MDL3(x, p, t))
+			+ exact_u_fcn_MDL3(x, p, t) * exact_q_xDer_fcn_MDL3(x, p, t)
+			+ exact_w_fcn_MDL3(x, p, t) * exact_q_pDer_fcn_MDL3(x, p, t);
+}
+
+double source_u_fcn_MDL3(double T, double q, double u, double x, double p, double t) {
+	return 0;
+}
+
+void setPar_MDL3() {
+	// Parameters on the geometry of the domain
+	x0 = 0;
+	xf = 100;
+	pA = 0;
+	pBVal_MDL3 = 100;
+	pB_fcnPtr = &pB_fcn_MDL3;
+	pBxDer_fcnPtr = &pBxDer_fcn_MDL3;
+
+	int numPeriod = 2;
+	c1_exT_coef_MDL3 = numPeriod * TWOPI_CONST / (xf - x0);
+	c2_exT_coef_MDL3 = numPeriod * TWOPI_CONST / (pBVal_MDL3 - pA);
+	c3_exT_coef_MDL3 = 2;
+
+	c1_exu_coef_MDL3 = 2 * M_PI / xf;
+	c2_exu_coef_MDL3 = M_PI / pBVal_MDL3;
+
+	c1_exw_coef_MDL3 = 2 * M_PI / xf;
+	c2_exw_coef_MDL3 = 2 * M_PI / pBVal_MDL3;
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Set All Model Parameters
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+// Select model and set model parameters
+void selectModels() {
+	// Select model according to modelNo
+	if (modelNo == 1) {
+		setPar_MDL1();
+		return;
+	}
+	if (modelNo == 2) {
+		setPar_MDL2();
+		return;
+	}
+	if (modelNo == 3) {
+		setPar_MDL3();
+		return;
+	}
+
+	// Throw error message when the model number does correspond to any model
+	throw "Error: Model does NOT exist!";
+}
 
 // Wrapper function to set all parameters for the selected model
 void setModels() {
-	// Default: if (modelNo == 1)
-	setPar_MDL1();
-	if (modelNo == 2)
-		setPar_MDL2();
+	try {
+		selectModels();
+	} catch (const char* msg) {
+		cerr << msg << endl;
+		return;
+	}
 }
 
 #endif /* MODELS_H_ */
