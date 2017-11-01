@@ -226,28 +226,6 @@ void testExactSolnInMDL1() {
 	testExactSolnInMDL1_helper(x, p, t);
 }
 
-void writeExactSolnToFile() {
-	// Write final numerical solution to files
-	FILE *exact_T = fopen("Results/T_exact.txt", "wb");
-	FILE *exact_q = fopen("Results/q_exact.txt", "wb");
-	FILE *exact_u = fopen("Results/u_exact.txt", "wb");
-	FILE *exact_w = fopen("Results/w_exact.txt", "wb");
-	double t = finalTime;
-	for (int i = 0; i < numCellsX; ++i) {
-		double x = getCellCenterX(i);
-		for (int j = 0; j < numCellsP; ++j) {
-			double p = getCellCenterP(i, j);
-			fprintf(exact_T, "%f ", exact_T_fcn_MDL1(x, p, t));
-			fprintf(exact_q, "%f ", exact_q_fcn_MDL1(x, p, t));
-			fprintf(exact_u, "%f ", exact_u_fcn_MDL1(x, p, t));
-			fprintf(exact_w, "%f ", exact_w_fcn_MDL1(x, p, t));
-		}
-	}
-	fclose(exact_T); fclose(exact_q); fclose(exact_u); fclose(exact_w);
-}
-
-
-
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Tests: Upwind Method
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -339,7 +317,7 @@ void timeSteps_upwind_reduced_MDL3_test() {
 
 void test_upwind_MDL3() {
 	try {
-		// timeSteps_upwind_reduced_MDL3_test();
+		//timeSteps_upwind_reduced_MDL3_test();
 		timeSteps_upwind_MDL3_test();
 	} catch (const char* msg) {
 		cerr << msg << endl;
@@ -354,7 +332,7 @@ void test_upwind_MDL3() {
 
 void testing() {
 	timeSteps();
-	// test_upwind_MDL3();
+	//test_upwind_MDL3();
 	peformAnalysis();
 	// print_r_uInterp_upwind_toFile();
 	//writeExactSolnToFile();

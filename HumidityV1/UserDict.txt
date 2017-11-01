@@ -15,3 +15,5 @@ aritcle
 dx
 quadrilateral
 euler
+jia
+oct

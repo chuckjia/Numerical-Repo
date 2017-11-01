@@ -1,11 +1,23 @@
+% Graph_Mesh.m - Plot the mesh grid and cell centers
 % 
-% Plot The Mesh And Cell Centers
+% This script plots the mesh grid and cell centers from the humidity
+% calculations.
 %
+% Author: Chuck Jia
+% Created on: Oct 20, 2017
 
 clear; clc
 
-% Control plotting cell centers
+% ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
+% Plot Settings
+% ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
+
+% Control whether to plot cell centers
 plotCenter = true;
+
+% ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
+% Plot The Mesh And Cell Centers
+% ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
 % Read data from file
 getPar_sct;  % Read and calculate parameters

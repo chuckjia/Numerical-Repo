@@ -24,9 +24,9 @@ int fluxMethod = 0;  // 0: Godunov
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 100;  // Number of space divisions in both x and p directions
-int numTimeSteps = 100;  // Number of time steps
-double Dt = 1e-2;  // Size of one time step
+const int numDivisions = 250;  // Number of space divisions in both x and p directions
+int numTimeSteps = 1000;  // Number of time steps
+double Dt = 1e-7;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

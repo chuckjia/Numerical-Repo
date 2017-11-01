@@ -110,7 +110,7 @@ double relativeL2Err_helper(double num, double denom) {
 		return sqrt(num / denom);
 	else if (num < GRTD_PREC_CONST)
 		return 0;
-	return -99;
+	return -99999e10;
 }
 
 // Print the L2 relative and absolute errors
@@ -136,8 +136,8 @@ void showL2Errors(double t) {
 			denom_w += vol * pow(exactVal_w, 2);
 		}
 	}
-	// double absL2Err_T = sqrt(num_T), absL2Err_q = sqrt(num_q),
-	// absL2Err_u = sqrt(num_u), absL2Err_w(num_w);
+	double absL2Err_T = sqrt(num_T), absL2Err_q = sqrt(num_q),
+			absL2Err_u = sqrt(num_u), absL2Err_w(num_w);
 	double relativeL2Err_T = relativeL2Err_helper(num_T, denom_T),
 			relativeL2Err_q = relativeL2Err_helper(num_q, denom_q),
 			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
@@ -147,8 +147,8 @@ void showL2Errors(double t) {
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
 	printf("  - L2 discrete norm for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
 			sqrt(denom_T), sqrt(denom_q), sqrt(denom_u), sqrt(denom_w));
-	// printf("\n  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
-	// absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
+	printf("  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
 }
 
 void showL2Errors() {
@@ -205,6 +205,26 @@ void writeResToFile() {
 	fclose(err_T); fclose(err_q); fclose(err_u); fclose(err_w);
 }
 
+void writeExactSolnToFile() {
+	// Write final numerical solution to files
+	FILE *exact_T = fopen("Results/T_exact.txt", "wb");
+	FILE *exact_q = fopen("Results/q_exact.txt", "wb");
+	FILE *exact_u = fopen("Results/u_exact.txt", "wb");
+	FILE *exact_w = fopen("Results/w_exact.txt", "wb");
+	double t = finalTime;
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < numCellsP; ++j) {
+			double p = getCellCenterP(i, j);
+			fprintf(exact_T, "%f ", (*IC_T_fcnPtr)(x, p, t));
+			fprintf(exact_q, "%f ", (*IC_q_fcnPtr)(x, p, t));
+			fprintf(exact_u, "%f ", (*IC_u_fcnPtr)(x, p, t));
+			fprintf(exact_w, "%f ", (*IC_w_fcnPtr)(x, p, t));
+		}
+	}
+	fclose(exact_T); fclose(exact_q); fclose(exact_u); fclose(exact_w);
+}
+
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in plotting the solution and the error
 void writeResToFileForMovie_T(int tt) {
@@ -234,6 +254,7 @@ void peformAnalysis() {
 	writeParToFile();
 	printMeshToFile();
 	writeResToFile();
+	writeExactSolnToFile();
 
 	printf("\n- Analysis complete. Time used = %1.2fs.\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);

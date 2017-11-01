@@ -1,13 +1,16 @@
-% ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-% Read Mesh: Cell Centers
-% ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
-
-% x-coordinates and p-coordinates for the cell centers
-
+% getCellCenters_sct.m - Read cell centers from humidity output files 
+% 
+% This script reads cell center coordinates from humidity output files and 
+% stores them in vectors cellCentersX and cellCentersP. Both vectors are 
+% reshaped in 2D and with dimension [numCellsP, numCellX].
+% 
+% Note: because of the reshape() function, the two vectors are in 
+% column-major order.
+%
 % To run this file, getPar_sct is required to be executed first
-
-% Note that reshape() method works in column-major order. Thus the shape is 
-% [numCellsP, numCellsX], the transpose from the matrix in c
+%
+% Author: Chuck Jia
+% Created on: Oct 20, 2017
 
 matShape = [numCellsP, numCellsX];
 folder = "Results/";
