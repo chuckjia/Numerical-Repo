@@ -13,7 +13,7 @@ clear; clc
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
 graphNumerSoln = [1];
-graphErr = [];
+graphErr = [1];
 graphExactSoln = [1];
 plotBoundary = false;
 

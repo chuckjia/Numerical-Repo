@@ -19,14 +19,15 @@ using namespace std;
 
 int modelNo = 1;  // Model number
 int fluxMethod = 0;  // 0: Godunov
+int timeMethod = 2; // 1: Forward Euler, 2: Runge-Kutta 2, 4: Runge-Kutta 4
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 250;  // Number of space divisions in both x and p directions
-int numTimeSteps = 1000;  // Number of time steps
-double Dt = 1e-7;  // Size of one time step
+const int numDivisions = 400;  // Number of space divisions in both x and p directions
+int numTimeSteps = 100;  // Number of time steps
+double Dt = 1e-2;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
