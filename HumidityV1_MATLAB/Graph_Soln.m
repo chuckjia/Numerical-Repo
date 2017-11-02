@@ -24,15 +24,7 @@ plotBoundary = false;
 getPar_sct;  % Read and calculate parameters
 getCellCenters_sct;  % Read cell centers
 % File list and title settings
-fileList = ["T_soln", "q_soln", "u_soln", "w_soln", ...
-    "T_err", "q_err", "u_err", "w_err",...
-    "T_exact", "q_exact", "u_exact", "w_exact" ];
-graphTitles = [
-    "Numerical Solution: T", "Numerical Solution: q", ...
-    "Numerical Solution: u", "Numerical Solution: w", ...
-    "Error: T", "Error: q", "Error: u", "Error: w", ...
-    "Exact Solution: T", "Exact Solution: q", ... 
-    "Exact Solution: u", "Exact Solution: w"];
+graphLists_sct;
 % List of graphs to be plotted
 graphList = [graphNumerSoln, graphErr + 4, graphExactSoln + 8];
 folder = "Results/"; 
@@ -42,6 +34,8 @@ if (~plotBoundary)
     cellCentersX = rmBDVal_fcn(cellCentersX);
     cellCentersP = rmBDVal_fcn(cellCentersP);
 end
+titleLine2 = "Mesh Size: " + int2str(Nx) + "x" +  int2str(Np) + ", " + ... 
+    "Dt = " + num2str(Dt) + "s";
 for ff = graphList
     % Read numerical solutions/errors from file
     res = reshape(getVecFromFile_fcn(folder, fileList(ff)), matShape);
@@ -51,6 +45,9 @@ for ff = graphList
     % Plot the solution and error
     figure; surf(cellCentersX, cellCentersP, res);
     % Add titles and labels
-    title({graphTitles(ff),""});
+    
+    title({graphTitleList(ff), titleLine2, ""});
     xlabel('x coordinates'); ylabel('p coordinates');
 end
+
+clear titleLine2 matShape fileList graphTitleList graphList

@@ -233,7 +233,7 @@ void testExactSolnInMDL1() {
 void print_r_uInterp_upwind_toFile() {
 	FILE *f = fopen("Results/r_uInterp_upwind.txt", "wb");
 	for (int i = 0; i <= Nx; ++i)
-		fprintf(f, "%f ", r_uInterp_cache[i]);
+		fprintf(f, "%1.20e ", r_uInterp_cache[i]);
 	fclose(f);
 }
 

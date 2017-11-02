@@ -118,20 +118,19 @@ double cellCenterX[numCellsX], cellCenterP[numCellsX][numCellsP];
 
 // Calculate cell barycenters. Require cells to be trapezoids
 void calcBaryCenters() {
-	double oneThird = 1. / 3;
 	double h = Dx / 3.;  // h = (x2_Outer - x1_Outer) / 3
 	for (int i = 0; i < numCellsX; ++i) {
 		double x1_Outer = getCellLeftX(i), x2_Outer = getCellRightX(i);
-		double x1_Inner = (2 * x1_Outer + x2_Outer) * oneThird;
-		double a = getCellRightDp(i) * oneThird,  // a = (p3_Outer - p2_Outer) / 3
-				b = getCellLeftDp(i) * oneThird,  // b = (p4_Outer - p1_Outer) / 3
+		double x1_Inner = (2 * x1_Outer + x2_Outer) * ONE_THIRD_CONST;
+		double a = getCellRightDp(i) * ONE_THIRD_CONST,  // a = (p3_Outer - p2_Outer) / 3
+				b = getCellLeftDp(i) * ONE_THIRD_CONST,  // b = (p4_Outer - p1_Outer) / 3
 				inv_ab_sum = 1. / (a + b);
 		cellCenterX[i] = x1_Inner + h * a * inv_ab_sum;
 		for (int j = 0; j < numCellsP; ++j) {
 			double p1_Outer = getCellBottLeftP(i, j), p2_Outer = getCellBottRightP(i, j),
 					p3_Outer = getCellTopRightP(i, j), p4_Outer = getCellTopLeftP(i, j);
-			double p1_Inner = (p1_Outer + p2_Outer + p4_Outer) * oneThird;
-			double bLeft = (p4_Outer - p3_Outer) * oneThird;
+			double p1_Inner = (p1_Outer + p2_Outer + p4_Outer) * ONE_THIRD_CONST;
+			double bLeft = (p4_Outer - p3_Outer) * ONE_THIRD_CONST;
 			cellCenterP[i][j] = p1_Inner + (b - bLeft) * a * inv_ab_sum;
 		}
 	}

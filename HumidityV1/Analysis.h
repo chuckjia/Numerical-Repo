@@ -158,7 +158,7 @@ void showL2Errors() {
 
 void writeParToFile() {
 	FILE *f = fopen("Results/par.txt", "wb");
-	fprintf(f, "%1.15f %1.15f %1.15f %1.15f %1.15f %d %d %1.15f %d",
+	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d",
 			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps);
 	fclose(f);
 }
@@ -185,19 +185,19 @@ void writeResToFile() {
 
 			double numer_T = T_sl[i][j], numer_q = q_sl[i][j],
 					numer_u = u_sl[i][j], numer_w = w_sl[i][j];
-			fprintf(res_T, "%f ", numer_T);
-			fprintf(res_q, "%f ", numer_q);
-			fprintf(res_u, "%f ", numer_u);
-			fprintf(res_w, "%f ", numer_w);
+			fprintf(res_T, "%1.20e ", numer_T);
+			fprintf(res_q, "%1.20e ", numer_q);
+			fprintf(res_u, "%1.20e ", numer_u);
+			fprintf(res_w, "%1.20e ", numer_w);
 
 			double exact_T = (*IC_T_fcnPtr)(x, p, finalTime),
 					exact_q = (*IC_q_fcnPtr)(x, p, finalTime),
 					exact_u = (*IC_u_fcnPtr)(x, p, finalTime),
 					exact_w = (*IC_w_fcnPtr)(x, p, finalTime);
-			fprintf(err_T, "%f ", numer_T - exact_T);
-			fprintf(err_q, "%f ", numer_q - exact_q);
-			fprintf(err_u, "%f ", numer_u - exact_u);
-			fprintf(err_w, "%f ", numer_w - exact_w);
+			fprintf(err_T, "%1.20e ", numer_T - exact_T);
+			fprintf(err_q, "%1.20e ", numer_q - exact_q);
+			fprintf(err_u, "%1.20e ", numer_u - exact_u);
+			fprintf(err_w, "%1.20e ", numer_w - exact_w);
 		}
 	}
 
@@ -216,10 +216,10 @@ void writeExactSolnToFile() {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellsP; ++j) {
 			double p = getCellCenterP(i, j);
-			fprintf(exact_T, "%f ", (*IC_T_fcnPtr)(x, p, t));
-			fprintf(exact_q, "%f ", (*IC_q_fcnPtr)(x, p, t));
-			fprintf(exact_u, "%f ", (*IC_u_fcnPtr)(x, p, t));
-			fprintf(exact_w, "%f ", (*IC_w_fcnPtr)(x, p, t));
+			fprintf(exact_T, "%1.20e ", (*IC_T_fcnPtr)(x, p, t));
+			fprintf(exact_q, "%1.20e ", (*IC_q_fcnPtr)(x, p, t));
+			fprintf(exact_u, "%1.20e ", (*IC_u_fcnPtr)(x, p, t));
+			fprintf(exact_w, "%1.20e ", (*IC_w_fcnPtr)(x, p, t));
 		}
 	}
 	fclose(exact_T); fclose(exact_q); fclose(exact_u); fclose(exact_w);
@@ -233,17 +233,20 @@ void writeResToFileForMovie_T(int tt) {
 	FILE *res = fopen(filename, "wb");
 	sprintf(filename, "MovieFrames/T_err_%d.txt", tt);
 	FILE *err = fopen(filename, "wb");
+	sprintf(filename, "MovieFrames/T_exact_%d.txt", tt);
+	FILE *exact = fopen(filename, "wb");
 	double t = tt * Dt;
 	for (int i = 0; i < numCellsX; ++i) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellsP; ++j) {
 			double p = getCellCenterP(i, j);
 			double numerVal = T_sl[i][j], exactVal = (*IC_T_fcnPtr)(x, p, t);
-			fprintf(res, "%f ", numerVal);
-			fprintf(err, "%f ", numerVal - exactVal);
+			//fprintf(res, "%1.20e ", numerVal);
+			fprintf(err, "%1.20e ", numerVal - exactVal);
+			//fprintf(exact, "%1.20e ", exactVal);
 		}
 	}
-	fclose(res); fclose(err);
+	fclose(res); fclose(err); fclose(exact);
 }
 
 void peformAnalysis() {
@@ -254,10 +257,13 @@ void peformAnalysis() {
 	writeParToFile();
 	printMeshToFile();
 	writeResToFile();
-	writeExactSolnToFile();
 
 	printf("\n- Analysis complete. Time used = %1.2fs.\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
+}
+
+void setAnalysis() {
+	//
 }
 
 #endif /* ANALYSIS_H_ */
