@@ -9,6 +9,7 @@
 
 void setAll() {
 	printTitle();
+	setConstants();
 	setModels();
 	setMesh();
 	setConditions();

@@ -30,11 +30,105 @@ double Rv_CONST = 461.5;
 double Cp_CONST = 1004.;
 double g_CONST = 9.8, gInv_CONST = 1. / 9.8;
 double T0_CONST = 300.;
-double p0_CONST = 1000.;
+double p0_CONST = 1000., p0Inv_CONST = 1 / 1000.;
 double DeltaT_CONST = 50.;
 
 double halfDt = 0.5 * Dt;
 double oneSixthDt = Dt / 6.;
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Model 0: Original Model
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+/* ----- ----- ----- ----- ----- -----
+ * Coefficients
+ * ----- ----- ----- ----- ----- ----- */
+
+// Coefficients used in the model
+double c1_pB_coef_MDL0;  // 1 / 6000
+double c1_pBxDer_coef_MDL0;  // 250 * 2 / 6000
+double c1_qs_coef_MDL0;  // 0.622 * 6.112
+double numPeriod_initU_coef_MDL0, // n in (4.10)
+cp_initU_coef_MDL0, cx_initU_coef_MDL0; // Coefficients for p and x in (4.10), respectively
+
+void setFcnCoef() {
+	c1_pB_coef_MDL0 = 1 / 6000.;
+	c1_pBxDer_coef_MDL0 = 1 / 12.;
+	c1_qs_coef_MDL0 = 0.622 * 6.112;
+
+	numPeriod_initU_coef_MDL0 = 1.5;
+	cp_initU_coef_MDL0 = M_PI * p0Inv_CONST;
+	cx_initU_coef_MDL0 = 2 * numPeriod_initU_coef_MDL0 * M_PI / xf;
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// pB function
+double pB_fcn_MDL0(double x) {
+	return 1000. - 250. * exp(-pow((x - 37500.) * c1_pB_coef_MDL0, 2));
+}
+
+// The derivative of pB function
+double pB_xDer_fcn_MDL0(double x) {
+	double tmp = (x - 37500.) * c1_pB_coef_MDL0;
+	return c1_pBxDer_coef_MDL0 * tmp * exp(-tmp * tmp);
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Initial Conditions
+ * ----- ----- ----- ----- ----- ----- */
+
+// Initial T function
+double init_T_fcn_MDL0(double x, double p, double t) {
+	return T0_CONST - (1 - p * p0Inv_CONST) * DeltaT_CONST;
+}
+
+double qs_fcn_MDL0(double T, double p) {
+	return c1_qs_coef_MDL0 / p * exp(17.67 * (T - 273.15) / (T - 29.65));
+}
+
+// Initial q function
+double init_q_fcn_MDL0(double x, double p, double t) {
+	double T = init_T_fcn_MDL0(x, p, 0);
+	return qs_fcn_MDL0(T, p) - 0.0052;
+}
+
+double init_u_fcn_MDL0(double x, double p, double t) {
+	return 7.5 + 2 * cos(cp_initU_coef_MDL0 * p) * cos(cx_initU_coef_MDL0 * x);
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Source solutions
+ * ----- ----- ----- ----- ----- ----- */
+
+// Source function for the T equation
+double source_T_fcn_MDL0(double T, double q, double u, double x, double p, double t) {
+	return 0;
+}
+
+// Source function for the q equation
+double source_q_fcn_MDL0(double T, double q, double u, double x, double p, double t) {
+	return 0;
+}
+
+// Source function for the u equation
+double source_u_fcn_MDL0(double T, double q, double u, double x, double p, double t) {
+	return 0;
+}
+
+// Set all parameters in model 1
+void setPar_MDL0() {
+	// Parameters on the domain geometry
+	x0 = 0;
+	xf = 50000;
+	pA = 200;
+	pB_fcnPtr = &pB_fcn_MDL0;
+	pBxDer_fcnPtr = &pB_xDer_fcn_MDL0;
+	// Function coefficients
+	setFcnCoef();
+}
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Test Case 1: Test Case from the Section 4.1
@@ -46,11 +140,30 @@ double oneSixthDt = Dt / 6.;
 
 // Coefficients used in the model
 double xfCubed_coef_MDL1, xf6thPow_coef_MDL1;
+double c1_pB_coef_MDL1;  // 1 / 3000
 double c1_pBxDer_coef_MDL1;
 double pBx0_coef_MDL1;  // pB(x0)
 double c1_exT_coef_MDL1, c2_exT_coef_MDL1, c3_exT_coef_MDL1, c4_exT_coef_MDL1;
 double c1_exu_coef_MDL1, c1_exu_pDer_coef_MDL1;
 double c1_exw_coef_MDL1;
+
+void setFcnCoef_MDL1() {
+	// Function coefficients
+	xfCubed_coef_MDL1 = pow(xf, 3);
+	xf6thPow_coef_MDL1 = pow(xf, 6);
+	c1_pB_coef_MDL1 = 1. / 3000.;
+	c1_pBxDer_coef_MDL1 = 4. / 30.;
+	pBx0_coef_MDL1 = (*pB_fcnPtr)(x0);
+
+	c1_exT_coef_MDL1 = -1. / (g_CONST * xfCubed_coef_MDL1);
+	c2_exT_coef_MDL1 = 3 * g_CONST / (450 * 450 * 450 * R_CONST);
+	c3_exT_coef_MDL1 = DeltaT_CONST / p0_CONST;
+	c4_exT_coef_MDL1 = DeltaT_CONST - T0_CONST;
+
+	c1_exu_coef_MDL1 = -3e-12 / xf6thPow_coef_MDL1;
+	c1_exu_pDer_coef_MDL1 = 2 * c1_exu_coef_MDL1;
+	c1_exw_coef_MDL1 = 3e-12 / xf6thPow_coef_MDL1;
+}
 
 /* ----- ----- ----- ----- ----- -----
  * Domain geometry
@@ -58,12 +171,12 @@ double c1_exw_coef_MDL1;
 
 // pB function
 double pB_fcn_MDL1(double x) {
-	return 1000 - 200 * exp(-pow((x - 25000) / 3000, 2));
+	return 1000. - 200. * exp(-pow((x - 25000.) * c1_pB_coef_MDL1, 2));
 }
 
 // The derivative of pB function
 double pB_xDer_fcn_MDL1(double x) {
-	double tmp = (x - 25000) / 3000;
+	double tmp = (x - 25000) * c1_pB_coef_MDL1;
 	return c1_pBxDer_coef_MDL1 * tmp * exp(-tmp * tmp);
 }
 
@@ -204,26 +317,13 @@ double source_u_fcn_MDL1(double T, double q, double u, double x, double p, doubl
 // Set all parameters in model 1
 void setPar_MDL1() {
 	// Parameters on the domain geometry
-	x0 = 0;
-	xf = 50000;
-	pA = 200;
+	x0 = 0.;
+	xf = 50000.;
+	pA = 200.;
 	pB_fcnPtr = &pB_fcn_MDL1;
 	pBxDer_fcnPtr = &pB_xDer_fcn_MDL1;
-
-	// Function coefficients
-	xfCubed_coef_MDL1 = pow(xf, 3);
-	xf6thPow_coef_MDL1 = pow(xf, 6);
-	c1_pBxDer_coef_MDL1 = 4. / 30.;
-	pBx0_coef_MDL1 = (*pB_fcnPtr)(x0);
-
-	c1_exT_coef_MDL1 = -1 / (g_CONST * xfCubed_coef_MDL1);
-	c2_exT_coef_MDL1 = 3 * g_CONST / (450 * 450 * 450 * R_CONST);
-	c3_exT_coef_MDL1 = DeltaT_CONST / p0_CONST;
-	c4_exT_coef_MDL1 = DeltaT_CONST - T0_CONST;
-
-	c1_exu_coef_MDL1 = -3e-12 / xf6thPow_coef_MDL1;
-	c1_exu_pDer_coef_MDL1 = 2 * c1_exu_coef_MDL1;
-	c1_exw_coef_MDL1 = 3e-12 / xf6thPow_coef_MDL1;
+	// Set function coefficients
+	setFcnCoef_MDL1();
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -311,8 +411,21 @@ void setPar_MDL2() {
 // Coefficients used in the model
 double pBVal_MDL3;
 double c1_exT_coef_MDL3, c2_exT_coef_MDL3, c3_exT_coef_MDL3;
-double c2_exu_coef_MDL3, c1_exu_coef_MDL3;
-double c2_exw_coef_MDL3, c1_exw_coef_MDL3;
+double c1_exu_coef_MDL3, c2_exu_coef_MDL3;
+double c1_exw_coef_MDL3, c2_exw_coef_MDL3;
+
+void setFcnCoef_MDL3() {
+	int numPeriod = 2;
+	c1_exT_coef_MDL3 = numPeriod * TWO_PI_CONST / (xf - x0);
+	c2_exT_coef_MDL3 = numPeriod * TWO_PI_CONST / (pBVal_MDL3 - pA);
+	c3_exT_coef_MDL3 = 2;
+
+	c1_exu_coef_MDL3 = 2 * M_PI / xf;
+	c2_exu_coef_MDL3 = M_PI / pBVal_MDL3;
+
+	c1_exw_coef_MDL3 = 2 * M_PI / xf;
+	c2_exw_coef_MDL3 = 2 * M_PI / pBVal_MDL3;
+}
 
 /* ----- ----- ----- ----- ----- -----
  * Domain geometry
@@ -425,17 +538,8 @@ void setPar_MDL3() {
 	pBVal_MDL3 = 100;
 	pB_fcnPtr = &pB_fcn_MDL3;
 	pBxDer_fcnPtr = &pBxDer_fcn_MDL3;
-
-	int numPeriod = 2;
-	c1_exT_coef_MDL3 = numPeriod * TWO_PI_CONST / (xf - x0);
-	c2_exT_coef_MDL3 = numPeriod * TWO_PI_CONST / (pBVal_MDL3 - pA);
-	c3_exT_coef_MDL3 = 2;
-
-	c1_exu_coef_MDL3 = 2 * M_PI / xf;
-	c2_exu_coef_MDL3 = M_PI / pBVal_MDL3;
-
-	c1_exw_coef_MDL3 = 2 * M_PI / xf;
-	c2_exw_coef_MDL3 = 2 * M_PI / pBVal_MDL3;
+	// Set function coefficients
+	setFcnCoef_MDL3();
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -445,6 +549,10 @@ void setPar_MDL3() {
 // Select model and set model parameters
 void selectModels() {
 	// Select model according to modelNo
+	if (modelNo == 0) {
+		setPar_MDL0();
+		return;
+	}
 	if (modelNo == 1) {
 		setPar_MDL1();
 		return;

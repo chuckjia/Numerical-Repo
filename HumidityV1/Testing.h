@@ -325,6 +325,27 @@ void test_upwind_MDL3() {
 	}
 }
 
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Tests on pB_xDer in the Physical Model
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+// This test works with corresponding MATLAB script. To test, evaluate the function at the
+// sample points in both c++ and MATLAB, and compare manually.
+void test_pB_xDer_MDL0() {
+	try {
+		if (modelNo)
+			throw "Error: This test only works for Model 0!";
+	} catch (const char* msg) {
+		cerr << msg << endl;
+		return;
+	}
+
+	double arr[] = {1, 3e4, 3.5e4, 4e4, 4.5e4, 5e4, 6e4, 7e4};
+	int n = sizeof(arr) / sizeof(arr[0]);
+	for (int i = 0; i < n; ++i)
+		printf("arr[%d] = %1.2e, pB_x = %1.7e \n", i, arr[i], pB_xDer_fcn_MDL0(arr[i]));
+	printf("%f", c1_pBxDer_coef_MDL0);
+}
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
@@ -332,11 +353,6 @@ void test_upwind_MDL3() {
 
 void testing() {
 	timeSteps();
-	//test_upwind_MDL3();
 	peformAnalysis();
-	// print_r_uInterp_upwind_toFile();
-	//writeExactSolnToFile();
-	// testExactSolnInMDL1();
-	//printMeshToFile();
 }
 #endif /* TESTING_H_ */

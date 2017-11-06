@@ -23,15 +23,6 @@ double calcFluxes_OneCell(int i, int j,
 	return GG[i][j] - GG[i][j - 1] + FF[i][j] - FF[i - 1][j];
 }
 
-void setZero_k_rk() {
-	for (int i = 1; i <= numCellsX; ++i)
-		for (int j = 1; j <= numCellsP; ++j) {
-			k_rk_T[i][j] = 0;
-			k_rk_q[i][j] = 0;
-			k_rk_u[i][j] = 0;
-		}
-}
-
 void (*update_k_rk_fcnPtr)(double k_rk[numCellsX][numCellsP], int i, int j,
 		double rkCoef, double kVal);
 
@@ -175,6 +166,8 @@ void rk4() {
 
 	// The initial condition
 	enforceIC();
+	(*projU_fcnPtr)();
+	(*calc_w_fcnPtr)();
 
 	for (int tt = 0; tt < numTimeSteps; tt++) {
 		// Print messages on calculation progress
@@ -219,6 +212,7 @@ void rk4() {
 			}
 		postForwardEuler();
 
+		//aveSoln(tt + 1);
 		//showL2Errors(t);
 		//writeResToFileForMovie_T(tt + 1);
 	}

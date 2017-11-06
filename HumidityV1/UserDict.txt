@@ -19,3 +19,5 @@ jia
 oct
 runge
 kutta
+soln
+boudnary

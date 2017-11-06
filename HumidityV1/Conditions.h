@@ -35,7 +35,6 @@ void enforceIC() {
 			T_sl[i][j] = (*IC_T_fcnPtr)(x, p, 0);
 			q_sl[i][j] = (*IC_q_fcnPtr)(x, p, 0);
 			u_sl[i][j] = (*IC_u_fcnPtr)(x, p, 0);
-			w_sl[i][j] = (*IC_w_fcnPtr)(x, p, 0);
 		}
 }
 
@@ -57,14 +56,14 @@ void (*enforceBC_fcnPtr)();
 
 // Enforce Neumann BCs on the right boundary
 void enforceNeumann_rightBD(double sl[numCellsX][numCellsP]) {
-	for (int j = 1; j <= lastRealIndexP; ++j)
+	for (int j = 1; j <= Np; ++j)
 		sl[lastGhostIndexX][j] = sl[lastRealIndexX][j];
 }
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary values specified by a function,
 // defined by (*bdVal_fcnPtr)(p)
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double (*bdVal_fcnPtr)(double)) {
-	for (int j = 1; j <= lastRealIndexP; ++j) {
+	for (int j = 1; j <= Np; ++j) {
 		// This interpolation on p only works for pB() that are sufficiently flat on the left
 		// side of domain
 		double p = 0.5 * (getCellBottLeftP(1, j) + getCellTopLeftP(1, j));
@@ -74,20 +73,26 @@ void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double (*bdVal_fcn
 
 // Enforce Dirichlet BCs on the LEFT boundary: with constant boundary value, specified by bdVal
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double bdVal) {
-	for (int j = 1; j <= lastRealIndexP; ++j)
+	for (int j = 1; j <= Np; ++j)
 		sl[0][j] = 2 * bdVal - sl[1][j];
 }
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary value 0
 void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP]) {
-	for (int j = 1; j <= lastRealIndexP; ++j)
+	for (int j = 1; j <= Np; ++j)
 		sl[0][j] = - sl[1][j];
 }
 
 // Enforce Dirichlet BCs on the RIGHT boundary: with boundary value 0
 void enforceDirichlet_rightBD(double sl[numCellsX][numCellsP]) {
-	for (int j = 1; j <= lastRealIndexP; ++j)
+	for (int j = 1; j <= Np; ++j)
 		sl[lastGhostIndexX][j] = - sl[lastRealIndexX][j];
+}
+
+// Enforce Dirichlet BCs on the BOTTOM boundary: with boundary value 0
+void enforceDirichlet_bottBD(double sl[numCellsX][numCellsP]) {
+	for (int i = 1; i <= Nx; ++i)
+		sl[i][0] = - sl[i][1];
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -98,15 +103,29 @@ double leftBdVal_T_fcn_MDL1(double p) {
 	return exact_T_fcn_MDL1(0, p, 0);
 }
 
+void enforceBC_topBD_MDL1() {
+	for (int i = 1; i <= Nx; ++i) {
+		double x = getCellCenterX(i);
+		w_sl[i][lastGhostIndexP] = pB_xDer_fcn_MDL1(x)
+				* (u_sl[i][Np] + u_sl[i][lastGhostIndexP]) - w_sl[i][Np];
+	}
+}
+
 void enforceBC_MDL1() {
 	// Left boundary: Dirichlet BC
 	enforceDirichlet_leftBD(T_sl, leftBdVal_T_fcn_MDL1);
 	enforceDirichlet_leftBD(q_sl);
 	enforceDirichlet_leftBD(u_sl);
+	enforceDirichlet_leftBD(w_sl);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
 	enforceNeumann_rightBD(u_sl);
+	enforceNeumann_rightBD(w_sl);
+	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
+	enforceDirichlet_bottBD(w_sl);  // Maybe not used
+	// Top boundary: for u and w
+	enforceBC_topBD_MDL1();
 }
 
 /* ----- ----- ----- ----- ----- -----

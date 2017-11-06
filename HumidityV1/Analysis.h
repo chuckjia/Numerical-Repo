@@ -143,11 +143,11 @@ void showL2Errors(double t) {
 			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
 			relativeL2Err_w = relativeL2Err_helper(num_w, denom_w);
 
-	printf("\n  - L2 relative error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("\n  - L2 relative error for T, q, u, w = [%1.7e, %1.7e, %1.7e, %1.7e]\n",
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
-	printf("  - L2 discrete norm for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("  - L2 discrete norm for T, q, u, w = [%1.7e, %1.7e, %1.7e, %1.7e]\n",
 			sqrt(denom_T), sqrt(denom_q), sqrt(denom_u), sqrt(denom_w));
-	printf("  - L2 absolute error for T, q, u, w = [%1.4e, %1.4e, %1.4e, %1.4e]\n",
+	printf("  - L2 absolute error for T, q, u, w = [%1.7e, %1.7e, %1.7e, %1.7e]\n",
 			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
 }
 
@@ -227,7 +227,7 @@ void writeExactSolnToFile() {
 
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in plotting the solution and the error
-void writeResToFileForMovie_T(int tt) {
+void writeAllResToFileForMovie_T_test(int tt) {
 	char filename[20];
 	sprintf(filename, "MovieFrames/T_soln_%d.txt", tt);
 	FILE *res = fopen(filename, "wb");
@@ -235,15 +235,19 @@ void writeResToFileForMovie_T(int tt) {
 	FILE *err = fopen(filename, "wb");
 	sprintf(filename, "MovieFrames/T_exact_%d.txt", tt);
 	FILE *exact = fopen(filename, "wb");
+
 	double t = tt * Dt;
 	for (int i = 0; i < numCellsX; ++i) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellsP; ++j) {
 			double p = getCellCenterP(i, j);
-			double numerVal = T_sl[i][j], exactVal = (*IC_T_fcnPtr)(x, p, t);
-			//fprintf(res, "%1.20e ", numerVal);
+			double numerVal = T_sl[i][j];
+			fprintf(res, "%1.20e ", numerVal);
+
+			double exactVal = (*IC_T_fcnPtr)(x, p, t);
 			fprintf(err, "%1.20e ", numerVal - exactVal);
-			//fprintf(exact, "%1.20e ", exactVal);
+			fprintf(exact, "%1.20e ", exactVal);
+
 		}
 	}
 	fclose(res); fclose(err); fclose(exact);
@@ -254,12 +258,37 @@ void peformAnalysis() {
 
 	printSchemeDescription();
 	showL2Errors();
-	writeParToFile();
-	printMeshToFile();
-	writeResToFile();
-
+	if (printResToFile_opt) {
+		writeParToFile();
+		printMeshToFile();
+		writeResToFile();
+	}
 	printf("\n- Analysis complete. Time used = %1.2fs.\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
+}
+
+double sign_fcn(double x) {
+	if (x > 0)
+		return 1;
+	if (x < 0)
+		return -1;
+	return 0;
+}
+
+void aveSoln_oneTerm(double sl[numCellsX][numCellsP]) {
+	for (int i = 1; i <= Nx; ++i)
+		for (int j = 1; j <= Np; ++j) {
+			double uSignHalf = 0.5 * sign_fcn(u_sl[i][j]);
+			sl[i][j] = 0.5 * (sl[i][j] + (0.5 + uSignHalf) * sl[i - 1][j] + (0.5 - uSignHalf) * sl[i + 1][j]);
+		}
+}
+
+void aveSoln(int tt) {
+	if (tt % aveFreq)
+		return;
+	aveSoln_oneTerm(T_sl);
+	aveSoln_oneTerm(q_sl);
+	aveSoln_oneTerm(u_sl);
 }
 
 void setAnalysis() {
