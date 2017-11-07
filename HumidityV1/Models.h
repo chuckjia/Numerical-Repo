@@ -37,6 +37,18 @@ double halfDt = 0.5 * Dt;
 double oneSixthDt = Dt / 6.;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Math Functions
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+double sign_fcn(double x) {
+	if (x > 0)
+		return 1;
+	if (x < 0)
+		return -1;
+	return 0;
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Model 0: Original Model
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
@@ -51,7 +63,7 @@ double c1_qs_coef_MDL0;  // 0.622 * 6.112
 double numPeriod_initU_coef_MDL0, // n in (4.10)
 cp_initU_coef_MDL0, cx_initU_coef_MDL0; // Coefficients for p and x in (4.10), respectively
 
-void setFcnCoef() {
+void setFcnCoef_MDL0() {
 	c1_pB_coef_MDL0 = 1 / 6000.;
 	c1_pBxDer_coef_MDL0 = 1 / 12.;
 	c1_qs_coef_MDL0 = 0.622 * 6.112;
@@ -85,6 +97,7 @@ double init_T_fcn_MDL0(double x, double p, double t) {
 	return T0_CONST - (1 - p * p0Inv_CONST) * DeltaT_CONST;
 }
 
+// Function used in the initial condition for q
 double qs_fcn_MDL0(double T, double p) {
 	return c1_qs_coef_MDL0 / p * exp(17.67 * (T - 273.15) / (T - 29.65));
 }
@@ -104,17 +117,27 @@ double init_u_fcn_MDL0(double x, double p, double t) {
  * ----- ----- ----- ----- ----- ----- */
 
 // Source function for the T equation
-double source_T_fcn_MDL0(double T, double q, double u, double x, double p, double t) {
-	return 0;
+double source_T_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
+	double qsVal = qs_fcn_MDL0(T, p),
+			deltaVal = 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal)),
+			LVal = 2.5008e6 - 2.3e3 * (T - 275.),
+			FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
+			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+	return w / (p * Cp_CONST) * (R_CONST * T - deltaVal * LVal * FVal);
 }
 
 // Source function for the q equation
-double source_q_fcn_MDL0(double T, double q, double u, double x, double p, double t) {
-	return 0;
+double source_q_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
+	double qsVal = qs_fcn_MDL0(T, p),
+			deltaVal = 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal)),
+			LVal = 2.5008e6 - 2.3e3 * (T - 275.),
+			FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
+			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+	return deltaVal * FVal * w / p;
 }
 
 // Source function for the u equation
-double source_u_fcn_MDL0(double T, double q, double u, double x, double p, double t) {
+double source_u_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
 	return 0;
 }
 
@@ -127,7 +150,7 @@ void setPar_MDL0() {
 	pB_fcnPtr = &pB_fcn_MDL0;
 	pBxDer_fcnPtr = &pB_xDer_fcn_MDL0;
 	// Function coefficients
-	setFcnCoef();
+	setFcnCoef_MDL0();
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -296,19 +319,19 @@ double exact_w_pDer_fcn_MDL1(double x, double p, double t) {
  * ----- ----- ----- ----- ----- ----- */
 
 // Source function for the T equation
-double source_T_fcn_MDL1(double T, double q, double u, double x, double p, double t) {
+double source_T_fcn_MDL1(double T, double q, double u, double w, double x, double p, double t) {
 	return exact_T_tDer_fcn_MDL1(x, p, t)
 			+ exact_u_fcn_MDL1(x, p, t) * exact_T_xDer_fcn_MDL1(x, p, t)
 			+ exact_w_fcn_MDL1(x, p, t) * exact_T_pDer_fcn_MDL1(x, p, t);
 }
 
 // Source function for the q equation
-double source_q_fcn_MDL1(double T, double q, double u, double x, double p, double t) {
+double source_q_fcn_MDL1(double T, double q, double u, double w, double x, double p, double t) {
 	return 0;
 }
 
 // Source function for the u equation
-double source_u_fcn_MDL1(double T, double q, double u, double x, double p, double t) {
+double source_u_fcn_MDL1(double T, double q, double u, double w, double x, double p, double t) {
 	return exact_u_tDer_fcn_MDL1(x, p, t)
 			+ exact_u_fcn_MDL1(x, p, t) * exact_u_xDer_fcn_MDL1(x, p, t)
 			+ exact_w_fcn_MDL1(x, p, t) * exact_u_pDer_fcn_MDL1(x, p, t);
@@ -377,15 +400,15 @@ double exact_w_fcn_MDL2(double x, double p, double t) {
  * Source functions
  * ----- ----- ----- ----- ----- ----- */
 
-double source_T_fcn_MDL2(double T, double q, double u, double x, double p, double t) {
+double source_T_fcn_MDL2(double T, double q, double u, double w, double x, double p, double t) {
 	return 0;
 }
 
-double source_q_fcn_MDL2(double T, double q, double u, double x, double p, double t) {
+double source_q_fcn_MDL2(double T, double q, double u, double w, double x, double p, double t) {
 	return 0;
 }
 
-double source_u_fcn_MDL2(double T, double q, double u, double x, double p, double t) {
+double source_u_fcn_MDL2(double T, double q, double u, double w, double x, double p, double t) {
 	return 0;
 }
 
@@ -512,21 +535,21 @@ double exact_w_pDer_fcn_MDL3(double x, double p, double t) {
  * Source functions
  * ----- ----- ----- ----- ----- ----- */
 
-double source_T_fcn_MDL3(double T, double q, double u, double x, double p, double t) {
+double source_T_fcn_MDL3(double T, double q, double u, double w, double x, double p, double t) {
 	return exact_T_tDer_fcn_MDL3(x, p, t)
 			+ T * (exact_u_xDer_fcn_MDL3(x, p, t) + exact_w_pDer_fcn_MDL3(x, p, t))
 			+ exact_u_fcn_MDL3(x, p, t) * exact_T_xDer_fcn_MDL3(x, p, t)
 			+ exact_w_fcn_MDL3(x, p, t) * exact_T_pDer_fcn_MDL3(x, p, t);
 }
 
-double source_q_fcn_MDL3(double T, double q, double u, double x, double p, double t) {
+double source_q_fcn_MDL3(double T, double q, double u, double w, double x, double p, double t) {
 	return exact_q_tDer_fcn_MDL3(x, p, t)
 			+ q * (exact_u_xDer_fcn_MDL3(x, p, t) + exact_w_pDer_fcn_MDL3(x, p, t))
 			+ exact_u_fcn_MDL3(x, p, t) * exact_q_xDer_fcn_MDL3(x, p, t)
 			+ exact_w_fcn_MDL3(x, p, t) * exact_q_pDer_fcn_MDL3(x, p, t);
 }
 
-double source_u_fcn_MDL3(double T, double q, double u, double x, double p, double t) {
+double source_u_fcn_MDL3(double T, double q, double u, double w, double x, double p, double t) {
 	return 0;
 }
 
@@ -547,33 +570,30 @@ void setPar_MDL3() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Select model and set model parameters
-void selectModels() {
+void selectModel() {
 	// Select model according to modelNo
-	if (modelNo == 0) {
+	switch (modelNo) {
+	case 0:
 		setPar_MDL0();
 		return;
-	}
-	if (modelNo == 1) {
+	case 1:
 		setPar_MDL1();
 		return;
-	}
-	if (modelNo == 2) {
+	case 2:
 		setPar_MDL2();
 		return;
-	}
-	if (modelNo == 3) {
+	case 3:
 		setPar_MDL3();
 		return;
+	default: // Throw error message when the model number does correspond to any model
+		throw "Error: Model does NOT exist!";
 	}
-
-	// Throw error message when the model number does correspond to any model
-	throw "Error: Model does NOT exist!";
 }
 
 // Wrapper function to set all parameters for the selected model
 void setModels() {
 	try {
-		selectModels();
+		selectModel();
 	} catch (const char* msg) {
 		cerr << msg << endl;
 		return;

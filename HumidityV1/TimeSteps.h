@@ -49,24 +49,24 @@ void forwardEuler_singleStep(double t, double stepSize, double T_arr[numCellsX][
 	for (int i = 1; i <= Nx; ++i) {
 		double x = getCellCenterX(i), volInv = 1. / getCellVol(i);
 		for (int j = 1; j <= Np; ++j) {
-			double T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j],
+			double T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j], w = w_sl[i][j],
 					p = getCellCenterP(i, j);
 			double RHS;
 			// Updating T
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_T, FF_T) +
-					(*source_T_fcnPtr)(T, q, u, x, p, t);
+					(*source_T_fcnPtr)(T, q, u, w, x, p, t);
 			T_sl[i][j] = T_arr[i][j] + RHS * stepSize;
 			(*update_k_rk_fcnPtr)(k_rk_T, i, j, rkCoef, RHS);
 
 			// Updating q
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_q, FF_q) +
-					(*source_q_fcnPtr)(T, q, u, x, p, t);
+					(*source_q_fcnPtr)(T, q, u, w, x, p, t);
 			q_sl[i][j] = q_arr[i][j] + RHS * stepSize;
 			(*update_k_rk_fcnPtr)(k_rk_q, i, j, rkCoef, RHS);
 
 			// Updating u
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_u, FF_u) - phix_sl[i][j] +
-					(*source_u_fcnPtr)(T, q, u, x, p, t);
+					(*source_u_fcnPtr)(T, q, u, w, x, p, t);
 			u_sl[i][j] = u_arr[i][j] + RHS * stepSize;
 			(*update_k_rk_fcnPtr)(k_rk_u, i, j, rkCoef, RHS);
 		}
@@ -226,12 +226,17 @@ void rk4() {
 void timeSteps() {
 	clock_t start = clock();
 
-	if (timeMethod == 1)
+	switch (timeMethod) {
+	case 1:
 		forwardEuler();
-	else if (timeMethod == 2)
+		break;
+	case 2:
 		rk2();
-	else if (timeMethod == 4)
+		break;
+	case 4:
 		rk4();
+		break;
+	}
 
 	printf("\n- Calculation complete. Time used = %1.2fs.\n\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);

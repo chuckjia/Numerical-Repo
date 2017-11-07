@@ -38,6 +38,14 @@ bool printResToFile_opt = false;  // Choose whether to print numerical solution/
 int aveFreq = numTimeSteps + 10;  // The frequency of using the average method
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Set All Parameter in This File
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void setConstants() {
+	// Empty for now
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
@@ -47,11 +55,4 @@ void testmsg() {
 	printf("The program passed here.\n===== ===== ===== ===== =====\n");
 }
 
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Set All Parameter in This File
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-void setConstants() {
-	//
-}
 #endif /* CONSTANTS_H_ */

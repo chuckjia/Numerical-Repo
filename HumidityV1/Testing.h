@@ -114,13 +114,13 @@ void test_GaussElimProj() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testSourceFcns_helper(int numTestTimeSteps,
-		double (*source_fcnPtr)(double, double, double, double, double, double)) {
+		double (*source_fcnPtr)(double, double, double, double, double, double, double)) {
 	for (int tt = 0; tt < numTestTimeSteps; ++tt) {
 		for (int i = 0; i <= Nx; ++i) {
 			for (int j = 0; j < Np; ++j) {
-				double T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j];
+				double T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j], w = w_sl[i][j];
 				double x = getCellCenterX(i, j), p = getCellCenterP(i, j), t = tt * Dt;
-				printf("%1.2f ", (*source_T_fcnPtr)(T, q, u, x, p, t));
+				printf("%1.2f ", (*source_T_fcnPtr)(T, q, u, w, x, p, t));
 			}
 			printf("\n");
 		}

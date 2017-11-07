@@ -267,14 +267,6 @@ void peformAnalysis() {
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }
 
-double sign_fcn(double x) {
-	if (x > 0)
-		return 1;
-	if (x < 0)
-		return -1;
-	return 0;
-}
-
 void aveSoln_oneTerm(double sl[numCellsX][numCellsP]) {
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 1; j <= Np; ++j) {
