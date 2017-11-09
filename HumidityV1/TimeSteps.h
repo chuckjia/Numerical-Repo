@@ -219,6 +219,65 @@ void rk4() {
 	printf("\r  - Runge-Kutta 4 method complete\n");
 }
 
+double c1_coef_BDF2 = 4. / 3., c2_coef_BDF2 = 1 / 3., c3_coef_BDF2 = 2. / 3. * Dt;
+
+void bdf2_singleStep(double t) {
+	for (int i = 1; i <= Nx; ++i) {
+		double x = getCellCenterX(i), volInv = 1 / getCellVol(i);
+		for (int j = 1; j <= Np; ++j) {
+			double p = getCellCenterP(i, j), T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j];
+			double RHS;
+			RHS = c3_coef_BDF2 * (-volInv * calcFluxes_OneCell(i, j, GG_T, FF_T) +
+					(*source_T_fcnPtr)(0, 0, 0, 0, x, p, t));
+			T_sl[i][j] = RHS + c1_coef_BDF2 * T - c2_coef_BDF2 * T_sl_copy[i][j];
+			RHS = c3_coef_BDF2 * (-volInv * calcFluxes_OneCell(i, j, GG_q, FF_q) +
+					(*source_q_fcnPtr)(0, 0, 0, 0, x, p, t));
+			q_sl[i][j] = RHS + c1_coef_BDF2 * q - c2_coef_BDF2 * q_sl_copy[i][j];
+			RHS = c3_coef_BDF2 * (-volInv * calcFluxes_OneCell(i, j, GG_u, FF_u) +
+					(*source_u_fcnPtr)(0, 0, 0, 0, x, p, t));
+			u_sl[i][j] = RHS + c1_coef_BDF2 * u - c2_coef_BDF2 * u_sl_copy[i][j];
+			T_sl_copy[i][j] = T; q_sl_copy[i][j] = q; u_sl_copy[i][j] = u;
+		}
+	}
+}
+
+void bdf2() {
+	printf("\n- Running BDF2 method on time\n");
+	int prog = -1;
+
+	update_k_rk_fcnPtr = &update_k_rk_noUpdate;
+
+	// The initial condition
+	enforceIC();
+	(*projU_fcnPtr)();
+	(*calc_w_fcnPtr)();
+
+	// BDF2 Time Step 1
+	copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+	preForwardEuler();
+	forwardEuler_singleStep(Dt, Dt, T_sl, q_sl, u_sl, 0);
+	postForwardEuler();
+
+	// BDF2 All Later Time Steps
+	for (int tt = 2; tt < numTimeSteps; tt++) {
+		// Print messages on calculation progress
+		int progNew = tt * 100 / numTimeSteps;
+		if (progNew > prog) {
+			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
+		}
+
+		// Numerical calculation
+		double t = Dt * tt;
+
+		preForwardEuler();
+		bdf2_singleStep(t);
+		postForwardEuler();
+	}
+
+	printf("\r  - BDF2 method complete\n");
+
+}
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Wrapper For Time Method
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -236,10 +295,25 @@ void timeSteps() {
 	case 4:
 		rk4();
 		break;
+	case 22:
+		bdf2();
+		break;
+	default:
+		throw "Error: Incorrect time method number!";
+		return;
 	}
 
 	printf("\n- Calculation complete. Time used = %1.2fs.\n\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
+}
+
+void runTimeSteps() {
+	try {
+		timeSteps();
+	} catch (const char* msg) {
+		cerr << "\n" << msg << endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -247,14 +321,7 @@ void timeSteps() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setTimeSteps() {
-	try {
-		if (timeMethod == 1 || timeMethod == 2 || timeMethod == 4)
-			return;
-		throw "Error: Incorrect time method!";
-	} catch (const char* msg) {
-		cerr << msg << endl;
-		return;
-	}
+	// Empty
 }
 
 

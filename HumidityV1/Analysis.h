@@ -263,6 +263,8 @@ void peformAnalysis() {
 		printMeshToFile();
 		writeResToFile();
 	}
+	if (printExactSolnToFile_opt)
+		writeExactSolnToFile();
 	printf("\n- Analysis complete. Time used = %1.2fs.\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }

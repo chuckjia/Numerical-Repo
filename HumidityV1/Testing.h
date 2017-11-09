@@ -352,7 +352,7 @@ void test_pB_xDer_MDL0() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	timeSteps();
+	runTimeSteps();
 	peformAnalysis();
 }
 #endif /* TESTING_H_ */

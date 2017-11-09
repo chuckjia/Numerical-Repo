@@ -19,7 +19,10 @@ using namespace std;
 
 int modelNo = 1;  // Model number. 0 = original model; other number = test models
 int fluxMethod = 0;  // Select flux calculation method. 0 = Upwind
-int timeMethod = 4; // Select time method. 1 = Forward Euler, 2 = RK2, 4 = RK4
+
+// Select time method.
+// 1 = Forward Euler, 2 = RK2, 4 = RK4, 22 = BDF2
+int timeMethod = 4;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Scheme Specifications
@@ -34,8 +37,10 @@ double finalTime = numTimeSteps * Dt;  // Final time
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-bool printResToFile_opt = false;  // Choose whether to print numerical solution/error to file
+bool printResToFile_opt = true;  // Choose whether to print numerical solution/error to file
 int aveFreq = numTimeSteps + 10;  // The frequency of using the average method
+
+bool printExactSolnToFile_opt = false;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Parameter in This File

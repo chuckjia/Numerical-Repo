@@ -14,7 +14,7 @@ clear; clc
 
 graphNumerSoln = [1];
 graphErr = [1];
-graphExactSoln = [1];
+graphExactSoln = [];
 plotBoundary = false;
 
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
@@ -36,8 +36,10 @@ if (~plotBoundary)
 end
 titleLine2 = "Mesh Size: " + int2str(Nx) + "x" +  int2str(Np) + ", " + ... 
     "Dt = " + num2str(Dt) + "s";
+fprintf("Plotting\n");
 for ff = graphList
     % Read numerical solutions/errors from file
+    fprintf("  - " + graphTitleList(ff) + "\n");
     res = reshape(getVecFromFile_fcn(folder, fileList(ff)), matShape);
     if (~plotBoundary)
         res = rmBDVal_fcn(res);
