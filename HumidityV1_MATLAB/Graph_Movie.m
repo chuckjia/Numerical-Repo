@@ -12,11 +12,11 @@ clear; clc
 % Plot Settings
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
-makeMovie = true;
-movieName = 'T_err_normalAngle_100x100';
+makeMovie = false;
+movieName = 'u_exact_normalAngle_100x100';
 
-solnNo = 1;  % 1: T, 2: q, 3: u, 4:w
-graphSelection = 2;  % 1: Numerical soln, 2: Error, 3: Exact soln
+solnNo = 4;  % 1: T, 2: q, 3: u, 4:w
+graphSelection = 3;  % 1: Numerical soln, 2: Error, 3: Exact soln
 removeBoundaryVal = true;
 plotFreq = 1;  % Choose the frequency of the frames
 
@@ -27,7 +27,8 @@ viewingAngle = [1 1 2];  % Normal angle
 %viewingAngle = [1 0 0];  % p side
 %viewingAngle = 2;  % Flat; viewing from direct above
 
-zAxisLimits = [-5e-5, 5e-5];
+% zAxisLimits = [-5e-5, 5e-5];
+zAxisLimits = [-5, 5];
 figureSize = [10, 10, 900, 700];  % x-pos, y-pos, width, height
 
 numTimeStepLimit = 1e10;  % Limiting the number of time steps in plotting
@@ -36,10 +37,10 @@ numTimeStepLimit = 1e10;  % Limiting the number of time steps in plotting
 % Plot The Soln/Error and Compile A Movie
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
-getPar_sct;  % Read and calculate parameters
-getCellCenters_sct;  % Read cell centers
+getPar_scp;  % Read and calculate parameters
+getCellCenters_scp;  % Read cell centers
 % File list and title settings
-graphLists_sct;
+graphLists_scp;
 % Create list of graphs to be plotted
 fileNo = solnNo + (graphSelection - 1) * 4;
 filenamePrefix = fileList(fileNo);
@@ -58,8 +59,14 @@ numTimeStepsToGraph = min(numTimeSteps, numTimeStepLimit);
 frameNo = 0;
 titleLine2 = "Mesh Size: " + int2str(Nx) + "x" +  int2str(Np) + ", " + ...
     "Dt = " + num2str(Dt) + "s";
+cPlotCount = 0;
 for tt = 1:numTimeStepsToGraph
-    if mod(tt, plotFreq)
+    if mod(tt, cMovieFrameFreq)
+        continue
+    else
+        cPlotCount = cPlotCount + 1;
+    end
+    if mod(cPlotCount, plotFreq)
         continue
     end
     
@@ -101,8 +108,9 @@ if (makeMovie)
     writeVideo(v, F);
     close(v);
 end
- clear axisLimits F figureSize fileList filename filenamePrefix fileNo ...
+
+clear axisLimits cPlotCount F figureSize fileList filename filenamePrefix fileNo ...
     folder frameNo graphSelection graphTitle graphTitleList makeMovie ...
     matShape movieName numTimeStepLimit numTimeStepsToGraph plotFreq ...
-    removeBoundaryVal res singleFrame setViewingAngle numFrames solnNo ... 
+    removeBoundaryVal res singleFrame setViewingAngle numFrames solnNo ...
     t titleLine2 tt v viewingAngle zAxisLimits

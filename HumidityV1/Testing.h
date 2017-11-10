@@ -354,5 +354,6 @@ void test_pB_xDer_MDL0() {
 void testing() {
 	runTimeSteps();
 	peformAnalysis();
+	//printExactVelocityToFile();
 }
 #endif /* TESTING_H_ */

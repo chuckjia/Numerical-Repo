@@ -21,10 +21,10 @@ plotBoundary = false;
 % Graph Selected Plots
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
-getPar_sct;  % Read and calculate parameters
-getCellCenters_sct;  % Read cell centers
+getPar_scp;  % Read and calculate parameters
+getCellCenters_scp;  % Read cell centers
 % File list and title settings
-graphLists_sct;
+graphLists_scp;
 % List of graphs to be plotted
 graphList = [graphNumerSoln, graphErr + 4, graphExactSoln + 8];
 folder = "Results/"; 

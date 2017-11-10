@@ -98,7 +98,7 @@ void forwardEuler() {
 		(*enforceBC_fcnPtr)();  // Enforce boundary conditions
 
 		//showL2Errors(t);
-		//writeResToFileForMovie_T(tt + 1);
+		//writeResToFileForMovie_T_test(tt + 1);
 	}
 	printf("\r  - Forward Euler method complete\n");
 }
@@ -214,7 +214,7 @@ void rk4() {
 
 		//aveSoln(tt + 1);
 		//showL2Errors(t);
-		//writeResToFileForMovie_T(tt + 1);
+		writeResToFileForMovie_T_test(tt + 1);
 	}
 	printf("\r  - Runge-Kutta 4 method complete\n");
 }

@@ -158,8 +158,9 @@ void showL2Errors() {
 
 void writeParToFile() {
 	FILE *f = fopen("Results/par.txt", "wb");
-	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d",
-			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps);
+	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d %d",
+			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps,
+			movieFrameFreq);
 	fclose(f);
 }
 
@@ -227,14 +228,17 @@ void writeExactSolnToFile() {
 
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in plotting the solution and the error
-void writeAllResToFileForMovie_T_test(int tt) {
+void writeResToFileForMovie_T_test(int tt) {
+	if (tt % movieFrameFreq)
+		return;
+
 	char filename[20];
 	sprintf(filename, "MovieFrames/T_soln_%d.txt", tt);
 	FILE *res = fopen(filename, "wb");
 	sprintf(filename, "MovieFrames/T_err_%d.txt", tt);
 	FILE *err = fopen(filename, "wb");
-	sprintf(filename, "MovieFrames/T_exact_%d.txt", tt);
-	FILE *exact = fopen(filename, "wb");
+	/*sprintf(filename, "MovieFrames/T_exact_%d.txt", tt);
+	FILE *exact = fopen(filename, "wb");*/
 
 	double t = tt * Dt;
 	for (int i = 0; i < numCellsX; ++i) {
@@ -246,11 +250,44 @@ void writeAllResToFileForMovie_T_test(int tt) {
 
 			double exactVal = (*IC_T_fcnPtr)(x, p, t);
 			fprintf(err, "%1.20e ", numerVal - exactVal);
-			fprintf(exact, "%1.20e ", exactVal);
+			// fprintf(exact, "%1.20e ", exactVal);
 
 		}
 	}
-	fclose(res); fclose(err); fclose(exact);
+	fclose(res); fclose(err); //fclose(exact);
+}
+
+void printExactVelocityToFile(int tt) {
+	if (tt % movieFrameFreq)
+		return;
+
+	printf("\r  - Printing movie frame for tt = %d", tt);
+	fflush(stdout);
+	char filename[20];
+	sprintf(filename, "MovieFrames/u_exact_%d.txt", tt);
+	FILE *u_ex = fopen(filename, "wb");
+	sprintf(filename, "MovieFrames/w_exact_%d.txt", tt);
+	FILE *w_ex = fopen(filename, "wb");
+	double t = tt * Dt;
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < numCellsP; ++j) {
+			double p = getCellCenterP(i, j);
+			fprintf(u_ex, "%1.20e ", (*IC_u_fcnPtr)(x, p, t));
+			fprintf(w_ex, "%1.20e ", (*IC_w_fcnPtr)(x, p, t));
+		}
+	}
+	fclose(u_ex); fclose(w_ex);
+}
+
+void printExactVelocityToFile() {
+	printf("\n>> Printing velocity field.\n");
+	for (int tt = 1; tt <= numTimeSteps; ++tt)
+		printExactVelocityToFile(tt);
+	printf("\n\nExact velocity field printed.\n");
+	writeParToFile();
+	printMeshToFile();
+	writeResToFile();
 }
 
 void peformAnalysis() {
