@@ -60,6 +60,12 @@ void (*enforceBC_fcnPtr)();
  * sides. This guarantees the left and right ghost cells are not distorted.
  */
 
+// Enforce Neumann BCs on the left boundary
+void enforceNeumann_leftBD(double sl[numCellsX][numCellsP]) {
+	for (int j = 1; j <= Np; ++j)
+		sl[0][j] = sl[1][j];
+}
+
 // Enforce Neumann BCs on the right boundary
 void enforceNeumann_rightBD(double sl[numCellsX][numCellsP]) {
 	for (int j = 1; j <= Np; ++j)
@@ -158,19 +164,30 @@ void enforceBC_topBD_numer_MDL1() {
 	}
 }
 
+void enforceBC_leftBD_w_MDL1() {
+	for (int j = 1; j <= Np; ++j)
+		w_sl[0][j] = 0;
+}
+
+// Implementation from (3.39)
+void enforceBC_bottBD_w_MDL1() {
+	for (int i = 1; i <= Nx; ++i)
+		w_sl[i][0] = 0;
+}
+
 void enforceBC_MDL1() {
-	// Left boundary: Dirichlet BC
+	// Left boundary
 	enforceDirichlet_leftBD(T_sl, leftBdVal_T_fcn_MDL1);
 	enforceDirichlet_leftBD(q_sl);
 	enforceDirichlet_leftBD(u_sl);
-	enforceDirichlet_leftBD(w_sl);  // Maybe not used
+	enforceNeumann_leftBD(w_sl);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
 	enforceNeumann_rightBD(u_sl);
 	enforceNeumann_rightBD(w_sl);
 	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
-	enforceDirichlet_bottBD(w_sl);  // Maybe not used
+	// enforceBC_bottBD_w_MDL1();  // Maybe not used. From (3.39)
 	// Top boundary: for u and w
 	//enforceBC_topBD_math_MDL1();
 	enforceBC_topBD_numer_MDL1();

@@ -40,7 +40,7 @@ double finalTime = numTimeSteps * Dt;  // Final time
 bool printResToFile_opt = true;  // Choose whether to print numerical solution/error to file
 int aveFreq = numTimeSteps + 10;  // The frequency of using the average method
 
-bool printExactSolnToFile_opt = true;
+bool printExactSolnToFile_opt = false;
 int movieFrameFreq = 1;  // The frequency of printing result to file
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
