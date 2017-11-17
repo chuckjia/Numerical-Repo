@@ -266,6 +266,7 @@ void timeSteps_upwind_MDL3_test() {
 	calc_w_fcnPtr = &emptyFcn;
 	calcFluxes = &calcFluxes_upwind_MDL3_test;
 	forwardEuler();
+	//rk4();
 }
 
 /**
@@ -312,7 +313,8 @@ void timeSteps_upwind_reduced_MDL3_test() {
 	projU_fcnPtr = &emptyFcn;
 	calc_w_fcnPtr = &emptyFcn;
 	calcFluxes = &calcFluxes_upwind_reduced_MDL3_test;
-	forwardEuler();
+	//forwardEuler();
+	rk4();
 }
 
 void test_upwind_MDL3() {
@@ -353,7 +355,9 @@ void test_pB_xDer_MDL0() {
 
 void testing() {
 	runTimeSteps();
-	peformAnalysis();
 	//printExactVelocityToFile();
+	//printResToFile_convAnalysis();
+	//timeSteps_upwind_reduced_MDL3_test();
+	peformAnalysis();
 }
 #endif /* TESTING_H_ */

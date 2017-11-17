@@ -118,6 +118,17 @@ void preForwardEuler() {
 	(*calc_phix_fcnPtr)();  // Calculate phi_x value at the beginning of each time step
 }
 
+void subExactVelocity(double t) {
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < numCellsP; ++j) {
+			double p = getCellCenterP(i, j);
+			u_sl[i][j] = (*IC_u_fcnPtr)(x, p, t);
+			w_sl[i][j] = (*IC_q_fcnPtr)(x, p, t);
+		}
+	}
+}
+
 void postForwardEuler() {
 	(*projU_fcnPtr)();  // Projection method on u
 	(*calc_w_fcnPtr)();  // Calculate w
@@ -303,8 +314,8 @@ void timeSteps() {
 		return;
 	}
 
-	printf("\n- Calculation complete. Time used = %1.2fs.\n\n",
-			((double) (clock() - start)) / CLOCKS_PER_SEC);
+	computationTime = (double) ((clock() - start)) / CLOCKS_PER_SEC;
+	printf("\n- Calculation complete. Time used = %1.2fs.\n\n", computationTime);
 }
 
 void runTimeSteps() {

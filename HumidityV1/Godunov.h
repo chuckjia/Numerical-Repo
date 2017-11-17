@@ -60,7 +60,6 @@ void calcFluxes_upwind() {
 			double velocity = getCellTopSideLen(i, j) * (
 					getCellTopSideNormX(i, j) * uTopSideVal +
 					getCellTopSideNormP(i, j) * wTopSideVal);
-
 			if (velocity >= 0) {
 				GG_T[i][j] =	 velocity * T_sl[i][j];
 				GG_q[i][j] =	 velocity * q_sl[i][j];

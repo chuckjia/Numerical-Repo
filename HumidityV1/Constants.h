@@ -17,7 +17,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 1;  // Model number. 0 = original model; other number = test models
+int modelNo = 4;  // Model number. 0 = original model; other number = test models
 int fluxMethod = 0;  // Select flux calculation method. 0 = Upwind
 
 // Select time method.
@@ -28,7 +28,7 @@ int timeMethod = 4;
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 50;  // Number of space divisions in both x and p directions
+const int numDivisions = 100;  // Number of space divisions in both x and p directions
 int numTimeSteps = 100;  // Number of time steps
 double Dt = 1e-2;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time

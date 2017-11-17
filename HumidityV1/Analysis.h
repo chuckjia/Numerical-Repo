@@ -10,6 +10,9 @@
 #include "Conditions.h"
 
 const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
+double computationTime = 0;
+double relative_L2Err_T_global, relative_L2Err_q_global,
+relative_L2Err_u_global, relative_L2Err_w_global;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Print Messages
@@ -149,6 +152,10 @@ void showL2Errors(double t) {
 			sqrt(denom_T), sqrt(denom_q), sqrt(denom_u), sqrt(denom_w));
 	printf("  - L2 absolute error for T, q, u, w = [%1.7e, %1.7e, %1.7e, %1.7e]\n",
 			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
+	relative_L2Err_T_global = relativeL2Err_T;
+	relative_L2Err_q_global = relativeL2Err_q;
+	relative_L2Err_u_global = relativeL2Err_u;
+	relative_L2Err_w_global = relativeL2Err_w;
 }
 
 void showL2Errors() {
@@ -320,6 +327,15 @@ void aveSoln(int tt) {
 	aveSoln_oneTerm(T_sl);
 	aveSoln_oneTerm(q_sl);
 	aveSoln_oneTerm(u_sl);
+}
+
+void printResToFile_convAnalysis() {
+	FILE *f = fopen("Results/ConvAnalysis.txt", "a");
+	fprintf(f, "%d  %1.7e  %1.7e  % 1.7e  %1.7e  %1.2f\n",
+			Nx, relative_L2Err_T_global, relative_L2Err_q_global,
+			relative_L2Err_u_global, relative_L2Err_w_global,
+			computationTime);
+	fclose(f);
 }
 
 void setAnalysis() {
