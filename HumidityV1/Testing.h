@@ -317,7 +317,7 @@ void timeSteps_upwind_reduced_MDL3_test() {
 	rk4();
 }
 
-void test_upwind_MDL3() {
+void testRun_MDL3() {
 	try {
 		//timeSteps_upwind_reduced_MDL3_test();
 		timeSteps_upwind_MDL3_test();
@@ -350,14 +350,211 @@ void test_pB_xDer_MDL0() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Tests: Decoupled System
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+// Enforce initial conditions on u for testing purposes
+void enforceIC_exactVelocity(double t) {
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < numCellsP; ++j) {
+			double p = getCellCenterP(i, j);
+			u_sl[i][j] = (*IC_u_fcnPtr)(x, p, t);
+			w_sl[i][j] = (*IC_w_fcnPtr)(x, p, t);
+		}
+	}
+	//enforceBC_topBD_numer_MDL1();
+	//(*calc_w_fcnPtr)();
+}
+
+void rk4_decoupledVelocity_MDL102() {
+	if (modelNo != 102)
+		throw "This method only works with model 102";
+	printf("\n- Running Runge-Kutta 4 method on time for decoupled velocity\n");
+	int prog = -1;
+
+	// The initial condition
+	enforceIC();
+	(*projU_fcnPtr)();
+	(*calc_w_fcnPtr)();
+
+	for (int tt = 0; tt < numTimeSteps; tt++) {
+		// Print messages on calculation progress
+		int progNew = tt * 100 / numTimeSteps;
+		if (progNew > prog) {
+			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
+		}
+
+		// Numerical calculation
+		double t = Dt * tt;
+
+		// RK4 Step 0
+		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+
+		// RK4 Step 1
+		enforceIC_exactVelocity(t);
+
+		update_k_rk_fcnPtr = &update_k_rk_directAssign;
+		preForwardEuler();
+		forwardEuler_singleStep(t, halfDt, T_sl, q_sl, u_sl, ONE_SIXTH_CONST);
+		postForwardEuler();
+
+		// RK4 Step 2
+		enforceIC_exactVelocity(t + halfDt);
+
+		update_k_rk_fcnPtr = &update_k_rk_accum;
+		preForwardEuler();
+		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		postForwardEuler();
+
+		// RK4 Step 3
+		enforceIC_exactVelocity(t + halfDt);
+
+		update_k_rk_fcnPtr = &update_k_rk_accum;
+		preForwardEuler();
+		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		postForwardEuler();
+
+		// RK4 Step 4
+		enforceIC_exactVelocity(t + Dt);
+
+		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
+		preForwardEuler();
+		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
+		for (int i = 1; i <= Nx; ++i)
+			for (int j = 1; j <= Np; ++j) {
+				T_sl[i][j] += k_rk_T[i][j];
+				q_sl[i][j] += k_rk_q[i][j];
+				u_sl[i][j] += k_rk_u[i][j];
+			}
+		postForwardEuler();
+	}
+	printf("\r  - Runge-Kutta 4 method complete\n");
+}
+
+void testRun_MDL102() {
+	try {
+		rk4_decoupledVelocity_MDL102();
+	} catch (const char* msg) {
+		cerr << msg << endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Use Exact w but Numerically compute u
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void calc_w_exact(double t) {
+	for (int i = 0; i < numCellsX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < Np; ++j) {
+			double p = getCellCenterP(i, j);
+			w_sl[i][j] = (*IC_w_fcnPtr)(x, p, t);
+		}
+	}
+	enforceBC_topBD_numer_MDL1();
+}
+
+// Use exact w but numerically enforce non-penetration BC on the top for w
+void rk4_exactW_withTopBC_MDL1_test() {
+	if (modelNo != 1)
+		throw "Error: Only works for Test Case 1!";
+	printf("\n- Running Runge-Kutta 4 method on time with exact w\n");
+	int prog = -1;
+
+	// The initial condition
+	enforceIC();
+	(*projU_fcnPtr)();
+
+	for (int tt = 0; tt < numTimeSteps; tt++) {
+		// Print messages on calculation progress
+		int progNew = tt * 100 / numTimeSteps;
+		if (progNew > prog) {
+			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
+		}
+
+		// Numerical calculation
+		double t = Dt * tt;
+
+		// RK4 Step 0
+		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+
+		// RK4 Step 1
+		calc_w_exact(t);
+
+		update_k_rk_fcnPtr = &update_k_rk_directAssign;
+		preForwardEuler();
+		forwardEuler_singleStep(t, halfDt, T_sl, q_sl, u_sl, ONE_SIXTH_CONST);
+		postForwardEuler();
+
+
+		// RK4 Step 2
+		calc_w_exact(t + halfDt);
+
+		update_k_rk_fcnPtr = &update_k_rk_accum;
+		preForwardEuler();
+		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		postForwardEuler();
+
+		// RK4 Step 3
+		calc_w_exact(t + halfDt);
+
+		update_k_rk_fcnPtr = &update_k_rk_accum;
+		preForwardEuler();
+		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		postForwardEuler();
+
+		// RK4 Step 4
+		calc_w_exact(t + Dt);
+
+		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
+		preForwardEuler();
+		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
+		for (int i = 1; i <= Nx; ++i)
+			for (int j = 1; j <= Np; ++j) {
+				T_sl[i][j] += k_rk_T[i][j];
+				q_sl[i][j] += k_rk_q[i][j];
+				u_sl[i][j] += k_rk_u[i][j];
+			}
+		postForwardEuler();
+	}
+	printf("\r  - Runge-Kutta 4 method complete\n");
+}
+
+void testRun_exactW_MDL1() {
+	try {
+		rk4_exactW_withTopBC_MDL1_test();
+	} catch (const char* msg) {
+		cerr << msg << endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+void printPhixErrToFile(double t) {
+	FILE *f = fopen("Results/phix_err.txt", "wb");
+	for (int i = 1; i <= Nx; ++i) {
+		double x = getCellCenterX(i), DpVal = getCellCenterDp(i), sum = 0;
+		for (int j = 1; j <= Np; ++j) {
+			double p = getCellCenterP(i, j), pInCurrCell = p - (j - 1) * DpVal;
+			double T_xDer_val = exact_T_xDer_fcn_MDL1(x, p, t);
+			double phixVal = sum - R_CONST * T_xDer_val / p * pInCurrCell;
+			sum -= R_CONST * T_xDer_val / p * DpVal;
+			fprintf(f, "%1.20e ", phixVal - phix_sl[i][j]);
+		}
+	}
+	fclose(f);
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
 	runTimeSteps();
-	//printExactVelocityToFile();
-	//printResToFile_convAnalysis();
-	//timeSteps_upwind_reduced_MDL3_test();
+	//testRun_exactW_MDL1();
+	// testRun_MDL102();
 	peformAnalysis();
+	printPhixErrToFile(finalTime);
 }
 #endif /* TESTING_H_ */

@@ -159,8 +159,8 @@ void enforceBC_topBD_math_MDL1() {
 void enforceBC_topBD_numer_MDL1() {
 	for (int i = 1; i <= Nx; ++i) {
 		double norm_x = getCellTopSideNormX(i, Np), norm_p = getCellTopSideNormP(i, Np);
-		w_sl[i][lastGhostIndexP] = -norm_x * (u_sl[i][Np] + u_sl[i][lastGhostIndexP])
-														 / norm_p - w_sl[i][Np];
+		w_sl[i][lastGhostIndexP] = -norm_x * (u_sl[i][Np] + u_sl[i][lastGhostIndexP]) / norm_p
+				- w_sl[i][Np];
 	}
 }
 
@@ -177,6 +177,7 @@ void enforceBC_MDL1() {
 	enforceDirichlet_leftBD(q_sl);
 	enforceDirichlet_leftBD(u_sl);
 	enforceNeumann_leftBD(w_sl);
+	//enforceDirichlet_leftBD(w_sl);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
@@ -187,6 +188,26 @@ void enforceBC_MDL1() {
 	// Top boundary: for u and w
 	//enforceBC_topBD_math_MDL1();
 	enforceBC_topBD_numer_MDL1();
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Test 101 BC
+ * ----- ----- ----- ----- ----- ----- */
+
+// Empty. Using Test Case 1 BC
+
+/* ----- ----- ----- ----- ----- -----
+ * Test 102 BC
+ * ----- ----- ----- ----- ----- ----- */
+
+void enforceBC_MDL102() {
+	// Left boundary
+	enforceDirichlet_leftBD(T_sl);
+	enforceDirichlet_leftBD(q_sl);
+	// Right boundary: Neumann BC
+	enforceNeumann_rightBD(T_sl);
+	enforceNeumann_rightBD(q_sl);
+	//enforceBC_topBD_numer_MDL1();
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -221,23 +242,7 @@ void enforceBC_MDL3() {
  * Test 4 BC
  * ----- ----- ----- ----- ----- ----- */
 
-void enforceBC_MDL4() {
-	// Left boundary
-	enforceDirichlet_leftBD(T_sl);
-	enforceDirichlet_leftBD(q_sl);
-	enforceDirichlet_leftBD(u_sl);
-	enforceNeumann_leftBD(w_sl);
-	// Right boundary: Neumann BC
-	enforceNeumann_rightBD(T_sl);
-	enforceNeumann_rightBD(q_sl);
-	enforceNeumann_rightBD(u_sl);
-	enforceNeumann_rightBD(w_sl);
-	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
-	// enforceBC_bottBD_w_MDL1();  // Maybe not used. From (3.39)
-	// Top boundary: for u and w
-	//enforceBC_topBD_math_MDL1();
-	enforceBC_topBD_numer_MDL1();
-}
+// BC same as Test Case 1
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Source Functions
@@ -269,6 +274,7 @@ void setConditions() {
 		return;
 
 	case 1:
+	case 101:
 		// Initial conditions
 		IC_T_fcnPtr = &exact_T_fcn_MDL1;
 		IC_q_fcnPtr = &exact_q_fcn_MDL1;
@@ -276,6 +282,20 @@ void setConditions() {
 		IC_w_fcnPtr = &exact_w_fcn_MDL1;
 		// Boundary conditions
 		enforceBC_fcnPtr = &enforceBC_MDL1;
+		// Source functions
+		source_T_fcnPtr = &source_T_fcn_MDL1;
+		source_q_fcnPtr = &source_q_fcn_MDL1;
+		source_u_fcnPtr = &source_u_fcn_MDL1;
+		return;
+
+	case 102:
+		// Initial conditions
+		IC_T_fcnPtr = &exact_T_fcn_MDL1;
+		IC_q_fcnPtr = &exact_q_fcn_MDL1;
+		IC_u_fcnPtr = &exact_u_fcn_MDL1;
+		IC_w_fcnPtr = &exact_w_fcn_MDL1;
+		// Boundary conditions
+		enforceBC_fcnPtr = &enforceBC_MDL102;
 		// Source functions
 		source_T_fcnPtr = &source_T_fcn_MDL1;
 		source_q_fcnPtr = &source_q_fcn_MDL1;
@@ -308,20 +328,6 @@ void setConditions() {
 		source_T_fcnPtr = &source_T_fcn_MDL3;
 		source_q_fcnPtr = &source_q_fcn_MDL3;
 		source_u_fcnPtr = &source_u_fcn_MDL3;
-		return;
-
-	case 4:
-		// Initial conditions
-		IC_T_fcnPtr = &exact_T_fcn_MDL4;
-		IC_q_fcnPtr = &exact_q_fcn_MDL4;
-		IC_u_fcnPtr = &exact_u_fcn_MDL4;
-		IC_w_fcnPtr = &exact_w_fcn_MDL4;
-		// Boundary conditions
-		enforceBC_fcnPtr = &enforceBC_MDL4;
-		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL4;
-		source_q_fcnPtr = &source_q_fcn_MDL4;
-		source_u_fcnPtr = &source_u_fcn_MDL4;
 		return;
 	}
 }

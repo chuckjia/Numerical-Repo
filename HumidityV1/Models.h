@@ -350,6 +350,66 @@ void setPar_MDL1() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Test Case 101: Solutions without Topography
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+/* ----- ----- ----- ----- ----- -----
+ * Coefficients
+ * ----- ----- ----- ----- ----- ----- */
+
+void setFcnCoef_MDL101() {
+	// Empty for now
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// pB function
+double pB_fcn_MDL101(double x) {
+	return 1000.;
+}
+
+// The derivative of pB function
+double pB_xDer_fcn_MDL101(double x) {
+	return 0;
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Manufacture solutions / IC
+ * ----- ----- ----- ----- ----- ----- */
+
+// Using MDL1 functions
+
+/* ----- ----- ----- ----- ----- -----
+ * Source solutions
+ * ----- ----- ----- ----- ----- ----- */
+
+// Using MDL1 functions
+
+// Set all parameters in model 101
+void setPar_MDL101() {
+	// Parameters on the domain geometry
+	x0 = 0.;
+	xf = 50000.;
+	pA = 200.;
+	pB_fcnPtr = &pB_fcn_MDL101;
+	pBxDer_fcnPtr = &pB_xDer_fcn_MDL101;
+	// Set function coefficients
+	// Model 4 is dependent on model 1. setFcnCoef_MDL1() has to come after the definition
+	// of x0, xf, pA, and pB()
+	setFcnCoef_MDL1();
+	setFcnCoef_MDL101();
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Test Case 102: Decoupled System
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+// To run this test case, set modelNo to 102 and run testRun_MDL102();
+
+// Empty. Using functions from Test Case 1
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Test Case 2: Constant Manufactured Solutions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
@@ -426,6 +486,7 @@ void setPar_MDL2() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // This test is made for the Godunov method. The u and w are fixed.
+// To run this test case, set modelNo to 3 and run testRun_MDL3();
 
 /* ----- ----- ----- ----- ----- -----
  * Coefficients
@@ -566,89 +627,10 @@ void setPar_MDL3() {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Test Case 4: Decoupled Solutions without Topography
+ * Test Case 4:
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-/* ----- ----- ----- ----- ----- -----
- * Coefficients
- * ----- ----- ----- ----- ----- ----- */
 
-// Coefficients used in the model
-double pBVal_coef_MDL4;
-
-void setFcnCoef_MDL4() {
-	pBVal_coef_MDL4 = 1000.;
-}
-
-/* ----- ----- ----- ----- ----- -----
- * Domain geometry
- * ----- ----- ----- ----- ----- ----- */
-
-// pB function
-double pB_fcn_MDL4(double x) {
-	return pBVal_coef_MDL4;
-}
-
-// The derivative of pB function
-double pB_xDer_fcn_MDL4(double x) {
-	return 0;
-}
-
-/* ----- ----- ----- ----- ----- -----
- * Manufacture solutions / IC
- * ----- ----- ----- ----- ----- ----- */
-
-// Manufactured solution: exact T function
-double exact_T_fcn_MDL4(double x, double p, double t) {
-	return exact_T_fcn_MDL1(x, p, t);
-}
-
-// Manufactured solution: exact q function
-double exact_q_fcn_MDL4(double x, double p, double t) {
-	return 0;
-}
-
-// Manufactured solution: exact u function
-double exact_u_fcn_MDL4(double x, double p, double t) {
-	return exact_u_fcn_MDL1(x, p, t);
-}
-
-// Manufactured solution: exact w function
-double exact_w_fcn_MDL4(double x, double p, double t) {
-	return exact_w_fcn_MDL1(x, p, t);
-}
-
-/* ----- ----- ----- ----- ----- -----
- * Source solutions
- * ----- ----- ----- ----- ----- ----- */
-
-// Source function for the T equation
-double source_T_fcn_MDL4(double T, double q, double u, double w, double x, double p, double t) {
-	return source_T_fcn_MDL1(T, q, u, w, x, p, t);
-}
-
-// Source function for the q equation
-double source_q_fcn_MDL4(double T, double q, double u, double w, double x, double p, double t) {
-	return 0;
-}
-
-// Source function for the u equation
-double source_u_fcn_MDL4(double T, double q, double u, double w, double x, double p, double t) {
-	return source_u_fcn_MDL1(T, q, u, w, x, p, t);
-}
-
-// Set all parameters in model 1
-void setPar_MDL4() {
-	// Parameters on the domain geometry
-	x0 = 0.;
-	xf = 50000.;
-	pA = 200.;
-	pB_fcnPtr = &pB_fcn_MDL4;
-	pBxDer_fcnPtr = &pB_xDer_fcn_MDL4;
-	// Set function coefficients
-	setFcnCoef_MDL1();  // Model 4 is dependent on model 1
-	setFcnCoef_MDL4();
-}
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Model Parameters
@@ -662,6 +644,7 @@ void selectModel() {
 		setPar_MDL0();
 		return;
 	case 1:
+	case 102:
 		setPar_MDL1();
 		return;
 	case 2:
@@ -670,8 +653,8 @@ void selectModel() {
 	case 3:
 		setPar_MDL3();
 		return;
-	case 4:
-		setPar_MDL4();
+	case 101:
+		setPar_MDL101();
 		return;
 	default: // Throw error message when the model number does correspond to any model
 		throw "Error: Model does NOT exist!";
@@ -684,7 +667,7 @@ void setModels() {
 		selectModel();
 	} catch (const char* msg) {
 		cerr << msg << endl;
-		return;
+		exit(EXIT_FAILURE);
 	}
 }
 

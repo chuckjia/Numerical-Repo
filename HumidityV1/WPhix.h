@@ -31,7 +31,6 @@ void (*calc_phix_fcnPtr)();
 // This function uses formula in (3.42): questionable calculation
 void calc_phix_orig() {
 	for (int i = 1; i <= Nx; ++i) {
-		phix_sl[i][1] = 0;  // Maybe not used
 		double sum = 0;
 		// factor = -R * (p_{i,j+1/2} - p_{i,j-1/2})
 		double factor = -R_CONST * getCellCenterDp(i);
@@ -39,6 +38,7 @@ void calc_phix_orig() {
 			sum += factor / getCellCenterP(i, j) * getGradhT_x(i, j);
 			phix_sl[i][j + 1] = sum;
 		}
+		//phix_sl[i][1] = phix_sl[i][2];
 	}
 }
 

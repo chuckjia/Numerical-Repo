@@ -10,13 +10,17 @@
 #include "WPhix.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Forward Euler Method On Time
+ * Copies of Numerical Solutions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double T_sl_copy[numCellsX][numCellsP], q_sl_copy[numCellsX][numCellsP],
 u_sl_copy[numCellsX][numCellsP];
 
 double k_rk_T[numCellsX][numCellsP], k_rk_q[numCellsX][numCellsP], k_rk_u[numCellsX][numCellsP];
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Functions for RK family methods
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double calcFluxes_OneCell(int i, int j,
 		double GG[Nx + 1][Np + 1], double FF[Nx + 1][Np + 1]) {
@@ -73,6 +77,10 @@ void forwardEuler_singleStep(double t, double stepSize, double T_arr[numCellsX][
 	}
 }
 
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Forward Euler Method On Time
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
 void forwardEuler() {
 	printf("\n- Running forward Euler method on time\n");
 	int prog = -1;
@@ -102,6 +110,10 @@ void forwardEuler() {
 	}
 	printf("\r  - Forward Euler method complete\n");
 }
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Runge-Kutta 2
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void copySoln(double T_copy[numCellsX][numCellsP], double q_copy[numCellsX][numCellsP],
 		double u_copy[numCellsX][numCellsP]) {
@@ -170,6 +182,10 @@ void rk2() {
 	}
 	printf("\r  - Runge-Kutta 2 method complete\n");
 }
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Runge-Kutta 4
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void rk4() {
 	printf("\n- Running Runge-Kutta 4 method on time\n");

@@ -17,7 +17,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 4;  // Model number. 0 = original model; other number = test models
+int modelNo = 1;  // Model number. 0 = original model; other number = test models
 int fluxMethod = 0;  // Select flux calculation method. 0 = Upwind
 
 // Select time method.
@@ -37,7 +37,7 @@ double finalTime = numTimeSteps * Dt;  // Final time
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-bool printResToFile_opt = true;  // Choose whether to print numerical solution/error to file
+bool printResToFile_opt = false;  // Choose whether to print numerical solution/error to file
 int aveFreq = numTimeSteps + 10;  // The frequency of using the average method
 
 bool printExactSolnToFile_opt = false;
