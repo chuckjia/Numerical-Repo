@@ -21,7 +21,12 @@ void setAll() {
 	setTimeSteps();
 }
 
+void fileManagement() {
+	closeFiles_analysis();
+}
+
 int main() {
 	setAll();
 	testing();
+	fileManagement();
 }

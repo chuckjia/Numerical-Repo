@@ -195,14 +195,17 @@ void rk4() {
 	enforceIC();
 
 	for (int tt = 0; tt < numTimeSteps; tt++) {
+		double t = Dt * tt;
 		// Print messages on calculation progress
 		int progNew = tt * 100 / numTimeSteps;
 		if (progNew > prog) {
-			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
+			prog = progNew;
+			printf("\r  - Current progress: %d%%, Time = %1.2fs", prog, t);
+			fflush(stdout);
+			calcL2Norm(t);
 		}
 
 		// Numerical calculation
-		double t = Dt * tt;
 
 		// RK4 Step 0
 		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);

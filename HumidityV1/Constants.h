@@ -31,7 +31,7 @@ int timeMethod = 4;
 const int numDivisions = 200;  // Number of space divisions in both x and p directions
 
 
-int numTimeSteps = 0;  // Number of time steps
+int numTimeSteps = 4000;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
 

@@ -13,6 +13,7 @@ const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
 double computationTime = 0;
 double relative_L2Err_T_global, relative_L2Err_q_global,
 relative_L2Err_u_global, relative_L2Err_w_global;
+FILE *T_norm_filePtr, *q_norm_filePtr, *u_norm_filePtr, *w_norm_filePtr;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Print Messages
@@ -161,6 +162,37 @@ void showL2Errors(double t) {
 void showL2Errors() {
 	printf("\n>> NUMERICAL ERRORS\n");
 	showL2Errors(finalTime);
+}
+
+// Print the L2 relative and absolute errors
+double calcL2Norm(double sl[numCellsX][numCellsP], double t) {
+	double norm = 0;
+	for (int i = 1; i <= Nx; ++i) {
+		double vol = getCellVol(i);
+		for (int j = 1; j <= Np; ++j)
+			norm += vol * pow(sl[i][j], 2);
+	}
+	return sqrt(norm);
+}
+
+void calcL2Norm(double t) {
+	double norm_T = 0, norm_q = 0, norm_u = 0, norm_w = 0;
+	for (int i = 1; i <= Nx; ++i) {
+		double vol = getCellVol(i);
+		for (int j = 1; j <= Np; ++j) {
+			norm_T += vol * pow(T_sl[i][j], 2);
+			norm_q += vol * pow(q_sl[i][j], 2);
+			norm_u += vol * pow(u_sl[i][j], 2);
+			norm_w += vol * pow(w_sl[i][j], 2);
+		}
+	}
+	norm_T = sqrt(norm_T); norm_q = sqrt(norm_q); norm_u = sqrt(norm_u); norm_w = sqrt(norm_w);
+	printf("\n    L2 norm (T, q, u, w) = (%1.7e %1.7e %1.7e %1.7e)",
+			norm_T, norm_q, norm_u, norm_w);
+	fprintf(T_norm_filePtr, "%1.20e ", norm_T);
+	fprintf(q_norm_filePtr, "%1.20e ", norm_q);
+	fprintf(u_norm_filePtr, "%1.20e ", norm_u);
+	fprintf(w_norm_filePtr, "%1.20e ", norm_w);
 }
 
 void writeParToFile() {
@@ -339,9 +371,16 @@ void printResToFile_convAnalysis() {
 	fclose(f);
 }
 
+void closeFiles_analysis() {
+	fclose(T_norm_filePtr); fclose(q_norm_filePtr);
+	fclose(u_norm_filePtr); fclose(w_norm_filePtr);
+}
 
 void setAnalysis() {
-	//
+	T_norm_filePtr = fopen("Results/T_norm.txt", "wb");
+	q_norm_filePtr = fopen("Results/q_norm.txt", "wb");
+	u_norm_filePtr = fopen("Results/u_norm.txt", "wb");
+	w_norm_filePtr = fopen("Results/w_norm.txt", "wb");
 }
 
 #endif /* ANALYSIS_H_ */

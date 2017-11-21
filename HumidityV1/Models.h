@@ -77,7 +77,7 @@ void setFcnCoef_MDL0() {
 	c1_pBxDer_coef_MDL0 = 1 / 12.;
 	c1_qs_coef_MDL0 = 0.622 * 6.112;
 
-	n_initU_coef_MDL0 = 1.5;
+	n_initU_coef_MDL0 = 1;
 	cp_initU_coef_MDL0 = M_PI * p0Inv_CONST;
 	cx_initU_coef_MDL0 = 2 * n_initU_coef_MDL0 * M_PI / xf;
 }

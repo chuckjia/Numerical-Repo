@@ -547,14 +547,21 @@ void printPhixErrToFile(double t) {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Functions in MDL0
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void test_functions_MDL0() {
+	double x = 35000;
+	printf("%1.10e", pB_xDer_fcn_MDL0(x));
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
 	runTimeSteps();
-	//testRun_exactW_MDL1();
-	// testRun_MDL102();
-	peformAnalysis();
-	printPhixErrToFile(finalTime);
+	//peformAnalysis();
+	//test_functions_MDL0();
 }
 #endif /* TESTING_H_ */
