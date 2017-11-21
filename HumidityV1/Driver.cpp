@@ -12,11 +12,12 @@ void setAll() {
 	setConstants();
 	setModels();
 	setMesh();
-	setConditions();
-	setGodunov();
-	setProjection();
 	setQuadCells();
+	setProjection();
 	setWPhix();
+	setConditions();
+	setAnalysis();
+	setGodunov();
 	setTimeSteps();
 }
 

@@ -7,7 +7,7 @@
 
 #ifndef QUADCELL_H_
 #define QUADCELL_H_
-#include "Projection.h"
+#include "Mesh.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Interpolation Coefficients For The Quadrilateral Cells
@@ -96,8 +96,6 @@ double getGradhT_x(int i, int j) {
 	return e11_diagMatInv_quadCell_cache * (getCellTopRightT(i, j) - getCellTopRightT(i - 1, j)) +
 			e12_diagMatInv_quadCell_cache[i][j] * (T_sl[i][j + 1] - T_sl[i][j]);
 }
-
-// Getters for gradient_h Ts_h over the quadrilateral cell (i,j+1/2)
 
 double getGradhT_p(int i, int j) {
 	return e22_diagMatInv_quadCell_cache[i][j] * (T_sl[i][j + 1] - T_sl[i][j]);

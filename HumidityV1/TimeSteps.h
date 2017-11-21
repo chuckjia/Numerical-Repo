@@ -7,7 +7,7 @@
 
 #ifndef TIMESTEPS_H_
 #define TIMESTEPS_H_
-#include "WPhix.h"
+#include "Godunov.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Copies of Numerical Solutions
@@ -193,8 +193,6 @@ void rk4() {
 
 	// The initial condition
 	enforceIC();
-	(*projU_fcnPtr)();
-	(*calc_w_fcnPtr)();
 
 	for (int tt = 0; tt < numTimeSteps; tt++) {
 		// Print messages on calculation progress
@@ -239,7 +237,7 @@ void rk4() {
 			}
 		postForwardEuler();
 
-		//aveSoln(tt + 1);
+		aveSoln(tt + 1);
 		//showL2Errors(t);
 		//writeResToFileForMovie_T_test(tt + 1);
 	}

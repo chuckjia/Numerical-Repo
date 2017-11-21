@@ -327,6 +327,7 @@ void aveSoln(int tt) {
 	aveSoln_oneTerm(T_sl);
 	aveSoln_oneTerm(q_sl);
 	aveSoln_oneTerm(u_sl);
+	aveSoln_oneTerm(w_sl);
 }
 
 void printResToFile_convAnalysis() {

@@ -453,7 +453,7 @@ void calc_w_exact(double t) {
 			w_sl[i][j] = (*IC_w_fcnPtr)(x, p, t);
 		}
 	}
-	enforceBC_topBD_numer_MDL1();
+	enforceNonPenetrationBC_topBD_numer();
 }
 
 // Use exact w but numerically enforce non-penetration BC on the top for w

@@ -7,15 +7,7 @@
 
 #ifndef CONDITIONS_H_
 #define CONDITIONS_H_
-#include "Mesh.h"
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Numerical Solutions: 2D Arrays
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-double T_sl[numCellsX][numCellsP], q_sl[numCellsX][numCellsP];
-double u_sl[numCellsX][numCellsP], w_sl[numCellsX][numCellsP];
-double phix_sl[numCellsX][numCellsP];
+#include "WPhix.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Initial Conditions
@@ -23,9 +15,9 @@ double phix_sl[numCellsX][numCellsP];
 
 // Function pointers: mathematical functions to calculate initial conditions
 double (*IC_T_fcnPtr)(double x, double p, double t),
-		(*IC_q_fcnPtr)(double x, double p, double t),
-		(*IC_u_fcnPtr)(double x, double p, double t),
-		(*IC_w_fcnPtr)(double x, double p, double t);  // IC for w is for testing purposes
+(*IC_q_fcnPtr)(double x, double p, double t),
+(*IC_u_fcnPtr)(double x, double p, double t),
+(*IC_w_fcnPtr)(double x, double p, double t);  // IC for w is for testing purposes
 
 // Enforce initial conditions at cell centers
 void enforceIC() {
@@ -37,11 +29,8 @@ void enforceIC() {
 			q_sl[i][j] = (*IC_q_fcnPtr)(x, p, 0);
 			u_sl[i][j] = (*IC_u_fcnPtr)(x, p, 0);
 		}
-}
-
-// Placeholder for w
-double zeroSoln_fcn(double x, double p, double t) {
-	return 0;
+	(*projU_fcnPtr)();
+	(*calc_w_fcnPtr)();
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -60,17 +49,9 @@ void (*enforceBC_fcnPtr)();
  * sides. This guarantees the left and right ghost cells are not distorted.
  */
 
-// Enforce Neumann BCs on the left boundary
-void enforceNeumann_leftBD(double sl[numCellsX][numCellsP]) {
-	for (int j = 1; j <= Np; ++j)
-		sl[0][j] = sl[1][j];
-}
-
-// Enforce Neumann BCs on the right boundary
-void enforceNeumann_rightBD(double sl[numCellsX][numCellsP]) {
-	for (int j = 1; j <= Np; ++j)
-		sl[lastGhostIndexX][j] = sl[lastRealIndexX][j];
-}
+/**
+ * LEFT
+ */
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary values specified by a function,
 // defined by (*bdVal_fcnPtr)(p)
@@ -95,11 +76,42 @@ void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP]) {
 		sl[0][j] = - sl[1][j];
 }
 
+// Cache to store the boundary values specified on the left side of boundary
+double T_leftBdVal_cache[numCellsP],
+q_leftBdVal_cache[numCellsP],
+u_leftBdVal_cache[numCellsP];
+
+// Enforce Dirichlet BCs on the LEFT boundary: with boundary value from cache
+void enforceDirichlet_leftBD(double sl[numCellsX][numCellsP], double bdVal_cache[numCellsP]) {
+	for (int j = 1; j <= Np; ++j)
+		sl[0][j] = 2 * bdVal_cache[j] - sl[1][j];
+}
+
+// Enforce Neumann BCs on the left boundary
+void enforceNeumann_leftBD(double sl[numCellsX][numCellsP]) {
+	for (int j = 1; j <= Np; ++j)
+		sl[0][j] = sl[1][j];
+}
+
+/**
+ * RIGHT
+ */
+
 // Enforce Dirichlet BCs on the RIGHT boundary: with boundary value 0
 void enforceDirichlet_rightBD(double sl[numCellsX][numCellsP]) {
 	for (int j = 1; j <= Np; ++j)
 		sl[lastGhostIndexX][j] = - sl[lastRealIndexX][j];
 }
+
+// Enforce Neumann BCs on the right boundary
+void enforceNeumann_rightBD(double sl[numCellsX][numCellsP]) {
+	for (int j = 1; j <= Np; ++j)
+		sl[lastGhostIndexX][j] = sl[lastRealIndexX][j];
+}
+
+/**
+ * BOTTOM
+ */
 
 // Enforce Dirichlet BCs on the BOTTOM boundary: with boundary value 0
 void enforceDirichlet_bottBD(double sl[numCellsX][numCellsP]) {
@@ -107,37 +119,83 @@ void enforceDirichlet_bottBD(double sl[numCellsX][numCellsP]) {
 		sl[i][0] = - sl[i][1];
 }
 
+// Implementation from (3.39)
+void enforceBC_zeroGhost_bottBD_w() {
+	for (int i = 1; i <= Nx; ++i)
+		w_sl[i][0] = 0;
+}
+
+/**
+ * TOP
+ */
+
+void enforceNonPenetrationBC_topBD_math() {
+	for (int i = 1; i <= Nx; ++i) {
+		double x = getCellCenterX(i);
+		w_sl[i][lastGhostIndexP] =
+				pB_xDer_fcn_MDL1(x) * (u_sl[i][Np] + u_sl[i][lastGhostIndexP]) - w_sl[i][Np];
+	}
+}
+
+void enforceNonPenetrationBC_topBD_numer() {
+	for (int i = 1; i <= Nx; ++i) {
+		double norm_x = getCellTopSideNormX(i, Np), norm_p = getCellTopSideNormP(i, Np);
+		w_sl[i][lastGhostIndexP] = -norm_x * (u_sl[i][Np] + u_sl[i][lastGhostIndexP]) / norm_p
+				- w_sl[i][Np];
+	}
+}
+
 /* ----- ----- ----- ----- ----- -----
- * Physical Case 0 BCs
+ * Physical Case 0: BCs
  * ----- ----- ----- ----- ----- ----- */
 
-double leftBdVal_T_fcn_MDL0(double p) {
-	return init_T_fcn_MDL0(0, p, 0);
+double helper1_fillCache_leftBdVal_MDL0(double p) {
+	return sin(M_PI * p / p0_CONST);
 }
 
-double leftBdVal_q_fcn_MDL0(double p) {
-	return qs_fcn_MDL0(init_T_fcn_MDL0(0, p, 0), p);
+double helper2_fillCache_leftBdVal_MDL0(double x) {
+	return cos(TWO_PI_CONST * n_initU_coef_MDL0 / xf * x);
 }
 
-// Not complete
-double leftBdVal_u_fcn_MDL0(double p) {
-	return 0;
+// Need to execute after enforcing initial conditions. More specifically, method only works
+// after enforcing IC and applying projection on u. This is to make sure that the lambda_x
+// are calculated, which will be used in the calculation.
+void fillCache_leftBdVal_MDL0() {
+	enforceIC();
+	// Calculate lambda_x(x0)
+	double pB = pB_fcn_MDL0(x0), x1 = getCellCenterX(1);
+	double lambda_x_leftBdVal = lambda_x_proj[1] -
+			2 * p0_CONST / (M_PI * (pB - pA))
+			* (helper1_fillCache_leftBdVal_MDL0(pA) - helper1_fillCache_leftBdVal_MDL0(pB))
+			* (helper2_fillCache_leftBdVal_MDL0(x1) - helper1_fillCache_leftBdVal_MDL0(x0));
+
+	for (int j = 0; j < numCellsP; ++j) {
+		double p = getCellCenterP(1, j);
+		// Calculate T values
+		double T = init_T_fcn_MDL0(x0, p, 0);
+		T_leftBdVal_cache[j] = T;
+		// Calculate q values
+		q_leftBdVal_cache[j] = qs_fcn_MDL0(T, p);
+		// Calculate u values
+		u_leftBdVal_cache[j] = init_u_fcn_MDL0(0, p, 0) - lambda_x_leftBdVal;
+	}
 }
 
 void enforceBC_MDL0() {
 	// Left boundary: Dirichlet BC
-	enforceDirichlet_leftBD(T_sl, leftBdVal_T_fcn_MDL0);
-	enforceDirichlet_leftBD(q_sl, leftBdVal_q_fcn_MDL0);
-	enforceDirichlet_leftBD(u_sl, leftBdVal_u_fcn_MDL0);
-	enforceDirichlet_leftBD(w_sl);  // Maybe not used: WRONG!
+	enforceDirichlet_leftBD(T_sl, T_leftBdVal_cache);
+	enforceDirichlet_leftBD(q_sl, q_leftBdVal_cache);
+	enforceDirichlet_leftBD(u_sl, u_leftBdVal_cache);
+	enforceNeumann_leftBD(w_sl);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
 	enforceNeumann_rightBD(u_sl);
 	enforceNeumann_rightBD(w_sl);
 	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
-	enforceDirichlet_bottBD(w_sl);  // Maybe not used
+	enforceBC_zeroGhost_bottBD_w(); // Maybe not used
 	// Top boundary: for u and w
+	enforceNonPenetrationBC_topBD_numer();
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -148,28 +206,6 @@ double leftBdVal_T_fcn_MDL1(double p) {
 	return exact_T_fcn_MDL1(0, p, 0);
 }
 
-void enforceBC_topBD_math_MDL1() {
-	for (int i = 1; i <= Nx; ++i) {
-		double x = getCellCenterX(i);
-		w_sl[i][lastGhostIndexP] =
-				pB_xDer_fcn_MDL1(x) * (u_sl[i][Np] + u_sl[i][lastGhostIndexP]) - w_sl[i][Np];
-	}
-}
-
-void enforceBC_topBD_numer_MDL1() {
-	for (int i = 1; i <= Nx; ++i) {
-		double norm_x = getCellTopSideNormX(i, Np), norm_p = getCellTopSideNormP(i, Np);
-		w_sl[i][lastGhostIndexP] = -norm_x * (u_sl[i][Np] + u_sl[i][lastGhostIndexP]) / norm_p
-				- w_sl[i][Np];
-	}
-}
-
-// Implementation from (3.39)
-void enforceBC_bottBD_w_MDL1() {
-	for (int i = 1; i <= Nx; ++i)
-		w_sl[i][0] = 0;
-}
-
 void enforceBC_MDL1() {
 	// Left boundary
 	// enforceDirichlet_leftBD(T_sl, leftBdVal_T_fcn_MDL1);
@@ -177,7 +213,6 @@ void enforceBC_MDL1() {
 	enforceDirichlet_leftBD(q_sl);
 	enforceDirichlet_leftBD(u_sl);
 	enforceNeumann_leftBD(w_sl);
-	//enforceDirichlet_leftBD(w_sl);
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_sl);
 	enforceNeumann_rightBD(q_sl);
@@ -187,7 +222,7 @@ void enforceBC_MDL1() {
 	// enforceBC_bottBD_w_MDL1();  // Maybe not used. From (3.39)
 	// Top boundary: for u and w
 	//enforceBC_topBD_math_MDL1();
-	enforceBC_topBD_numer_MDL1();
+	enforceNonPenetrationBC_topBD_numer();
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -242,7 +277,12 @@ void enforceBC_MDL3() {
  * Test 4 BC
  * ----- ----- ----- ----- ----- ----- */
 
-// BC same as Test Case 1
+// Empty for now
+// Same with BCs in MDL1
+
+/* ----- ----- ----- ----- ----- -----
+ * Test 5 BC
+ * ----- ----- ----- ----- ----- ----- */
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Source Functions
@@ -264,8 +304,9 @@ void setConditions() {
 		IC_T_fcnPtr = &init_T_fcn_MDL0;
 		IC_q_fcnPtr = &init_q_fcn_MDL0;
 		IC_u_fcnPtr = &init_u_fcn_MDL0;
-		IC_w_fcnPtr = &zeroSoln_fcn;
+		IC_w_fcnPtr = &zero_fcn;
 		// Boundary conditions
+		fillCache_leftBdVal_MDL0();
 		enforceBC_fcnPtr = &enforceBC_MDL0;
 		// Source functions
 		source_T_fcnPtr = &source_T_fcn_MDL0;
@@ -328,6 +369,34 @@ void setConditions() {
 		source_T_fcnPtr = &source_T_fcn_MDL3;
 		source_q_fcnPtr = &source_q_fcn_MDL3;
 		source_u_fcnPtr = &source_u_fcn_MDL3;
+		return;
+
+	case 4:  // All are the same with MDL1, except for all T functions
+		// Initial conditions
+		IC_T_fcnPtr = &exact_T_fcn_MDL4;
+		IC_q_fcnPtr = &exact_q_fcn_MDL1;
+		IC_u_fcnPtr = &exact_u_fcn_MDL1;
+		IC_w_fcnPtr = &exact_w_fcn_MDL1;
+		// Boundary conditions
+		enforceBC_fcnPtr = &enforceBC_MDL1;
+		// Source functions
+		source_T_fcnPtr = &source_T_fcn_MDL4;
+		source_q_fcnPtr = &source_q_fcn_MDL1;
+		source_u_fcnPtr = &source_u_fcn_MDL1;
+		return;
+
+	case 5:  // All are the same with MDL1, except for all T functions
+		// Initial conditions
+		IC_T_fcnPtr = &exact_T_fcn_MDL5;
+		IC_q_fcnPtr = &exact_q_fcn_MDL1;
+		IC_u_fcnPtr = &exact_u_fcn_MDL1;
+		IC_w_fcnPtr = &exact_w_fcn_MDL1;
+		// Boundary conditions
+		enforceBC_fcnPtr = &enforceBC_MDL1;
+		// Source functions
+		source_T_fcnPtr = &source_T_fcn_MDL5;
+		source_q_fcnPtr = &source_q_fcn_MDL1;
+		source_u_fcnPtr = &source_u_fcn_MDL1;
 		return;
 	}
 }

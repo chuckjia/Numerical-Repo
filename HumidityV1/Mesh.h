@@ -274,6 +274,14 @@ double getCellCenterDp(int i) {
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Numerical Solutions: 2D Arrays
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+double T_sl[numCellsX][numCellsP], q_sl[numCellsX][numCellsP];
+double u_sl[numCellsX][numCellsP], w_sl[numCellsX][numCellsP];
+double phix_sl[numCellsX][numCellsP];
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Mesh Parameters and Build Mesh
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 

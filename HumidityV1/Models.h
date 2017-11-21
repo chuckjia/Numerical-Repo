@@ -48,6 +48,15 @@ double sign_fcn(double x) {
 	return 0;
 }
 
+void empty_fcn() {
+	// Empty
+}
+
+// Placeholder for a solution function
+double zero_fcn(double x, double p, double t) {
+	return 0;
+}
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Model 0: Original Model
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -60,7 +69,7 @@ double sign_fcn(double x) {
 double c1_pB_coef_MDL0;  // 1 / 6000
 double c1_pBxDer_coef_MDL0;  // 250 * 2 / 6000
 double c1_qs_coef_MDL0;  // 0.622 * 6.112
-double numPeriod_initU_coef_MDL0, // n in (4.10)
+double n_initU_coef_MDL0, // n in (4.10)
 cp_initU_coef_MDL0, cx_initU_coef_MDL0; // Coefficients for p and x in (4.10), respectively
 
 void setFcnCoef_MDL0() {
@@ -68,9 +77,9 @@ void setFcnCoef_MDL0() {
 	c1_pBxDer_coef_MDL0 = 1 / 12.;
 	c1_qs_coef_MDL0 = 0.622 * 6.112;
 
-	numPeriod_initU_coef_MDL0 = 1.5;
+	n_initU_coef_MDL0 = 1.5;
 	cp_initU_coef_MDL0 = M_PI * p0Inv_CONST;
-	cx_initU_coef_MDL0 = 2 * numPeriod_initU_coef_MDL0 * M_PI / xf;
+	cx_initU_coef_MDL0 = 2 * n_initU_coef_MDL0 * M_PI / xf;
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -145,8 +154,8 @@ double source_u_fcn_MDL0(double T, double q, double u, double w, double x, doubl
 void setPar_MDL0() {
 	// Parameters on the domain geometry
 	x0 = 0;
-	xf = 50000;
-	pA = 200;
+	xf = 75000;
+	pA = 250;
 	pB_fcnPtr = &pB_fcn_MDL0;
 	pBxDer_fcnPtr = &pB_xDer_fcn_MDL0;
 	// Function coefficients
@@ -204,7 +213,7 @@ double pB_xDer_fcn_MDL1(double x) {
 }
 
 /* ----- ----- ----- ----- ----- -----
- * Manufacture solutions / IC
+ * Manufactured solutions / IC
  * ----- ----- ----- ----- ----- ----- */
 
 // This is the exact T function excluding the t terms
@@ -358,7 +367,7 @@ void setPar_MDL1() {
  * ----- ----- ----- ----- ----- ----- */
 
 void setFcnCoef_MDL101() {
-	// Empty for now
+	setFcnCoef_MDL1();
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -376,7 +385,7 @@ double pB_xDer_fcn_MDL101(double x) {
 }
 
 /* ----- ----- ----- ----- ----- -----
- * Manufacture solutions / IC
+ * Manufactured solutions / IC
  * ----- ----- ----- ----- ----- ----- */
 
 // Using MDL1 functions
@@ -398,7 +407,6 @@ void setPar_MDL101() {
 	// Set function coefficients
 	// Model 4 is dependent on model 1. setFcnCoef_MDL1() has to come after the definition
 	// of x0, xf, pA, and pB()
-	setFcnCoef_MDL1();
 	setFcnCoef_MDL101();
 }
 
@@ -630,7 +638,168 @@ void setPar_MDL3() {
  * Test Case 4:
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+/* ----- ----- ----- ----- ----- -----
+ * Coefficients
+ * ----- ----- ----- ----- ----- ----- */
 
+// Coefficients used in the model
+// Empty for now
+double c1_exT_coef_MDL4;
+
+// Need to execute after setting domain parameters x0, xf, pA, pB
+void setFcnCoef_MDL4() {
+	setFcnCoef_MDL1();
+	c1_exT_coef_MDL4 = 1.5 * M_PI / xf;
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// Empty
+// Use functions from Model 1
+
+/* ----- ----- ----- ----- ----- -----
+ * Manufactured solutions / IC
+ * ----- ----- ----- ----- ----- ----- */
+
+double exact_T_helper_fcn_MDL4(double x, double p) {
+	return sin(c1_exT_coef_MDL4 * x) * sin(TWO_PI_CONST * (p - pA) / (pB_fcn_MDL1(x) - pA));
+}
+
+// Manufactured solution: exact T function
+double exact_T_fcn_MDL4(double x, double p, double t) {
+	return cos(TWO_PI_CONST * t) * exact_T_helper_fcn_MDL4(x, p);
+}
+
+// x-derivative of the exact T function
+double exact_T_xDer_fcn_MDL4(double x, double p, double t) {
+	double p_minus_pA = p - pA;
+	double xPart = c1_exT_coef_MDL4 * x,
+			pPart = TWO_PI_CONST * p_minus_pA / (pB_fcn_MDL1(x) - pA);
+	return cos(TWO_PI_CONST * t) * (
+			c1_exT_coef_MDL4 * cos(xPart) * sin(pPart)
+			- sin(xPart) * TWO_PI_CONST * p_minus_pA * cos(pPart) *
+			pB_xDer_fcn_MDL1(x) / pow(pB_fcn_MDL1(x) - pA, 2)
+	);
+}
+
+// p-derivative of the exact T function
+double exact_T_pDer_fcn_MDL4(double x, double p, double t) {
+	double pPartCoef = TWO_PI_CONST / (pB_fcn_MDL1(x) - pA);
+	return cos(TWO_PI_CONST * t) * sin(c1_exT_coef_MDL4 * x)
+			* pPartCoef * cos(pPartCoef * (p - pA));
+}
+
+// The t-derivative of the exact T function
+double exact_T_tDer_fcn_MDL4(double x, double p, double t) {
+	return -TWO_PI_CONST * sin(TWO_PI_CONST * t) * exact_T_helper_fcn_MDL4(x, p);
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Source solutions
+ * ----- ----- ----- ----- ----- ----- */
+
+// Source function for the T equation
+double source_T_fcn_MDL4(double T, double q, double u, double w, double x, double p, double t) {
+	return exact_T_tDer_fcn_MDL4(x, p, t)
+			+ exact_u_fcn_MDL1(x, p, t) * exact_T_xDer_fcn_MDL4(x, p, t)
+			+ exact_w_fcn_MDL1(x, p, t) * exact_T_pDer_fcn_MDL4(x, p, t);
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Wrapper function of all setters
+ * ----- ----- ----- ----- ----- ----- */
+
+// Set all parameters in model 4
+void setPar_MDL4() {
+	// Parameters on the domain geometry
+	x0 = 0.;
+	xf = 50000.;
+	pA = 200.;
+	pB_fcnPtr = &pB_fcn_MDL1;
+	pBxDer_fcnPtr = &pB_xDer_fcn_MDL1;
+	// Set function coefficients
+	setFcnCoef_MDL4();
+}
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Test Case 5:
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+/* ----- ----- ----- ----- ----- -----
+ * Coefficients
+ * ----- ----- ----- ----- ----- ----- */
+
+// Coefficients used in the model
+// Empty for now
+double c1_scale_exT_coef_MDL5;
+
+void setFcnCoef_MDL5() {
+	// Function coefficients
+	setFcnCoef_MDL4();
+	c1_scale_exT_coef_MDL5 = 1e-5;
+}
+
+/* ----- ----- ----- ----- ----- -----
+ * Domain geometry
+ * ----- ----- ----- ----- ----- ----- */
+
+// Use functions from MDL1
+
+/* ----- ----- ----- ----- ----- -----
+ * Manufacture solutions / IC
+ * ----- ----- ----- ----- ----- ----- */
+
+// Manufactured solution: exact T function
+double exact_T_fcn_MDL5(double x, double p, double t) {
+	return c1_scale_exT_coef_MDL5 * exact_T_fcn_MDL4(x, p, t) * pow(p - pA, 2);
+}
+
+// x-derivative of the exact T function
+double exact_T_xDer_fcn_MDL5(double x, double p, double t) {
+	return c1_scale_exT_coef_MDL5 * exact_T_xDer_fcn_MDL4(x, p, t) * pow(p - pA, 2);
+}
+
+// p-derivative of the exact T function
+double exact_T_pDer_fcn_MDL5(double x, double p, double t) {
+	double p_minus_pA = p - pA;
+	double pPartCoef = TWO_PI_CONST / (pB_fcn_MDL1(x) - pA),
+			pPart = pPartCoef * p_minus_pA;
+	return c1_scale_exT_coef_MDL5 * cos(TWO_PI_CONST * t) * sin(c1_exT_coef_MDL4 * x) * (
+			pPartCoef * cos(pPart) * p_minus_pA * p_minus_pA
+			+ sin(pPart) * 2 * p_minus_pA);
+}
+
+// The t-derivative of the exact T function
+double exact_T_tDer_fcn_MDL5(double x, double p, double t) {
+	return c1_scale_exT_coef_MDL5 * exact_T_tDer_fcn_MDL4(x, p, t) * pow(p - pA, 2);
+}
+
+// q, u, w: use functions from MDL1
+
+/* ----- ----- ----- ----- ----- -----
+ * Source Functions
+ * ----- ----- ----- ----- ----- ----- */
+
+// Source function for the T equation
+double source_T_fcn_MDL5(double T, double q, double u, double w, double x, double p, double t) {
+	return c1_scale_exT_coef_MDL5 * (exact_T_tDer_fcn_MDL5(x, p, t)
+			+ exact_u_fcn_MDL1(x, p, t) * exact_T_xDer_fcn_MDL5(x, p, t)
+			+ exact_w_fcn_MDL1(x, p, t) * exact_T_pDer_fcn_MDL5(x, p, t));
+}
+
+// Set all parameters in model 5
+void setPar_MDL5() {
+	// Parameters on the domain geometry
+	x0 = 0.;
+	xf = 50000.;
+	pA = 200.;
+	pB_fcnPtr = &pB_fcn_MDL1;
+	pBxDer_fcnPtr = &pB_xDer_fcn_MDL1;
+	// Set function coefficients
+	setFcnCoef_MDL5();
+}
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Model Parameters
@@ -647,14 +816,20 @@ void selectModel() {
 	case 102:
 		setPar_MDL1();
 		return;
+	case 101:
+		setPar_MDL101();
+		return;
 	case 2:
 		setPar_MDL2();
 		return;
 	case 3:
 		setPar_MDL3();
 		return;
-	case 101:
-		setPar_MDL101();
+	case 4:
+		setPar_MDL4();
+		return;
+	case 5:
+		setPar_MDL5();
 		return;
 	default: // Throw error message when the model number does correspond to any model
 		throw "Error: Model does NOT exist!";

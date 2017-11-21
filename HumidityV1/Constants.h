@@ -17,7 +17,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 1;  // Model number. 0 = original model; other number = test models
+int modelNo = 0;  // Model number. 0 = original model; other number = test models
 int fluxMethod = 0;  // Select flux calculation method. 0 = Upwind
 
 // Select time method.
@@ -28,17 +28,19 @@ int timeMethod = 4;
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 100;  // Number of space divisions in both x and p directions
-int numTimeSteps = 100;  // Number of time steps
-double Dt = 1e-2;  // Size of one time step
+const int numDivisions = 200;  // Number of space divisions in both x and p directions
+
+
+int numTimeSteps = 0;  // Number of time steps
+double Dt = 0.5;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-bool printResToFile_opt = false;  // Choose whether to print numerical solution/error to file
-int aveFreq = numTimeSteps + 10;  // The frequency of using the average method
+bool printResToFile_opt = true;  // Choose whether to print numerical solution/error to file
+int aveFreq = 18;  // The frequency of using the average method
 
 bool printExactSolnToFile_opt = false;
 int movieFrameFreq = 1;  // The frequency of printing result to file
@@ -56,7 +58,7 @@ void setConstants() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Print out messages for testing purposes
-void testmsg() {
+void tm() {
 	printf("\n===== ===== ===== ===== ===== \n");
 	printf("The program passed here.\n===== ===== ===== ===== =====\n");
 }

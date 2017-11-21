@@ -7,7 +7,7 @@
 
 #ifndef WPHIX_H_
 #define WPHIX_H_
-#include "QuadCell.h"
+#include "Projection.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Calculate the w Function
