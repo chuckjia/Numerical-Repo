@@ -28,10 +28,9 @@ int timeMethod = 4;
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 200;  // Number of space divisions in both x and p directions
+const int numDivisions = 100;  // Number of space divisions in both x and p directions
 
-
-int numTimeSteps = 4000;  // Number of time steps
+int numTimeSteps = 20000;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
 double finalTime = numTimeSteps * Dt;  // Final time
 
@@ -39,8 +38,8 @@ double finalTime = numTimeSteps * Dt;  // Final time
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-bool printResToFile_opt = true;  // Choose whether to print numerical solution/error to file
-int aveFreq = 18;  // The frequency of using the average method
+bool printResToFile_opt = false;  // Choose whether to print numerical solution/error to file
+int aveFreq = 20;  // The frequency of using the average method
 
 bool printExactSolnToFile_opt = false;
 int movieFrameFreq = 1;  // The frequency of printing result to file

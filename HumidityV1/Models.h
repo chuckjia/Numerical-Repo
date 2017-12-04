@@ -30,7 +30,7 @@ double Rv_CONST = 461.5;
 double Cp_CONST = 1004.;
 double g_CONST = 9.8, gInv_CONST = 1. / 9.8;
 double T0_CONST = 300.;
-double p0_CONST = 1000., p0Inv_CONST = 1 / 1000.;
+double p0_CONST = 1000., p0Inv_CONST = 0.001;
 double DeltaT_CONST = 50.;
 
 double halfDt = 0.5 * Dt;

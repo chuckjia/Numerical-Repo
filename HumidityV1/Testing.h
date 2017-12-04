@@ -552,7 +552,7 @@ void printPhixErrToFile(double t) {
 
 void test_functions_MDL0() {
 	double x = 35000;
-	printf("%1.10e", pB_xDer_fcn_MDL0(x));
+	printf("%1.10f", pB_xDer_fcn_MDL0(x));
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -560,8 +560,8 @@ void test_functions_MDL0() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	runTimeSteps();
-	//peformAnalysis();
-	//test_functions_MDL0();
+	// runTimeSteps();
+	// peformAnalysis();
+	test_functions_MDL0();
 }
 #endif /* TESTING_H_ */

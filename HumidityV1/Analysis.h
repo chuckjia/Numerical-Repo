@@ -13,7 +13,7 @@ const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
 double computationTime = 0;
 double relative_L2Err_T_global, relative_L2Err_q_global,
 relative_L2Err_u_global, relative_L2Err_w_global;
-FILE *T_norm_filePtr, *q_norm_filePtr, *u_norm_filePtr, *w_norm_filePtr;
+FILE *T_norm_filePtr, *q_norm_filePtr, *u_norm_filePtr, *w_norm_filePtr, *time_filePtr;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Print Messages
@@ -187,12 +187,13 @@ void calcL2Norm(double t) {
 		}
 	}
 	norm_T = sqrt(norm_T); norm_q = sqrt(norm_q); norm_u = sqrt(norm_u); norm_w = sqrt(norm_w);
-	printf("\n    L2 norm (T, q, u, w) = (%1.7e %1.7e %1.7e %1.7e)",
+	printf("\n    L2 norm (T, q, u, w) = (%1.7e, %1.2f, %1.2f, %1.2f)",
 			norm_T, norm_q, norm_u, norm_w);
 	fprintf(T_norm_filePtr, "%1.20e ", norm_T);
 	fprintf(q_norm_filePtr, "%1.20e ", norm_q);
 	fprintf(u_norm_filePtr, "%1.20e ", norm_u);
 	fprintf(w_norm_filePtr, "%1.20e ", norm_w);
+	fprintf(time_filePtr, "%1.20e ", t);
 }
 
 void writeParToFile() {
@@ -374,6 +375,7 @@ void printResToFile_convAnalysis() {
 void closeFiles_analysis() {
 	fclose(T_norm_filePtr); fclose(q_norm_filePtr);
 	fclose(u_norm_filePtr); fclose(w_norm_filePtr);
+	fclose(time_filePtr);
 }
 
 void setAnalysis() {
@@ -381,6 +383,7 @@ void setAnalysis() {
 	q_norm_filePtr = fopen("Results/q_norm.txt", "wb");
 	u_norm_filePtr = fopen("Results/u_norm.txt", "wb");
 	w_norm_filePtr = fopen("Results/w_norm.txt", "wb");
+	time_filePtr = fopen("Results/time.txt", "wb");
 }
 
 #endif /* ANALYSIS_H_ */

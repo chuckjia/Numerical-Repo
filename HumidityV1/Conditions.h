@@ -168,6 +168,8 @@ void fillCache_leftBdVal_MDL0() {
 			2 * p0_CONST / (M_PI * (pB - pA))
 			* (helper1_fillCache_leftBdVal_MDL0(pA) - helper1_fillCache_leftBdVal_MDL0(pB))
 			* (helper2_fillCache_leftBdVal_MDL0(x1) - helper1_fillCache_leftBdVal_MDL0(x0));
+	printf("\nlambda_x on the left BD = %1.10e\n", lambda_x_leftBdVal);
+	printf("lambda_x[1] = %1.10e\n", lambda_x_proj[1]);
 
 	for (int j = 0; j < numCellsP; ++j) {
 		double p = getCellCenterP(1, j);
@@ -175,7 +177,8 @@ void fillCache_leftBdVal_MDL0() {
 		double T = init_T_fcn_MDL0(x0, p, 0);
 		T_leftBdVal_cache[j] = T;
 		// Calculate q values
-		q_leftBdVal_cache[j] = qs_fcn_MDL0(T, p);
+		q_leftBdVal_cache[j] = init_q_fcn_MDL0(T, p, 0);
+		//q_leftBdVal_cache[j] = qs_fcn_MDL0(T, p);
 		// Calculate u values
 		u_leftBdVal_cache[j] = init_u_fcn_MDL0(0, p, 0) - lambda_x_leftBdVal;
 	}
@@ -195,7 +198,7 @@ void enforceBC_MDL0() {
 	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
 	enforceBC_zeroGhost_bottBD_w(); // Maybe not used
 	// Top boundary: for u and w
-	enforceNonPenetrationBC_topBD_numer();
+	 enforceNonPenetrationBC_topBD_numer();
 }
 
 /* ----- ----- ----- ----- ----- -----

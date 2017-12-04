@@ -12,7 +12,7 @@ clear; clc
 % Plot Settings
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
-graphNumerSoln = [1];
+graphNumerSoln = [3];
 graphErr = [];
 graphExactSoln = [];
 plotBoundary = false;
