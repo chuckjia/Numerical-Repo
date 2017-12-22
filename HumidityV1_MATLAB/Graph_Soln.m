@@ -12,8 +12,8 @@ clear; clc
 % Plot Settings
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
-graphNumerSoln = [3];
-graphErr = [];
+graphNumerSoln = [1];
+graphErr = [1];
 graphExactSoln = [];
 plotBoundary = false;
 
@@ -51,5 +51,6 @@ for ff = graphList
     title({graphTitleList(ff), titleLine2, ""});
     xlabel('x coordinates'); ylabel('p coordinates');
 end
+%view(-180, 90)
 
 clear titleLine2 matShape fileList graphTitleList graphList

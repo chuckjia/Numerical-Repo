@@ -1,21 +1,24 @@
- folder = "Storage/Res11/"
-% folder = "Storage/Res7_Nx400_Dt0.125/"
-% folder = "Results/"
-%tVec = 50:50:5000;
- tVec = getVecFromFile_fcn(folder, "time");
-norm_T = getVecFromFile_fcn(folder, "T_norm");
+folder = "Storage/Res17/"
 dotSize = 10;
+
+tVec = getVecFromFile_fcn(folder, "time");
+
+norm_T = getVecFromFile_fcn(folder, "T_norm");
 figure
-plot(tVec, norm_T, '.-', 'MarkerSize', dotSize); title("T")
+plot(tVec, norm_T - 2.055e6, '.-', 'MarkerSize', dotSize)
+title("T"); xlabel("Time"); ylabel("Value - 2.055e6")
 
 norm_q = getVecFromFile_fcn(folder, "q_norm");
 figure
-plot(tVec, norm_q, '.-', 'MarkerSize', dotSize); title("q")
+plot(tVec, norm_q, '.-', 'MarkerSize', dotSize); 
+title("q"); xlabel("Time"); ylabel("Value")
 
 norm_u = getVecFromFile_fcn(folder, "u_norm");
 figure
-plot(tVec, norm_u, '.-', 'MarkerSize', dotSize); title("u")
+plot(tVec, norm_u, '.-', 'MarkerSize', dotSize); 
+title("u"); xlabel("Time"); ylabel("Value")
 
 norm_w = getVecFromFile_fcn(folder, "w_norm");
 figure
-plot(tVec, norm_w, '.-', 'MarkerSize', dotSize); title("w")
+plot(tVec, norm_w, '.-', 'MarkerSize', dotSize); 
+title("w"); xlabel("Time"); ylabel("Value")

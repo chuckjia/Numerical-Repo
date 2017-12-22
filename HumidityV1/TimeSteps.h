@@ -202,8 +202,10 @@ void rk4() {
 			prog = progNew;
 			printf("\r  - Current progress: %d%%, Time = %1.2fs", prog, t);
 			fflush(stdout);
-			calcL2Norm(t);
+			if (calcL2err_opt)
+				calcL2Norm(t);
 		}
+		aveSoln(tt + 1);
 
 		// Numerical calculation
 
@@ -240,12 +242,16 @@ void rk4() {
 			}
 		postForwardEuler();
 
-		aveSoln(tt + 1);
 		//showL2Errors(t);
 		//writeResToFileForMovie_T_test(tt + 1);
+		writeSolnToFile(tt);
 	}
 	printf("\r  - Runge-Kutta 4 method complete\n");
 }
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * BDF2
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double c1_coef_BDF2 = 4. / 3., c2_coef_BDF2 = 1 / 3., c3_coef_BDF2 = 2. / 3. * Dt;
 

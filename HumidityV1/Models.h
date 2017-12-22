@@ -21,18 +21,23 @@ double (*pBxDer_fcnPtr)(double x);  // Function pointer: derivative of pB functi
  * Mathematical and Physical Constants
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+// Mathematical
 double TWO_PI_CONST = 2 * M_PI;
 double ONE_THIRD_CONST = 1. / 3.;
 double ONE_SIXTH_CONST = 1. / 6.;
 
+// Defined on page 100
 double R_CONST = 287.;
 double Rv_CONST = 461.5;
 double Cp_CONST = 1004.;
 double g_CONST = 9.8, gInv_CONST = 1. / 9.8;
+double p0_CONST = 1000., p0Inv_CONST = 1. / 1000.;
+
+// Defined on page 115: physical case
 double T0_CONST = 300.;
-double p0_CONST = 1000., p0Inv_CONST = 0.001;
 double DeltaT_CONST = 50.;
 
+// For convenience
 double halfDt = 0.5 * Dt;
 double oneSixthDt = Dt / 6.;
 
@@ -40,14 +45,12 @@ double oneSixthDt = Dt / 6.;
  * Math Functions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
+// Returns the sign of a number
 double sign_fcn(double x) {
-	if (x > 0)
-		return 1;
-	if (x < 0)
-		return -1;
-	return 0;
+	if (x > 0) return 1; if (x < 0) return -1; return 0;
 }
 
+// Empty function as place holders
 void empty_fcn() {
 	// Empty
 }
@@ -91,7 +94,7 @@ double pB_fcn_MDL0(double x) {
 	return 1000. - 250. * exp(-pow((x - 37500.) * c1_pB_coef_MDL0, 2));
 }
 
-// The derivative of pB function
+// Derivative of pB function
 double pB_xDer_fcn_MDL0(double x) {
 	double tmp = (x - 37500.) * c1_pB_coef_MDL0;
 	return c1_pBxDer_coef_MDL0 * tmp * exp(-tmp * tmp);
@@ -125,23 +128,34 @@ double init_u_fcn_MDL0(double x, double p, double t) {
  * Source solutions
  * ----- ----- ----- ----- ----- ----- */
 
+double sourceHelper_delta_fcn_MDL0(double q, double w, double qsVal) {
+	return 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal));
+}
+
+double sourceHelper_L_fcn_MDL0(double T) {
+	return 2.5008e6 - 2.3e3 * (T - 275.);
+}
+
+double sourceHelper_F_fcn_MDL0(double T, double qsVal, double LVal) {
+	return qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
+			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+}
+
 // Source function for the T equation
 double source_T_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
 	double qsVal = qs_fcn_MDL0(T, p),
-			deltaVal = 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal)),
-			LVal = 2.5008e6 - 2.3e3 * (T - 275.),
-			FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
-			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+			deltaVal = sourceHelper_delta_fcn_MDL0(q, w, qsVal),
+			LVal = sourceHelper_L_fcn_MDL0(T),
+			FVal = sourceHelper_F_fcn_MDL0(T, qsVal, LVal);
 	return w / (p * Cp_CONST) * (R_CONST * T - deltaVal * LVal * FVal);
 }
 
 // Source function for the q equation
 double source_q_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
 	double qsVal = qs_fcn_MDL0(T, p),
-			deltaVal = 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal)),
-			LVal = 2.5008e6 - 2.3e3 * (T - 275.),
-			FVal = qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
-			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+			deltaVal = sourceHelper_delta_fcn_MDL0(q, w, qsVal),
+			LVal = sourceHelper_L_fcn_MDL0(T),
+			FVal = sourceHelper_F_fcn_MDL0(T, qsVal, LVal);
 	return deltaVal * FVal * w / p;
 }
 

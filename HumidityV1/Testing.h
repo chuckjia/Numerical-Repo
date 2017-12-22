@@ -560,8 +560,8 @@ void test_functions_MDL0() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	// runTimeSteps();
-	// peformAnalysis();
-	test_functions_MDL0();
+	runTimeSteps();
+	peformAnalysis();
+	// test_functions_MDL0();
 }
 #endif /* TESTING_H_ */

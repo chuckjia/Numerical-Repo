@@ -187,8 +187,8 @@ void calcL2Norm(double t) {
 		}
 	}
 	norm_T = sqrt(norm_T); norm_q = sqrt(norm_q); norm_u = sqrt(norm_u); norm_w = sqrt(norm_w);
-	printf("\n    L2 norm (T, q, u, w) = (%1.7e, %1.2f, %1.2f, %1.2f)",
-			norm_T, norm_q, norm_u, norm_w);
+	printf("\n    L2 norm (T, q, u, w) = (%1.2f, %1.2f, %1.2f, %1.2f)",
+			norm_T - 2.055e6, norm_q, norm_u, norm_w);
 	fprintf(T_norm_filePtr, "%1.20e ", norm_T);
 	fprintf(q_norm_filePtr, "%1.20e ", norm_q);
 	fprintf(u_norm_filePtr, "%1.20e ", norm_u);
@@ -271,7 +271,6 @@ void writeExactSolnToFile() {
 void writeResToFileForMovie_T_test(int tt) {
 	if (tt % movieFrameFreq)
 		return;
-
 	char filename[20];
 	sprintf(filename, "MovieFrames/T_soln_%d.txt", tt);
 	FILE *res = fopen(filename, "wb");
@@ -295,6 +294,29 @@ void writeResToFileForMovie_T_test(int tt) {
 		}
 	}
 	fclose(res); fclose(err); //fclose(exact);
+}
+
+void writeSolnToFile(int tt) {
+	if (tt % movieFrameFreq)
+		return;
+	char filename[20];
+	sprintf(filename, "MovieFrames/T_soln_%d.txt", tt);
+	FILE *res_T = fopen(filename, "wb");
+	sprintf(filename, "MovieFrames/q_soln_%d.txt", tt);
+	FILE *res_q = fopen(filename, "wb");
+	sprintf(filename, "MovieFrames/u_soln_%d.txt", tt);
+	FILE *res_u = fopen(filename, "wb");
+	sprintf(filename, "MovieFrames/w_soln_%d.txt", tt);
+	FILE *res_w = fopen(filename, "wb");
+
+	for (int i = 0; i < numCellsX; ++i)
+		for (int j = 0; j < numCellsP; ++j) {
+			fprintf(res_T, "%1.20e ", T_sl[i][j]);
+			fprintf(res_q, "%1.20e ", q_sl[i][j]);
+			fprintf(res_u, "%1.20e ", u_sl[i][j]);
+			fprintf(res_w, "%1.20e ", w_sl[i][j]);
+		}
+	fclose(res_T); fclose(res_q); fclose(res_u); fclose(res_w);
 }
 
 void printExactVelocityToFile(int tt) {
@@ -348,19 +370,17 @@ void peformAnalysis() {
 
 void aveSoln_oneTerm(double sl[numCellsX][numCellsP]) {
 	for (int i = 1; i <= Nx; ++i)
-		for (int j = 1; j <= Np; ++j) {
-			double uSignHalf = 0.5 * sign_fcn(u_sl[i][j]);
-			sl[i][j] = 0.5 * (sl[i][j] + (0.5 + uSignHalf) * sl[i - 1][j] + (0.5 - uSignHalf) * sl[i + 1][j]);
-		}
+		for (int j = 1; j <= Np; ++j)
+			sl[i][j] = 0.5 * (sl[i][j] + sl[i - 1][j]);
 }
 
 void aveSoln(int tt) {
-	if (tt % aveFreq)
-		return;
-	aveSoln_oneTerm(T_sl);
-	aveSoln_oneTerm(q_sl);
+	if (tt % aveFreq == 0) {
+		aveSoln_oneTerm(T_sl);
+	}
 	aveSoln_oneTerm(u_sl);
 	aveSoln_oneTerm(w_sl);
+	aveSoln_oneTerm(phix_sl);
 }
 
 void printResToFile_convAnalysis() {
