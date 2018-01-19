@@ -69,18 +69,21 @@ double zero_fcn(double x, double p, double t) {
  * ----- ----- ----- ----- ----- ----- */
 
 // Coefficients used in the model
-double c1_pB_coef_MDL0;  // 1 / 6000
+double c1_pB_coef_MDL0;  // Controls the height of the mountain
+double c2_pB_coef_MDL0;  // 1 / 6000
 double c1_pBxDer_coef_MDL0;  // 250 * 2 / 6000
 double c1_qs_coef_MDL0;  // 0.622 * 6.112
 double n_initU_coef_MDL0, // n in (4.10)
 cp_initU_coef_MDL0, cx_initU_coef_MDL0; // Coefficients for p and x in (4.10), respectively
 
+// Set values to the coefficients defined in this section
 void setFcnCoef_MDL0() {
-	c1_pB_coef_MDL0 = 1 / 6000.;
-	c1_pBxDer_coef_MDL0 = 1 / 12.;
+	c1_pB_coef_MDL0 = 279.;
+	c2_pB_coef_MDL0 = 1 / 6000.;
+	c1_pBxDer_coef_MDL0 = c1_pB_coef_MDL0 * 2 / 6000.;
 	c1_qs_coef_MDL0 = 0.622 * 6.112;
 
-	n_initU_coef_MDL0 = 1;
+	n_initU_coef_MDL0 = 1.;
 	cp_initU_coef_MDL0 = M_PI * p0Inv_CONST;
 	cx_initU_coef_MDL0 = 2 * n_initU_coef_MDL0 * M_PI / xf;
 }
@@ -91,12 +94,12 @@ void setFcnCoef_MDL0() {
 
 // pB function
 double pB_fcn_MDL0(double x) {
-	return 1000. - 250. * exp(-pow((x - 37500.) * c1_pB_coef_MDL0, 2));
+	return 1000. - c1_pB_coef_MDL0 * exp(-pow((x - 37500.) * c2_pB_coef_MDL0, 2));
 }
 
 // Derivative of pB function
 double pB_xDer_fcn_MDL0(double x) {
-	double tmp = (x - 37500.) * c1_pB_coef_MDL0;
+	double tmp = (x - 37500.) * c2_pB_coef_MDL0;
 	return c1_pBxDer_coef_MDL0 * tmp * exp(-tmp * tmp);
 }
 
@@ -120,6 +123,7 @@ double init_q_fcn_MDL0(double x, double p, double t) {
 	return qs_fcn_MDL0(T, p) - 0.0052;
 }
 
+// Initial u function
 double init_u_fcn_MDL0(double x, double p, double t) {
 	return 7.5 + 2 * cos(cp_initU_coef_MDL0 * p) * cos(cx_initU_coef_MDL0 * x);
 }
@@ -128,15 +132,18 @@ double init_u_fcn_MDL0(double x, double p, double t) {
  * Source solutions
  * ----- ----- ----- ----- ----- ----- */
 
-double sourceHelper_delta_fcn_MDL0(double q, double w, double qsVal) {
+// Delta function defined on p.100, line 10-15
+double source_delta_fcn_MDL0(double q, double w, double qsVal) {
 	return 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal));
 }
 
-double sourceHelper_L_fcn_MDL0(double T) {
+// L function defined on p.100, line 15-20
+double source_L_fcn_MDL0(double T) {
 	return 2.5008e6 - 2.3e3 * (T - 275.);
 }
 
-double sourceHelper_F_fcn_MDL0(double T, double qsVal, double LVal) {
+// F function defined in (2.2) on p.100
+double source_F_fcn_MDL0(double T, double qsVal, double LVal) {
 	return qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
 			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
 }
@@ -144,18 +151,18 @@ double sourceHelper_F_fcn_MDL0(double T, double qsVal, double LVal) {
 // Source function for the T equation
 double source_T_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
 	double qsVal = qs_fcn_MDL0(T, p),
-			deltaVal = sourceHelper_delta_fcn_MDL0(q, w, qsVal),
-			LVal = sourceHelper_L_fcn_MDL0(T),
-			FVal = sourceHelper_F_fcn_MDL0(T, qsVal, LVal);
+			deltaVal = source_delta_fcn_MDL0(q, w, qsVal),
+			LVal = source_L_fcn_MDL0(T),
+			FVal = source_F_fcn_MDL0(T, qsVal, LVal);
 	return w / (p * Cp_CONST) * (R_CONST * T - deltaVal * LVal * FVal);
 }
 
 // Source function for the q equation
 double source_q_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
 	double qsVal = qs_fcn_MDL0(T, p),
-			deltaVal = sourceHelper_delta_fcn_MDL0(q, w, qsVal),
-			LVal = sourceHelper_L_fcn_MDL0(T),
-			FVal = sourceHelper_F_fcn_MDL0(T, qsVal, LVal);
+			deltaVal = source_delta_fcn_MDL0(q, w, qsVal),
+			LVal = source_L_fcn_MDL0(T),
+			FVal = source_F_fcn_MDL0(T, qsVal, LVal);
 	return deltaVal * FVal * w / p;
 }
 

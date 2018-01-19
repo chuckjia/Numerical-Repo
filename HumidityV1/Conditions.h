@@ -168,8 +168,8 @@ void fillCache_leftBdVal_MDL0() {
 			2 * p0_CONST / (M_PI * (pB - pA))
 			* (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
 			* (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));
-	printf("\nlambda_x on the left BD = %1.10e\n", lambda_x_leftBdVal);
-	printf("lambda_x[1] = %1.10e\n", lambda_x_proj[1]);
+	// printf("\nlambda_x on the left BD = %1.10e\n", lambda_x_leftBdVal);
+	// printf("lambda_x[1] = %1.10e\n", lambda_x_proj[1]);
 
 	for (int j = 0; j < numCellsP; ++j) {
 		double p = getCellCenterP(1, j);

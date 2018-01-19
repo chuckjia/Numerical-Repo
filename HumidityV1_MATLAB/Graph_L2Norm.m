@@ -1,4 +1,4 @@
-folder = "Storage/Res17/"
+folder = "Storage/Res21/"
 dotSize = 10;
 
 tVec = getVecFromFile_fcn(folder, "time");

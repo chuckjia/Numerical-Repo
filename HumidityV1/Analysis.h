@@ -368,6 +368,8 @@ void peformAnalysis() {
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }
 
+void (*aveSoln_fcnPtr)(int tt);
+
 void aveSoln_oneTerm(double sl[numCellsX][numCellsP]) {
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 1; j <= Np; ++j)
@@ -377,10 +379,15 @@ void aveSoln_oneTerm(double sl[numCellsX][numCellsP]) {
 void aveSoln(int tt) {
 	if (tt % aveFreq == 0) {
 		aveSoln_oneTerm(T_sl);
+		// aveSoln_oneTerm(q_sl);
 	}
 	aveSoln_oneTerm(u_sl);
 	aveSoln_oneTerm(w_sl);
 	aveSoln_oneTerm(phix_sl);
+}
+
+void noAveSoln(int tt) {
+	// Empty
 }
 
 void printResToFile_convAnalysis() {
@@ -404,6 +411,11 @@ void setAnalysis() {
 	u_norm_filePtr = fopen("Results/u_norm.txt", "wb");
 	w_norm_filePtr = fopen("Results/w_norm.txt", "wb");
 	time_filePtr = fopen("Results/time.txt", "wb");
+
+	if (average_result_opt)
+		aveSoln_fcnPtr = &aveSoln;
+	else
+		aveSoln_fcnPtr = &noAveSoln;
 }
 
 #endif /* ANALYSIS_H_ */

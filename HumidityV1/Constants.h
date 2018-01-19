@@ -17,7 +17,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 0;  // Model number. 0 = original model; other number = test models
+int modelNo = 0;  // Model number. 0 = original physical model; other number = test models
 int fluxMethod = 0;  // Select flux calculation method. 0 = Upwind Godunov
 
 // Select time method.
@@ -38,30 +38,31 @@ double finalTime = numTimeSteps * Dt;  // Final time
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-/*
+/* ----- ----- ----- ----- ----- -----
  * Physical Simulations
- */
+ * ----- ----- ----- ----- ----- ----- */
 
 // The frequency of using the average method
-int aveFreq = 25;
-// Choose whether to calculate, show, and print to file L2 errors during computation
+bool average_result_opt = true;
+int aveFreq = 18;
+// Choose whether to calculate, show, and print to file the L2 errors during computation
 bool calcL2err_opt = true;
 
-/*
+/* ----- ----- ----- ----- ----- -----
  * For testing cases
- */
+ * ----- ----- ----- ----- ----- -----*/
 
 // Choose whether to print numerical SOLUTION and ERRORS to file at the END of computation
 bool printResToFile_opt = true;
 // Choose if print EXACT solutions to file at the END of computation
 bool printExactSolnToFile_opt = false;
 
-/*
+/* ----- ----- ----- ----- ----- -----
  * Settings for movie I/O
- */
+ * ----- ----- ----- ----- ----- -----*/
 
 // The frequency of printing results to file for movie frames
-int movieFrameFreq = numTimeSteps / 5;
+int movieFrameFreq = 2000;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Parameter in This File
