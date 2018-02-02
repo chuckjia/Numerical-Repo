@@ -5,8 +5,8 @@
 
 clear; clc
 
-for numThou = 0:10
-clearvars -except numThou
+% for numThou = 0:10
+% clearvars -except numThou
 
 folder = "Sim10/"
 
@@ -18,7 +18,7 @@ folder_getParScp = path + folder + "Norm/"; getPar_scp; getCellCenters_scp;
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
 solnName = 'w';
-% numThou = 20;
+numThou = 20;
 timeToPlot = 1000 * numThou
 
 zCoordPlot = false;
@@ -135,4 +135,4 @@ end
 
 clear titleLine2 matShape fileList graphTitleList graphList
 
-end
+% end
