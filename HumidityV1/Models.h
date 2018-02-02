@@ -69,18 +69,19 @@ double zero_fcn(double x, double p, double t) {
  * ----- ----- ----- ----- ----- ----- */
 
 // Coefficients used in the model
-double c1_pB_coef_MDL0;  // Controls the height of the mountain
-double c2_pB_coef_MDL0;  // 1 / 6000
-double c1_pBxDer_coef_MDL0;  // 250 * 2 / 6000
+double h_pB_coef_MDL0;  // Controls the height of mountain
+double c1_pB_coef_MDL0;  // 1 / 6000
+double c1_pBxDer_coef_MDL0;  // heightFactor * 2 / 6000
+
 double c1_qs_coef_MDL0;  // 0.622 * 6.112
 double n_initU_coef_MDL0, // n in (4.10)
 cp_initU_coef_MDL0, cx_initU_coef_MDL0; // Coefficients for p and x in (4.10), respectively
 
 // Set values to the coefficients defined in this section
 void setFcnCoef_MDL0() {
-	c1_pB_coef_MDL0 = 279.;
-	c2_pB_coef_MDL0 = 1 / 6000.;
-	c1_pBxDer_coef_MDL0 = c1_pB_coef_MDL0 * 2 / 6000.;
+	h_pB_coef_MDL0 = 400.;
+	c1_pB_coef_MDL0 = 1 / 6000.;
+	c1_pBxDer_coef_MDL0 = 2 * h_pB_coef_MDL0 * c1_pB_coef_MDL0;
 	c1_qs_coef_MDL0 = 0.622 * 6.112;
 
 	n_initU_coef_MDL0 = 1.;
@@ -94,12 +95,12 @@ void setFcnCoef_MDL0() {
 
 // pB function
 double pB_fcn_MDL0(double x) {
-	return 1000. - c1_pB_coef_MDL0 * exp(-pow((x - 37500.) * c2_pB_coef_MDL0, 2));
+	return 1000. - h_pB_coef_MDL0 * exp(-pow((x - 37500.) * c1_pB_coef_MDL0, 2));
 }
 
 // Derivative of pB function
 double pB_xDer_fcn_MDL0(double x) {
-	double tmp = (x - 37500.) * c2_pB_coef_MDL0;
+	double tmp = (x - 37500.) * c1_pB_coef_MDL0;
 	return c1_pBxDer_coef_MDL0 * tmp * exp(-tmp * tmp);
 }
 

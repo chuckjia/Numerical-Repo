@@ -198,9 +198,9 @@ void calcL2Norm(double t) {
 
 void writeParToFile() {
 	FILE *f = fopen("Results/par.txt", "wb");
-	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d %d",
+	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d %d %d",
 			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps,
-			movieFrameFreq);
+			movieFrameFreq, aveFreq);
 	fclose(f);
 }
 

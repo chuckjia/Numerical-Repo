@@ -9,7 +9,6 @@
 #define TESTING_H_
 #include "TimeSteps.h"
 
-
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Tests: Mesh Methods
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -551,8 +550,10 @@ void printPhixErrToFile(double t) {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void test_functions_MDL0() {
-	double x = 35000;
-	printf("%1.10f", pB_xDer_fcn_MDL0(x));
+	double x = 37400;
+	printf("\n");
+	printf("At x = %1.1fm, pB = %1.10f,  ", x, pB_fcn_MDL0(x));
+	printf("pB_x = %1.10f\n", pB_xDer_fcn_MDL0(x));
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -562,6 +563,6 @@ void test_functions_MDL0() {
 void testing() {
 	runTimeSteps();
 	peformAnalysis();
-	// test_functions_MDL0();
+	//test_functions_MDL0();
 }
 #endif /* TESTING_H_ */
