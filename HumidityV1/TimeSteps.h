@@ -89,9 +89,9 @@ void forwardEuler() {
 	enforceIC();
 	update_k_rk_fcnPtr = &update_k_rk_noUpdate;
 
-	for (int tt = 0; tt < numTimeSteps; tt++) {
+	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
-		int progNew = tt * 100 / numTimeSteps;
+		int progNew = tt * 100 / numTimeStep;
 		if (progNew > prog) {
 			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
 		}
@@ -143,6 +143,7 @@ void subExactVelocity(double t) {
 
 void postForwardEuler() {
 	(*projU_fcnPtr)();  // Projection method on u
+	(*enforceBC_fcnPtr)();  // Enforce boundary conditions
 	(*calc_w_fcnPtr)();  // Calculate w
 	(*enforceBC_fcnPtr)();  // Enforce boundary conditions
 }
@@ -154,9 +155,9 @@ void rk2() {
 	// The initial condition
 	enforceIC();
 	update_k_rk_fcnPtr = &update_k_rk_noUpdate;
-	for (int tt = 0; tt < numTimeSteps; tt++) {
+	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
-		int progNew = tt * 100 / numTimeSteps;
+		int progNew = tt * 100 / numTimeStep;
 		if (progNew > prog) {
 			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
 		}
@@ -194,10 +195,10 @@ void rk4() {
 	// The initial condition
 	enforceIC();
 
-	for (int tt = 0; tt < numTimeSteps; tt++) {
+	for (int tt = 0; tt < numTimeStep; tt++) {
 		double t = Dt * tt;
 		// Print messages on calculation progress
-		int progNew = tt * 100 / numTimeSteps;
+		int progNew = tt * 100 / numTimeStep;
 		if (progNew > prog) {
 			prog = progNew;
 			printf("\r  - Current progress: %d%%, Time = %1.2fs", prog, t);
@@ -206,7 +207,7 @@ void rk4() {
 				calcL2Norm(t);
 		}
 
-		writeSolnToFile(tt);
+		printSolnToFile(tt);
 
 		// Numerical calculation
 
@@ -247,7 +248,7 @@ void rk4() {
 		//writeResToFileForMovie_T_test(tt + 1);
 		(*aveSoln_fcnPtr)(tt + 1);
 	}
-	writeSolnToFile(numTimeSteps);
+	printSolnToFile(numTimeStep);
 	printf("\r  - Runge-Kutta 4 method complete\n");
 }
 

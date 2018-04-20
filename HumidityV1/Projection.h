@@ -32,8 +32,8 @@
 
 // Refer to notes for details.
 
-double aInv_proj_cache[Nx], b_proj_cache[Nx];  // Only values from 1 to Nx-1 are used
-double d_proj_cache[Nx + 1]; // Only values from 1 to Nx are used
+double aInv_proj[Nx], b_proj[Nx];  // Only values from 1 to Nx-1 are used
+double d_proj[Nx + 1]; // Only values from 1 to Nx are used
 double lambda_x_proj[Nx + 1];  // Only values from 1 to Nx are used
 
 // Calculate a and b values
@@ -41,18 +41,18 @@ void fillCache_ab_proj() {
 	for (int i = 1; i < Nx; ++i) {
 		double x = getCellCenterX(i);
 		double bThis = ((*pB_fcnPtr)(x) - pA) * DxInv;
-		b_proj_cache[i] = bThis;
-		aInv_proj_cache[i] = 1 / ((*pBxDer_fcnPtr)(x) - bThis);
+		b_proj[i] = bThis;
+		aInv_proj[i] = 1 / ((*pBxDer_fcnPtr)(x) - bThis);
 	}
 }
 
 // Calculate d values. It is separated from the calculation of a and b for testing reasons
 void fillCache_d_proj() {
-	d_proj_cache[1] = 1;
+	d_proj[1] = 1;
 	for (int i = 1; i < Nx; ++i) {
-		double temp = d_proj_cache[i] * aInv_proj_cache[i];
-		d_proj_cache[i] = temp;
-		d_proj_cache[i + 1] = 1 - b_proj_cache[i] * temp;
+		double temp = d_proj[i] * aInv_proj[i];
+		d_proj[i] = temp;
+		d_proj[i + 1] = 1 - b_proj[i] * temp;
 	}
 }
 
@@ -81,10 +81,10 @@ void calcLambdax_gaussElim_proj() {
 	calc_c_proj();
 	double sum = 0;
 	for (int i = 1; i < Nx; ++i)
-		sum += lambda_x_proj[i] * d_proj_cache[i];
-	lambda_x_proj[Nx] = -sum / d_proj_cache[Nx];
+		sum += lambda_x_proj[i] * d_proj[i];
+	lambda_x_proj[Nx] = -sum / d_proj[Nx];
 	for (int i = Nx - 1; i >= 1; --i)
-		lambda_x_proj[i] = (lambda_x_proj[i] - b_proj_cache[i] * lambda_x_proj[i + 1]) * aInv_proj_cache[i];
+		lambda_x_proj[i] = (lambda_x_proj[i] - b_proj[i] * lambda_x_proj[i + 1]) * aInv_proj[i];
 }
 
 // Perform the projection method on uTilde to calculate u

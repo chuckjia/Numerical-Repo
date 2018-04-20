@@ -37,6 +37,7 @@ numTimeStepLimit = 1e10;  % Limiting the number of time steps in plotting
 % Plot The Soln/Error and Compile A Movie
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
+folder
 getPar_scp;  % Read and calculate parameters
 getCellCenters_scp;  % Read cell centers
 % File list and title settings

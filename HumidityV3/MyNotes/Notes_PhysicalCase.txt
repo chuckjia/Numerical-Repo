@@ -1,0 +1,4 @@
+1. Term n in (4.10) is guessed.
+2. enforceBC_bottBD_w is not used.
+3. Check BC again
+4. Norm of T at the beginning?

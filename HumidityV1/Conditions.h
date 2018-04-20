@@ -154,7 +154,7 @@ double helper1_fillCache_leftBdVal_MDL0(double p) {
 }
 
 double helper2_fillCache_leftBdVal_MDL0(double x) {
-	return cos(TWO_PI_CONST * n_initU_coef_MDL0 / xf * x);
+	return cos(TWO_PI_CONST * _n_initU_MDL0 / xf * x);
 }
 
 // Need to execute after enforcing initial conditions. More specifically, method only works
@@ -164,10 +164,10 @@ void fillCache_leftBdVal_MDL0() {
 	enforceIC();
 	// Calculate lambda_x(x0)
 	double pB = pB_fcn_MDL0(x0), x1 = getCellCenterX(1);
-	double lambda_x_leftBdVal = lambda_x_proj[1] -
-			2 * p0_CONST / (M_PI * (pB - pA))
-			* (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
-			* (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));
+	double lambda_x_leftBdVal = 0; // lambda_x_proj[1] -
+	//2 * p0_CONST / (M_PI * (pB - pA))
+	//* (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
+	//* (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));
 	// printf("\nlambda_x on the left BD = %1.10e\n", lambda_x_leftBdVal);
 	// printf("lambda_x[1] = %1.10e\n", lambda_x_proj[1]);
 

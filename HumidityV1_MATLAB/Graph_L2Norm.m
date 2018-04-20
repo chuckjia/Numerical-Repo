@@ -1,7 +1,7 @@
 clear; clc
 
 path = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/";
-folder = path + "Sim10/Norm/";
+folder = path + "Sim14/Norm/";
 dotSize = 10;
 
 graph_T = 1;

@@ -1,0 +1,22 @@
+Naming Rules
+
+In this project, the naming conventions follow the Google C++ Style Guide 
+(https://google.github.io/styleguide/cppguide.html), barring a few minor differences due to personal preferences.
+
+
+1. Variable Names
+
+    - Local Variable Names
+        - Local variables names are generally in the snake format: lower-case letters with words separated by 
+          underscores (_).
+        - Example: int a_local_variable;
+        
+    - Class Data Members
+        - Class data members have names in the snake format, as with local variable names, but with a trailing 
+          underscore (_).
+        - Example: int a_class_data_member_;
+
+2. Function Names
+    - Names of global functions and class methods are in camel format and start with a lower-case letter (Google 
+      style guide suggests starting with capital letters).
+    - Example: double myExampleFunction() { }

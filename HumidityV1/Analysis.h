@@ -34,7 +34,7 @@ void printDiagnostics() {
 	printf("\nParameters: \n");
 
 	printf("\n - Time\n");
-	printf("    [1] Dt = %1.2e, finalTime = %1.2es, numTimeSteps = %d\n", Dt, finalTime, numTimeSteps);
+	printf("    [1] Dt = %1.2e, finalTime = %1.2es, numTimeSteps = %d\n", Dt, finalTime, numTimeStep);
 
 	printf("\n - Domain geometry\n");
 	printf("    [1] x0 = %1.2f, xf = %1.2f \n", x0, xf);
@@ -53,7 +53,7 @@ void printSchemeDescription() {
 	printf("\n  MODEL %d:  \n", modelNo);
 
 	printf("  [1] Time:  ");
-	printf("Dt = %1.2e, finalTime = %1.2es, numTimeSteps = %d\n", Dt, finalTime, numTimeSteps);
+	printf("Dt = %1.2e, finalTime = %1.2es, numTimeSteps = %d\n", Dt, finalTime, numTimeStep);
 
 	printf("  [2] Mesh Specs:  ");
 	printf("Nx = %d, Np = %d\n", Nx, Np);
@@ -196,17 +196,17 @@ void calcL2Norm(double t) {
 	fprintf(time_filePtr, "%1.20e ", t);
 }
 
-void writeParToFile() {
+void printParamToFile() {
 	FILE *f = fopen("Results/par.txt", "wb");
 	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d %d %d",
-			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeSteps,
+			x0, xf, pA, (*pB_fcnPtr)(x0), (*pB_fcnPtr)(xf), Nx, Np, Dt, numTimeStep,
 			movieFrameFreq, aveFreq);
 	fclose(f);
 }
 
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in plotting the solution and the error
-void writeResToFile() {
+void printResToFile() {
 	// Numerical solution files
 	FILE *res_T = fopen("Results/T_soln.txt", "wb");
 	FILE *res_q = fopen("Results/q_soln.txt", "wb");
@@ -246,7 +246,7 @@ void writeResToFile() {
 	fclose(err_T); fclose(err_q); fclose(err_u); fclose(err_w);
 }
 
-void writeExactSolnToFile() {
+void printExactSolnToFile() {
 	// Write final numerical solution to files
 	FILE *exact_T = fopen("Results/T_exact.txt", "wb");
 	FILE *exact_q = fopen("Results/q_exact.txt", "wb");
@@ -296,7 +296,7 @@ void writeResToFileForMovie_T_test(int tt) {
 	fclose(res); fclose(err); //fclose(exact);
 }
 
-void writeSolnToFile(int tt) {
+void printSolnToFile(int tt) {
 	if (tt % movieFrameFreq)
 		return;
 	char filename[20];
@@ -344,12 +344,12 @@ void printExactVelocityToFile(int tt) {
 
 void printExactVelocityToFile() {
 	printf("\n>> Printing velocity field.\n");
-	for (int tt = 1; tt <= numTimeSteps; ++tt)
+	for (int tt = 1; tt <= numTimeStep; ++tt)
 		printExactVelocityToFile(tt);
 	printf("\n\nExact velocity field printed.\n");
-	writeParToFile();
+	printParamToFile();
 	printMeshToFile();
-	writeResToFile();
+	printResToFile();
 }
 
 void peformAnalysis() {
@@ -358,12 +358,12 @@ void peformAnalysis() {
 	printSchemeDescription();
 	showL2Errors();
 	if (printResToFile_opt) {
-		writeParToFile();
+		printParamToFile();
 		printMeshToFile();
-		writeResToFile();
+		printResToFile();
 	}
 	if (printExactSolnToFile_opt)
-		writeExactSolnToFile();
+		printExactSolnToFile();
 	printf("\n- Analysis complete. Time used = %1.2fs.\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }
@@ -412,7 +412,7 @@ void setAnalysis() {
 	w_norm_filePtr = fopen("Results/w_norm.txt", "wb");
 	time_filePtr = fopen("Results/time.txt", "wb");
 
-	if (average_result_opt)
+	if (averageResult_opt)
 		aveSoln_fcnPtr = &aveSoln;
 	else
 		aveSoln_fcnPtr = &noAveSoln;

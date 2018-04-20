@@ -34,8 +34,8 @@ void setTest1_gaussElimProj() {
 			test_b[5] = {3, 2, 3, 5, 4},
 			test_c[5] = {2, 3, 1, 0, 3};
 	for (int i = 1; i < Nx; ++i) {
-		aInv_proj_cache[i] = 1 / test_a[i - 1];
-		b_proj_cache[i] = test_b[i - 1];
+		aInv_proj[i] = 1 / test_a[i - 1];
+		b_proj[i] = test_b[i - 1];
 		lambda_x_proj[i] = test_c[i - 1];
 	}
 }
@@ -48,8 +48,8 @@ void setTest2_gaussElimProj() {
 			test_b[5] = {3, 3, 6, 9, 5},
 			test_c[5] = {3, 2, 5, 1, 4};
 	for (int i = 1; i < Nx; ++i) {
-		aInv_proj_cache[i] = 1 / test_a[i - 1];
-		b_proj_cache[i] = test_b[i - 1];
+		aInv_proj[i] = 1 / test_a[i - 1];
+		b_proj[i] = test_b[i - 1];
 		lambda_x_proj[i] = test_c[i - 1];
 	}
 }
@@ -62,8 +62,8 @@ void setTest3_gaussElimProj() {
 			test_b[9] = {3, 3, 6, 9, 5, 6, 7, 9, 6},
 			test_c[9] = {3, 2, 5, 1, 3, 5, 6, 7, 8};
 	for (int i = 1; i <= Nx; ++i) {
-		aInv_proj_cache[i] = 1 / test_a[i - 1];
-		b_proj_cache[i] = test_b[i - 1];
+		aInv_proj[i] = 1 / test_a[i - 1];
+		b_proj[i] = test_b[i - 1];
 		lambda_x_proj[i] = test_c[i - 1];
 	}
 }
@@ -86,9 +86,9 @@ void test_GaussElimProj() {
 	for (int i = 1; i < Nx; ++i) {
 		for (int j = 1; j <= Nx; ++j)
 			if (i == j)
-				printf("  %1.2f", 1 / aInv_proj_cache[i]);
+				printf("  %1.2f", 1 / aInv_proj[i]);
 			else if (i == j - 1)
-				printf("  %1.2f", b_proj_cache[i]);
+				printf("  %1.2f", b_proj[i]);
 			else
 				printf("  %1.2f", 0.);
 		printf("  %1.2f\n", lambda_x_proj[i]);
@@ -156,9 +156,9 @@ void printQuadCellCoefToFile() {
 	FILE *f_a4 = fopen("Results/a4_quadCell.txt", "wb");
 	for (int i = 0; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			fprintf(f_a2, "%1.20e ", a2_quadCell_cache[i][j]);
-			fprintf(f_a3, "%1.20e ", a3_quadCell_cache[i][j]);
-			fprintf(f_a4, "%1.20e ", a4_quadCell_cache[i][j]);
+			fprintf(f_a2, "%1.20e ", a2_quadCell[i][j]);
+			fprintf(f_a3, "%1.20e ", a3_quadCell[i][j]);
+			fprintf(f_a4, "%1.20e ", a4_quadCell[i][j]);
 		}
 	fclose(f_a2); fclose(f_a3); fclose(f_a4);
 }
@@ -168,18 +168,18 @@ void printQuadCellDiagMatToFile() {
 	FILE *f_e22 = fopen("Results/e22_diagMat_quadCell.txt", "wb");
 	for (int i = 0; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			fprintf(f_e12, "%1.20e ", e12_diagMatInv_quadCell_cache[i][j]);
-			fprintf(f_e22, "%1.20e ", e22_diagMatInv_quadCell_cache[i][j]);
+			fprintf(f_e12, "%1.20e ", e12_diagMatInv_quadCell[i][j]);
+			fprintf(f_e22, "%1.20e ", e22_diagMatInv_quadCell[i][j]);
 		}
 	fclose(f_e12); fclose(f_e22);
 	FILE *f = fopen("Results/e11e21_diagMat_quadCell.txt", "wb");
-	fprintf(f, "%1.20e %1.20e ", e11_diagMatInv_quadCell_cache, e21_diagMatInv_quadCell_cache);
+	fprintf(f, "%1.20e %1.20e ", e11_diagMatInv_quadCell, e21_diagMatInv_quadCell);
 	fclose(f);
 }
 
 void testQuadCell() {
-	writeParToFile();
-	writeResToFile();
+	printParamToFile();
+	printResToFile();
 	printMeshToFile();
 	printQuadCellCoefToFile();
 	printQuadCellDiagMatToFile();
@@ -344,8 +344,8 @@ void test_pB_xDer_MDL0() {
 	double arr[] = {1, 3e4, 3.5e4, 4e4, 4.5e4, 5e4, 6e4, 7e4};
 	int n = sizeof(arr) / sizeof(arr[0]);
 	for (int i = 0; i < n; ++i)
-		printf("arr[%d] = %1.2e, pB_x = %1.7e \n", i, arr[i], pB_xDer_fcn_MDL0(arr[i]));
-	printf("%f", c1_pBxDer_coef_MDL0);
+		printf("arr[%d] = %1.2e, pB_x = %1.7e \n", i, arr[i], pBxDer_fcn_MDL0(arr[i]));
+	printf("%f", _c1_pBxDer_MDL0);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -377,9 +377,9 @@ void rk4_decoupledVelocity_MDL102() {
 	(*projU_fcnPtr)();
 	(*calc_w_fcnPtr)();
 
-	for (int tt = 0; tt < numTimeSteps; tt++) {
+	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
-		int progNew = tt * 100 / numTimeSteps;
+		int progNew = tt * 100 / numTimeStep;
 		if (progNew > prog) {
 			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
 		}
@@ -466,9 +466,9 @@ void rk4_exactW_withTopBC_MDL1_test() {
 	enforceIC();
 	(*projU_fcnPtr)();
 
-	for (int tt = 0; tt < numTimeSteps; tt++) {
+	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
-		int progNew = tt * 100 / numTimeSteps;
+		int progNew = tt * 100 / numTimeStep;
 		if (progNew > prog) {
 			prog = progNew; printf("\r  - Current progress: %d%%", prog); fflush(stdout);
 		}
@@ -553,7 +553,7 @@ void test_functions_MDL0() {
 	double x = 37400;
 	printf("\n");
 	printf("At x = %1.1fm, pB = %1.10f,  ", x, pB_fcn_MDL0(x));
-	printf("pB_x = %1.10f\n", pB_xDer_fcn_MDL0(x));
+	printf("pB_x = %1.10f\n", pBxDer_fcn_MDL0(x));
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

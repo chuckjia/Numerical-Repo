@@ -8,7 +8,7 @@ clear; clc
 % for numThou = 0:10
 % clearvars -except numThou
 
-folder = "Sim10/"
+folder = "Sim14/"
 
 path = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/";
 folder_getParScp = path + folder + "Norm/"; getPar_scp; getCellCenters_scp;
@@ -17,8 +17,8 @@ folder_getParScp = path + folder + "Norm/"; getPar_scp; getCellCenters_scp;
 % Plot Settings
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
-solnName = 'w';
-numThou = 20;
+solnName = 'q';
+numThou = 3;
 timeToPlot = 1000 * numThou
 
 zCoordPlot = false;
@@ -72,8 +72,8 @@ if (zCoordPlot)
     % yAxisRange = [0, convPtoZ_fcn(pA)]; nearMountPortion = 1 / numCellsP;
 else  % p Coordinates
     yCoordName = 'p coordinate';
-    yAxisRange = [pA, pB]; nearMountPortion = 1 / numCellsP;
-    % yAxisRange = [600, pB]; nearMountPortion = 20 / 25;  % yAxisRange from 650 in original simulation
+    yAxisRange = [600, pB]; nearMountPortion = 20 / 25;
+    % yAxisRange = [600, pB]; nearMountPortion = 1 / numCellsP;  % yAxisRange from 650 in original simulation
 end
 
 % viewAngle = [0, -90];
@@ -101,7 +101,7 @@ end
 fprintf("Plotting\n");
 
 % Read numerical solutions/errors from file
-filename = solnName + "_soln_" + int2str(floor(timeToPlot / Dt));
+filename = solnName + "_soln_" + int2str(floor(timeToPlot / Dt))
 titleText = solnName + " at t = " + timeToPlot + "s";
 % Reshape matrix read from file
 res = reshape(getVecFromFile_fcn(sourceFolder, filename), matShape);

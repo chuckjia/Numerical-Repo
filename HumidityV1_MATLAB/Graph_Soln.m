@@ -21,6 +21,7 @@ plotBoundary = false;
 % Graph Selected Plots
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
+folder = "/Users/chuckjia/Documents/Workspace/Git/Numerical-Repo/HumidityV1/"
 getPar_scp;  % Read and calculate parameters
 getCellCenters_scp;  % Read cell centers
 % File list and title settings

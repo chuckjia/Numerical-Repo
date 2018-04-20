@@ -11,8 +11,9 @@ clear; clc
 % Plot Settings
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
+plot_time = 6000
 graphSelection = 1;  % 1: Numerical soln, 2: Exact
-removeBoundaryVal = true;
+removeBoundaryVal = false;
 
 %viewingAngle = [1 1 2];  % Normal angle
 viewingAngle = 2;  % Flat; viewing from direct above
@@ -23,6 +24,7 @@ figureSize = [10, 10, 900, 700];  % x-pos, y-pos, width, height
 % Plot The Soln/Error and Compile Movie
 % ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== %
 
+folder_getParScp = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/Sim10/Norm/";
 getPar_scp;  % Read and calculate parameters
 getCellCenters_scp;  % Read cell centers
 
@@ -34,32 +36,35 @@ else
     filenamePrefix = ["u_exact", "w_exact"];
     graphTitle = 'Exact Velocity Field';
 end
-folder = "Results/";
+folder = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/Sim09/Snapshots/";
 matShape = [numCellsX, numCellsP];
 quiverScaleOnX = 0.05;  % This is introduced to adjust arrow head angle
+cellCentersX = cellCentersX .* quiverScaleOnX;
 % Choose whether to plot boundary values or not
 if (removeBoundaryVal)
-    cellCentersX = rmBDVal_fcn(cellCentersX) .* quiverScaleOnX;
+    cellCentersX = rmBDVal_fcn(cellCentersX);
     cellCentersP = rmBDVal_fcn(cellCentersP);
 end
 % Fix figure size
 figure('pos', figureSize);
 axisLimits = [x0, xf * quiverScaleOnX, pA, pBx0];
 titleLine2 = "Mesh Size: " + int2str(Nx) + "x" +  int2str(Np) + ", " + ...
-    "Dt = " + num2str(Dt) + "s";
+    "Time = " + num2str(plot_time) + "s";
 
-filename = filenamePrefix(1)
+
+filename = "u_soln_" + num2str(plot_time * 2)
 % Read numerical solutions/errors from file
 u_res = reshape(getVecFromFile_fcn(folder, filename), matShape);
-filename = filenamePrefix(2)
+filename = "w_soln_" + num2str(plot_time * 2)
 w_res = reshape(getVecFromFile_fcn(folder, filename), matShape);
 if (removeBoundaryVal)
     u_res = rmBDVal_fcn(u_res);
     w_res = rmBDVal_fcn(w_res);
 end
 % Plot the solution and error
-h = quiver(cellCentersX, cellCentersP, u_res, w_res);
-axis(axisLimits);
+xRange = 1:10; pRange = 180:200; 
+h = quiver(cellCentersX(pRange, xRange), cellCentersP(pRange, xRange), u_res(pRange, xRange), w_res(pRange, xRange));
+% axis(axisLimits);
 view(viewingAngle);
 % Add titles and labels
 title({graphTitle, titleLine2});

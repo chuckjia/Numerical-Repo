@@ -30,9 +30,9 @@ int timeMethod = 4;
 
 const int numDivisions = 200;  // Number of space divisions in both x and p directions
 
-int numTimeSteps = 40000;  // Number of time steps
+int numTimeStep = 10000;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
-double finalTime = numTimeSteps * Dt;  // Final time
+double finalTime = numTimeStep * Dt;  // Final time
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Settings
@@ -43,7 +43,7 @@ double finalTime = numTimeSteps * Dt;  // Final time
  * ----- ----- ----- ----- ----- ----- */
 
 // The frequency of using the average method
-bool average_result_opt = true;
+bool averageResult_opt = true;
 int aveFreq = 20;
 // Choose whether to calculate, show, and print to file the L2 errors during computation
 bool calcL2err_opt = true;
@@ -62,7 +62,7 @@ bool printExactSolnToFile_opt = false;
  * ----- ----- ----- ----- ----- -----*/
 
 // The frequency of printing results to file for movie frames
-int movieFrameFreq = 2000;
+int movieFrameFreq = 1000;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Parameter in This File
