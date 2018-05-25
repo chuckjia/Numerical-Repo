@@ -73,7 +73,7 @@ void printCellCentersToFile() {
 	FILE *f = fopen("Output/CellCenters_X.csv", "wb");
 	int last_j = numCellP - 1;
 	for (int i = 0; i < numCellX; ++i) {
-		double centerX = cellCenterX[i];
+		double centerX = cellCenterX_[i];
 		for (int j = 0; j < last_j; ++j)
 			fprintf(f, "%1.20e,", centerX);
 		fprintf(f, "%1.20e\n", centerX);
@@ -81,7 +81,7 @@ void printCellCentersToFile() {
 	fclose(f);
 
 	// Print p-coordinates
-	printMatrixToFile(cellCenterP, "Output/CellCenters_P.csv");
+	printMatrixToFile(cellCenterP_, "Output/CellCenters_P.csv");
 }
 
 

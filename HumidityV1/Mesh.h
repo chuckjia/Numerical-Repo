@@ -114,7 +114,7 @@ double getCellTopRightP(int i, int j) {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Store the coordinates for cell barycenters
-double cellCenterX[numCellX], cellCenterP[numCellX][numCellP];
+double cellCenterX_[numCellX], cellCenterP_[numCellX][numCellP];
 
 // Calculate cell barycenters. Require cells to be trapezoids
 void calcBaryCenters() {
@@ -125,13 +125,13 @@ void calcBaryCenters() {
 		double a = getCellRightDp(i) * ONE_THIRD,  // a = (p3_Outer - p2_Outer) / 3
 				b = getCellLeftDp(i) * ONE_THIRD,  // b = (p4_Outer - p1_Outer) / 3
 				inv_ab_sum = 1. / (a + b);
-		cellCenterX[i] = x1_Inner + h * a * inv_ab_sum;
+		cellCenterX_[i] = x1_Inner + h * a * inv_ab_sum;
 		for (int j = 0; j < numCellP; ++j) {
 			double p1_Outer = getCellBottLeftP(i, j), p2_Outer = getCellBottRightP(i, j),
 					p3_Outer = getCellTopRightP(i, j), p4_Outer = getCellTopLeftP(i, j);
 			double p1_Inner = (p1_Outer + p2_Outer + p4_Outer) * ONE_THIRD;
 			double bLeft = (p4_Outer - p3_Outer) * ONE_THIRD;
-			cellCenterP[i][j] = p1_Inner + (b - bLeft) * a * inv_ab_sum;
+			cellCenterP_[i][j] = p1_Inner + (b - bLeft) * a * inv_ab_sum;
 		}
 	}
 }
@@ -139,15 +139,15 @@ void calcBaryCenters() {
 // Getters for coordinates of cell centers
 
 double getCellCenterX(int i, int j) {
-	return cellCenterX[i];
+	return cellCenterX_[i];
 }
 
 double getCellCenterX(int i) {
-	return cellCenterX[i];
+	return cellCenterX_[i];
 }
 
 double getCellCenterP(int i, int j) {
-	return cellCenterP[i][j];
+	return cellCenterP_[i][j];
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -155,14 +155,14 @@ double getCellCenterP(int i, int j) {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Stores the length of cell bottom sides
-double cellBottSideLen[numCellX][numCellP];
+double cellBottSideLen_[numCellX][numCellP];
 
 // Calculate all cell sides length: calculate bottom side length of cell (i, j)
 void calcCellSideLen() {
 	for (int i = 0; i < numCellX; ++i) {
 		double xDiffSq = pow(getCellRightX(i) - getCellLeftX(i), 2);
 		for (int j = 0; j < numCellP; ++j) {
-			cellBottSideLen[i][j] = sqrt(xDiffSq +
+			cellBottSideLen_[i][j] = sqrt(xDiffSq +
 					pow(getCellBottRightP(i, j) - getCellBottLeftP(i, j), 2));
 		}
 	}
@@ -171,11 +171,11 @@ void calcCellSideLen() {
 // Getters for cell side lengths
 
 double getCellBottSideLen(int i, int j) {
-	return cellBottSideLen[i][j];
+	return cellBottSideLen_[i][j];
 }
 
 double getCellTopSideLen(int i, int j) {
-	return cellBottSideLen[i][j + 1];
+	return cellBottSideLen_[i][j + 1];
 }
 
 double getCellLeftSideLen(int i, int j) {
@@ -199,24 +199,24 @@ double getCellRightSideLen(int i) {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Store the volumes of all cells. Made 2D to accommodate flat control volumes
-double cellVol[numCellX][numCellP];
+double cellVol_[numCellX][numCellP];
 
 // Calculate cell volumes. Require cells to be trapezoids
 void calcCellVol() {
 	for (int i = 0; i < numCellX; ++i)
 		for (int j = 0; j < numCellP; ++j)
-			cellVol[i][j] = 0.5 * (getCellLeftDp(i) + getCellRightDp(i)) * Dx;
+			cellVol_[i][j] = 0.5 * (getCellLeftDp(i) + getCellRightDp(i)) * Dx;
 }
 
 // Getters for cell volumes
 
 double getCellVol(int i, int j) {
-	return cellVol[i][j];
+	return cellVol_[i][j];
 }
 
 // This getter function is NOT compatible with flat control volumes
 double getCellVol(int i) {
-	return cellVol[i][1];
+	return cellVol_[i][1];
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -224,7 +224,7 @@ double getCellVol(int i) {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Stores the normal vectors of on cell top sides
-double cellTopSideNormVecX[Nx + 1][Np + 1], cellTopSideNormVecP[Nx + 1][Np + 1];
+double cellTopSideNormVecX_[Nx + 1][Np + 1], cellTopSideNormVecP_[Nx + 1][Np + 1];
 // We chose to store the top side normal vectors to be consistent with notations in the aritcle
 
 // Calculate the normal vectors on the cell sides
@@ -233,8 +233,8 @@ void calcCellSideNormVec() {
 		for (int j = 0; j <= Np; ++j) {
 			double pDiff = getCellTopRightP(i, j) - getCellTopLeftP(i, j);
 			double topSideVecSizeInv = 1 / sqrt(pDiff * pDiff + Dx * Dx);
-			cellTopSideNormVecX[i][j] = -pDiff * topSideVecSizeInv;
-			cellTopSideNormVecP[i][j] = Dx * topSideVecSizeInv;
+			cellTopSideNormVecX_[i][j] = -pDiff * topSideVecSizeInv;
+			cellTopSideNormVecP_[i][j] = Dx * topSideVecSizeInv;
 		}
 }
 
@@ -242,35 +242,35 @@ void calcCellSideNormVec() {
 // on purpose, to be consistent with the notations in the article
 
 double getCellTopSideNormVecX(int i, int j) {
-	return cellTopSideNormVecX[i][j];
+	return cellTopSideNormVecX_[i][j];
 }
 
 double getCellTopSideNormVecP(int i, int j) {
-	return cellTopSideNormVecP[i][j];
+	return cellTopSideNormVecP_[i][j];
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Dp Values at Cell Centers
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double cellCenterDp_cache[numCellX];  // Stores the Dp values at cell centers x
+double cellCenterDp_[numCellX];  // Stores the Dp values at cell centers x
 
 // Calculate Dp values at cell centers
 void calcCellCenterDp() {
 	for (int i = 0; i < numCellX; ++i) {
 		double x = getCellCenterX(i);
-		cellCenterDp_cache[i] = ((*pB_fptr)(x) - pA) * NpInv;
+		cellCenterDp_[i] = ((*pB_fptr)(x) - pA) * NpInv;
 	}
 }
 
 // Getters for Dp values at cell centers
 
 double getCellCenterDp(int i, int j) {
-	return cellCenterDp_cache[i];
+	return cellCenterDp_[i];
 }
 
 double getCellCenterDp(int i) {
-	return cellCenterDp_cache[i];
+	return cellCenterDp_[i];
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

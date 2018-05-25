@@ -5,7 +5,7 @@ This code performs numerical simulations for inviscid hydrostatic primitive equa
 ## Change Logs
 #### Version 3.180524
 
-- Changed calculation method of `Dp` in the function `calcCellCenterDp`, defined in `Mesh.h`. The calculation is now consistent with the mesh cells. See code for details.
+- Changed calculation method of `Dp` in the function `calcCellCenterDp`, defined in `Mesh.h`. The calculation is now consistent with the domain mesh, instead of the actual physical domain. This affects the integration on p in the projection method. See code for details.
 
 
 ## How to Run the Code
@@ -20,7 +20,7 @@ To run the code, you can either compile the driver file or simply use the includ
   ~~~~
   ./output_filename
   ~~~~
-  The driver cpp file might vary slightly across versions.
+  The name of the driver cpp file might vary slightly across versions.
 
 * To use makefile, in terminal, navigate to the project directory and use
   ~~~~
@@ -44,6 +44,9 @@ In general, variables have camel style names. For example, the following variabl
 ##### Constants
 Constant variables have all-caps names or names with `_CONST` at the end. For example, the following constant variables are used in the project: `TWO_PI`, `g_CONST`.
 
+##### Global Arrays
+Global array variables have underscores at the end of their names. For example, `T_`, `meshGridP_`, etc.
+
 ##### Optional Variables
 Variables serving as options have underscores before and after their names: `_[VAR_NAME]_`. For example, the variable `_aveResults_` is a `bool` variable that controls if averaging method is applied during simulations.
 
@@ -55,5 +58,6 @@ Variables serving as options have underscores before and after their names: `_[V
 
 #### Naming Conventions for Functions
 
-#### In General
+##### In General
 In general, function names use camel styles. For example, `getCellTopRightP`, `runTimeSteps`.
+They usually start with lowercase letters. However, this is not strictly followed. If it is more convenient to the start with a capital letter in the function name, then it is not recommendeded to convert it to uppercase. For example, the two functions `L_fcn` and `F_fcn` in the file `Constants.h` correspond to two physical functions named L and F. Then their natural names are used in the function naming.

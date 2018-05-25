@@ -156,9 +156,9 @@ void printQuadCellCoefToFile() {
 	FILE *f_a4 = fopen("Results/a4_quadCell.txt", "wb");
 	for (int i = 0; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			fprintf(f_a2, "%1.20e ", a2_quadCell[i][j]);
-			fprintf(f_a3, "%1.20e ", a3_quadCell[i][j]);
-			fprintf(f_a4, "%1.20e ", a4_quadCell[i][j]);
+			fprintf(f_a2, "%1.20e ", a2_quad_[i][j]);
+			fprintf(f_a3, "%1.20e ", a3_quad_[i][j]);
+			fprintf(f_a4, "%1.20e ", a4_quad_[i][j]);
 		}
 	fclose(f_a2); fclose(f_a3); fclose(f_a4);
 }
@@ -168,12 +168,12 @@ void printQuadCellDiagMatToFile() {
 	FILE *f_e22 = fopen("Results/e22_diagMat_quadCell.txt", "wb");
 	for (int i = 0; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			fprintf(f_e12, "%1.20e ", e12_diagMatInv_quadCell[i][j]);
-			fprintf(f_e22, "%1.20e ", e22_diagMatInv_quadCell[i][j]);
+			fprintf(f_e12, "%1.20e ", e12_MInv_quad_[i][j]);
+			fprintf(f_e22, "%1.20e ", e22_MInv_quad_[i][j]);
 		}
 	fclose(f_e12); fclose(f_e22);
 	FILE *f = fopen("Results/e11e21_diagMat_quadCell.txt", "wb");
-	fprintf(f, "%1.20e %1.20e ", e11_diagMatInv_quadCell, e21_diagMatInv_quadCell);
+	fprintf(f, "%1.20e %1.20e ", e11_MInv_quad, e21_MInv_quad);
 	fclose(f);
 }
 
