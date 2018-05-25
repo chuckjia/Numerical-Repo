@@ -18,7 +18,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.macosx.exe.debug.2115718625." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug.1072783248" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.macosx.exe.debug.510463484" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.debug"/>
-							<builder buildPath="${workspace_loc:/HumidityV3}/Debug" id="cdt.managedbuild.target.gnu.builder.macosx.exe.debug.1568066296" managedBuildOn="true" name="Gnu Make Builder.Debug" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.debug"/>
+							<builder buildPath="${workspace_loc:/HumidityV3}/Debug" id="cdt.managedbuild.target.gnu.builder.macosx.exe.debug.1568066296" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug.169654309" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug.1173448017" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug">
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1272245500" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
@@ -31,13 +31,13 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.823823322" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.debug.390942156" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.debug">
-								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.1793187456" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1813489599" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.1793187456" name="Optimization Level" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1813489599" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2005305134" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.229052016" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.macosx.exe.debug.option.optimization.level.1879585087" superClass="gnu.c.compiler.macosx.exe.debug.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.macosx.exe.debug.option.debugging.level.1839563735" superClass="gnu.c.compiler.macosx.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.macosx.exe.debug.option.optimization.level.1879585087" name="Optimization Level" superClass="gnu.c.compiler.macosx.exe.debug.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.macosx.exe.debug.option.debugging.level.1839563735" name="Debug Level" superClass="gnu.c.compiler.macosx.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1455857227" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 						</toolChain>
@@ -63,7 +63,7 @@
 					<folderInfo id="cdt.managedbuild.config.macosx.exe.release.457698154." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.exe.release.1412644000" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.release">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.macosx.exe.release.912350169" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.release"/>
-							<builder buildPath="${workspace_loc:/HumidityV3}/Release" id="cdt.managedbuild.target.gnu.builder.macosx.exe.release.294608211" managedBuildOn="true" name="Gnu Make Builder.Release" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.release"/>
+							<builder buildPath="${workspace_loc:/HumidityV3}/Release" id="cdt.managedbuild.target.gnu.builder.macosx.exe.release.294608211" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.release"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.release.153195348" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.release"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.release.5341245" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.release">
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.553726410" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
@@ -76,19 +76,20 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.2142240975" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.release.1621304335" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.release">
-								<option id="gnu.cpp.compiler.macosx.exe.release.option.optimization.level.1834309722" superClass="gnu.cpp.compiler.macosx.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.macosx.exe.release.option.debugging.level.1628429206" superClass="gnu.cpp.compiler.macosx.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.macosx.exe.release.option.optimization.level.1834309722" name="Optimization Level" superClass="gnu.cpp.compiler.macosx.exe.release.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.macosx.exe.release.option.debugging.level.1628429206" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2086187135" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.release.1722774201" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.release">
-								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.macosx.exe.release.option.optimization.level.1638738351" superClass="gnu.c.compiler.macosx.exe.release.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.macosx.exe.release.option.debugging.level.1219330600" superClass="gnu.c.compiler.macosx.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.macosx.exe.release.option.optimization.level.1638738351" name="Optimization Level" superClass="gnu.c.compiler.macosx.exe.release.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.macosx.exe.release.option.debugging.level.1219330600" name="Debug Level" superClass="gnu.c.compiler.macosx.exe.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2100406679" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
 				</configuration>
 			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">

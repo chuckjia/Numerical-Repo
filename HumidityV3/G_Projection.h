@@ -42,9 +42,9 @@ int first_proj = 0, last_proj = Nx;
 void fillCache_ab_proj() {
 	for (int i = first_proj; i < last_proj; ++i) {  // Last index is last_proj - 1, see (3.33)
 		double x = getCellCenterX(i);
-		double bThis = (*pB_fcnPtr)(x) - pA;
+		double bThis = (*pB_fptr)(x) - pA;
 		b_proj[i] = bThis;
-		a_proj[i] = (*pBxDer_fcnPtr)(x) * Dx - bThis;
+		a_proj[i] = (*pBxDer_fptr)(x) * Dx - bThis;
 	}
 }
 
@@ -69,7 +69,7 @@ void calc_c_proj() {
 	for (int i = first_proj; i <= last_proj; ++i) {  // Largest index is last_proj, see (3.33). In c_i, we need integral of u at x_{i+1}
 		double sum = 0;
 		for (int j = 1; j <= Np; j++)
-			sum += u_sl[i][j];
+			sum += u_[i][j];
 		sum *= getCellCenterDp(i);
 		lambda_x_proj[i] = sum;
 	}
@@ -98,7 +98,7 @@ void projU_orig() {
 	for (int i = first_proj; i <= last_proj; ++i) {
 		double lambda_x = lambda_x_proj[i];
 		for (int j = 1; j <= Np; ++j)
-			u_sl[i][j] -= lambda_x;
+			u_[i][j] -= lambda_x;
 	}
 }
 

@@ -40,9 +40,9 @@ double lambda_x_proj[Nx + 1];  // Only values from 1 to Nx are used
 void fillCache_ab_proj() {
 	for (int i = 1; i < Nx; ++i) {
 		double x = getCellCenterX(i);
-		double bThis = ((*pB_fcnPtr)(x) - pA) * DxInv;
+		double bThis = ((*pB_fptr)(x) - pA) * DxInv;
 		b_proj[i] = bThis;
-		aInv_proj[i] = 1 / ((*pBxDer_fcnPtr)(x) - bThis);
+		aInv_proj[i] = 1 / ((*pBxDer_fptr)(x) - bThis);
 	}
 }
 
@@ -67,7 +67,7 @@ void calc_c_proj() {
 	for (int i = 1; i <= Nx; ++i) {
 		double sum = 0;
 		for (int j = 1; j <= lastRealIndexP; j++)
-			sum += u_sl[i][j];
+			sum += u_[i][j];
 		sum *= getCellCenterDp(i);
 		lambda_x_proj[i] = sum;
 	}
@@ -96,7 +96,7 @@ void projU_orig() {
 	for (int i = 1; i < Nx; ++i) {
 		double lambda_x = lambda_x_proj[i];
 		for (int j = 1; j < lastRealIndexP; ++j)
-			u_sl[i][j] -= lambda_x;
+			u_[i][j] -= lambda_x;
 	}
 }
 

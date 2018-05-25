@@ -18,7 +18,7 @@ void (*calc_w_fcnPtr)();
 void calc_w_orig() {
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 0; j < Np; ++j)
-			w_sl[i][j + 1] = w_sl[i][j] - (getCellCenterP(i, j + 1) - getCellCenterP(i, j)) *
+			w_[i][j + 1] = w_[i][j] - (getCellCenterP(i, j + 1) - getCellCenterP(i, j)) *
 					getGradhU_x(i, j);
 }
 
@@ -36,7 +36,7 @@ void calc_phix_orig() {
 		double factor = -R_CONST * getCellCenterDp(i);
 		for (int j = 1; j < Np; ++j) {
 			sum += factor / getCellCenterP(i, j) * getGradhT_x(i, j);
-			phix_sl[i][j + 1] = sum;
+			phix_[i][j + 1] = sum;
 		}
 		//phix_sl[i][1] = phix_sl[i][2];
 	}

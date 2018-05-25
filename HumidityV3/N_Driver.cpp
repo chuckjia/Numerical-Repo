@@ -9,7 +9,6 @@
 
 void setAll() {
 	printTitle();
-	setAllSettings();
 	setModels();
 	setMesh();
 	setQuadCells();
@@ -27,8 +26,8 @@ void fileManagement() {
 
 int main() {
 	setAll();
-	printCellCentersToFile();
-	printParamToFile();
-	runTimeSteps();
-	showL2Errors();
+	// printCellCentersToFile();
+	// printParamToFile();
+	// runTimeSteps();
+	// showL2Errors();
 }

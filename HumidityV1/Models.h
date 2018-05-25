@@ -14,17 +14,17 @@
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double x0, xf, pA;
-double (*pB_fcnPtr)(double x);  // Function pointer: pB function
-double (*pBxDer_fcnPtr)(double x);  // Function pointer: derivative of pB function
+double (*pB_fptr)(double x);  // Function pointer: pB function
+double (*pBxDer_fptr)(double x);  // Function pointer: derivative of pB function
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Mathematical and Physical Constants
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Mathematical
-double TWO_PI_CONST = 2 * M_PI;
-double ONE_THIRD_CONST = 1. / 3.;
-double ONE_SIXTH_CONST = 1. / 6.;
+double TWO_PI = 2 * M_PI;
+double ONE_THIRD = 1. / 3.;
+double ONE_SIXTH = 1. / 6.;
 
 // Defined on page 100
 double R_CONST = 287.;
@@ -46,7 +46,7 @@ double oneSixthDt = Dt / 6.;
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Returns the sign of a number
-double sign_fcn(double x) {
+double sgn_fcn(double x) {
 	if (x > 0) return 1; if (x < 0) return -1; return 0;
 }
 
@@ -114,14 +114,14 @@ double init_T_fcn_MDL0(double x, double p, double t) {
 }
 
 // Function used in the initial condition for q
-double qs_fcn_MDL0(double T, double p) {
+double qs_fcn(double T, double p) {
 	return _c1_qs_MDL0 / p * exp(17.67 * (T - 273.15) / (T - 29.65));
 }
 
 // Initial q function
 double init_q_fcn_MDL0(double x, double p, double t) {
 	double T = init_T_fcn_MDL0(x, p, 0);
-	return qs_fcn_MDL0(T, p) - 0.0052;
+	return qs_fcn(T, p) - 0.0052;
 }
 
 // Initial u function
@@ -134,36 +134,36 @@ double init_u_fcn_MDL0(double x, double p, double t) {
  * ----- ----- ----- ----- ----- ----- */
 
 // Delta function defined on p.100, line 10-15
-double delta_fcn_MDL0(double q, double w, double qsVal) {
-	return 0.25 * (1 - sign_fcn(w)) * (1 + sign_fcn(q - qsVal));
+double delta_fcn(double q, double w, double qsVal) {
+	return 0.25 * (1 - sgn_fcn(w)) * (1 + sgn_fcn(q - qsVal));
 }
 
 // L function defined on p.100, line 15-20
-double L_fcn_MDL0(double T) {
+double L_fcn(double T) {
 	return 2.5008e6 - 2.3e3 * (T - 275.);
 }
 
 // F function defined in (2.2) on p.100
-double F_fcn_MDL0(double T, double qsVal, double LVal) {
+double F_fcn(double T, double qsVal, double LVal) {
 	return qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
 			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
 }
 
 // Source function for the T equation
 double source_T_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
-	double qsVal = qs_fcn_MDL0(T, p),
-			deltaVal = delta_fcn_MDL0(q, w, qsVal),
-			LVal = L_fcn_MDL0(T),
-			FVal = F_fcn_MDL0(T, qsVal, LVal);
+	double qsVal = qs_fcn(T, p),
+			deltaVal = delta_fcn(q, w, qsVal),
+			LVal = L_fcn(T),
+			FVal = F_fcn(T, qsVal, LVal);
 	return w / (p * Cp_CONST) * (R_CONST * T - deltaVal * LVal * FVal);
 }
 
 // Source function for the q equation
 double source_q_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
-	double qsVal = qs_fcn_MDL0(T, p),
-			deltaVal = delta_fcn_MDL0(q, w, qsVal),
-			LVal = L_fcn_MDL0(T),
-			FVal = F_fcn_MDL0(T, qsVal, LVal);
+	double qsVal = qs_fcn(T, p),
+			deltaVal = delta_fcn(q, w, qsVal),
+			LVal = L_fcn(T),
+			FVal = F_fcn(T, qsVal, LVal);
 	return deltaVal * FVal * w / p;
 }
 
@@ -178,8 +178,8 @@ void setPar_MDL0() {
 	x0 = 0;
 	xf = 75000;
 	pA = 250;
-	pB_fcnPtr = &pB_fcn_MDL0;
-	pBxDer_fcnPtr = &pBxDer_fcn_MDL0;
+	pB_fptr = &pB_fcn_MDL0;
+	pBxDer_fptr = &pBxDer_fcn_MDL0;
 	// Function coefficients
 	setFcnCoef_MDL0();
 }
@@ -207,7 +207,7 @@ void setFcnCoef_MDL1() {
 	_xf6thPow_MDL1 = pow(xf, 6);
 	_c1_pB_MDL1 = 1. / 3000.;
 	_c1_pBxDer_MDL1 = 4. / 30.;
-	_pBx0_MDL1 = (*pB_fcnPtr)(x0);
+	_pBx0_MDL1 = (*pB_fptr)(x0);
 
 	_c1_exT_MDL1 = -1. / (g_CONST * _xfCubed_MDL1);
 	_c2_exT_MDL1 = 3 * g_CONST / (450 * 450 * 450 * R_CONST);
@@ -229,7 +229,7 @@ double pB_fcn_MDL1(double x) {
 }
 
 // The derivative of pB function
-double pB_xDer_fcn_MDL1(double x) {
+double pBxDer_fcn_MDL1(double x) {
 	double tmp = (x - 25000) * _c1_pB_MDL1;
 	return _c1_pBxDer_MDL1 * tmp * exp(-tmp * tmp);
 }
@@ -248,33 +248,33 @@ double exact_T_helper_fcn_MDL1(double x, double p) {
 
 // Manufactured solution: exact T function
 double exact_T_fcn_MDL1(double x, double p, double t) {
-	return cos(TWO_PI_CONST * t) * exact_T_helper_fcn_MDL1(x, p);
+	return cos(TWO_PI * t) * exact_T_helper_fcn_MDL1(x, p);
 }
 
 // x-derivative of the exact T function
-double exact_T_xDer_fcn_MDL1(double x, double p, double t) {
+double exact_TxDer_fcn_MDL1(double x, double p, double t) {
 	double x_minus_xf = x - xf, pB_minus_p = pB_fcn_MDL1(x) - p;
 	double xPart1 = x * x_minus_xf * x_minus_xf,
 			xPart2 = p * (_c2_exT_MDL1 * pB_minus_p * pB_minus_p - _c3_exT_MDL1)
 			+ _c4_exT_MDL1;
-	return _c1_exT_MDL1 * cos(TWO_PI_CONST * t) * (
+	return _c1_exT_MDL1 * cos(TWO_PI * t) * (
 			(3 * x - xf) * x_minus_xf * xPart2 +
-			xPart1 * (2 * _c2_exT_MDL1 * pB_minus_p * pB_xDer_fcn_MDL1(x) * p)
+			xPart1 * (2 * _c2_exT_MDL1 * pB_minus_p * pBxDer_fcn_MDL1(x) * p)
 	);
 }
 
 // The p-derivative of the exact T function
-double exact_T_pDer_fcn_MDL1(double x, double p, double t) {
+double exact_TpDer_fcn_MDL1(double x, double p, double t) {
 	double p_minus_pB = p - pB_fcn_MDL1(x);
-	return _c1_exT_MDL1 * cos(TWO_PI_CONST * t) * x * pow(x - xf, 2) * (
+	return _c1_exT_MDL1 * cos(TWO_PI * t) * x * pow(x - xf, 2) * (
 			_c2_exT_MDL1 * p_minus_pB * p_minus_pB - _c3_exT_MDL1 +
 			p * _c2_exT_MDL1 * 2 * p_minus_pB
 	);
 }
 
 // The t-derivative of the exact T function
-double exact_T_tDer_fcn_MDL1(double x, double p, double t) {
-	return -TWO_PI_CONST * sin(TWO_PI_CONST * t) * exact_T_helper_fcn_MDL1(x, p);
+double exact_TtDer_fcn_MDL1(double x, double p, double t) {
+	return -TWO_PI * sin(TWO_PI * t) * exact_T_helper_fcn_MDL1(x, p);
 }
 
 // Manufactured solution: exact q function
@@ -290,18 +290,18 @@ double exact_u_fcn_helper_MDL1(double x, double p) {
 }
 
 // Manufactured solution: exact u function
-double exact_u_fcn_MDL1(double x, double p, double t) {
-	return (cos(TWO_PI_CONST * t) + 20) * exact_u_fcn_helper_MDL1(x, p);
+double exact_U_fcn_MDL1(double x, double p, double t) {
+	return (cos(TWO_PI * t) + 20) * exact_u_fcn_helper_MDL1(x, p);
 }
 
 // The x-derivative of the exact u function
-double exact_u_xDer_fcn_MDL1(double x, double p, double t) {
+double exact_UxDer_fcn_MDL1(double x, double p, double t) {
 	double x_minus_xf = x - xf,
 			p_minus_pA = p - pA, pB_minus_p = pB_fcn_MDL1(x) - p,
-			pB_xDer_val = pB_xDer_fcn_MDL1(x);
+			pB_xDer_val = pBxDer_fcn_MDL1(x);
 	double xPart1 = pow(x, 3), xPart2 = pow(x_minus_xf, 3),
 			xPart3 = pB_minus_p * pB_minus_p, xPart4 = p_minus_pA - pB_minus_p;
-	return _c1_exU_MDL1 * p_minus_pA * p_minus_pA * (cos(TWO_PI_CONST * t) + 20) * (
+	return _c1_exU_MDL1 * p_minus_pA * p_minus_pA * (cos(TWO_PI * t) + 20) * (
 			3 * x * x * xPart2 * xPart3 * xPart4
 			+ xPart1 * 3 * x_minus_xf * x_minus_xf * xPart3 * xPart4
 			+ xPart1 * xPart2 * 2 * pB_minus_p * pB_xDer_val * xPart4
@@ -310,35 +310,35 @@ double exact_u_xDer_fcn_MDL1(double x, double p, double t) {
 }
 
 // The p-derivative of the exact u function
-double exact_u_pDer_fcn_MDL1(double x, double p, double t) {
+double exact_UpDer_fcn_MDL1(double x, double p, double t) {
 	double x_minus_xf = x - xf,
 			p_minus_pA = p - pA, p_minus_pB = p - pB_fcn_MDL1(x);
 	double p_sum_part = p_minus_pA + p_minus_pB, p_prod_part = p_minus_pA * p_minus_pB;
-	return _c1_exUpDer_MDL1 * pow(x * x_minus_xf, 3) * (cos(TWO_PI_CONST * t) + 20)
+	return _c1_exUpDer_MDL1 * pow(x * x_minus_xf, 3) * (cos(TWO_PI * t) + 20)
 			* p_prod_part * (p_sum_part * p_sum_part + p_prod_part);
 }
 
 // The t-derivative of the exact u function
-double exact_u_tDer_fcn_MDL1(double x, double p, double t) {
-	return -TWO_PI_CONST * sin(TWO_PI_CONST * t) * exact_u_fcn_helper_MDL1(x, p);
+double exact_UtDer_fcn_MDL1(double x, double p, double t) {
+	return -TWO_PI * sin(TWO_PI * t) * exact_u_fcn_helper_MDL1(x, p);
 }
 
 // Manufactured solution: exact w function
-double exact_w_fcn_MDL1(double x, double p, double t) {
+double exact_W_fcn_MDL1(double x, double p, double t) {
 	double xPart1 = x * (x - xf), p_minus_pB = p - pB_fcn_MDL1(x);
-	return _c1_exW_MDL1 * pow(p - pA, 3) * (cos(TWO_PI_CONST * t) + 20)
+	return _c1_exW_MDL1 * pow(p - pA, 3) * (cos(TWO_PI * t) + 20)
 			* xPart1 * xPart1 * p_minus_pB * p_minus_pB * (
-					p_minus_pB * (2 * x - xf) - pB_xDer_fcn_MDL1(x) * xPart1
+					p_minus_pB * (2 * x - xf) - pBxDer_fcn_MDL1(x) * xPart1
 			);
 }
 
 // The p-derivative of the exact w function
-double exact_w_pDer_fcn_MDL1(double x, double p, double t) {
+double exact_WpDer_fcn_MDL1(double x, double p, double t) {
 	double xTerm = x * (x - xf), p_minus_pB = p - pB_fcn_MDL1(x), p_minus_pA = p - pA,
 			two_x_minus_xf = 2 * x - xf;
 	double pPart1 = pow(p_minus_pA, 3), pPart2 = p_minus_pB * p_minus_pB,
-			pPart3 = p_minus_pB * two_x_minus_xf - pB_xDer_fcn_MDL1(x) * xTerm;
-	return _c1_exW_MDL1 * xTerm * xTerm * (cos(TWO_PI_CONST * t) + 20) * (
+			pPart3 = p_minus_pB * two_x_minus_xf - pBxDer_fcn_MDL1(x) * xTerm;
+	return _c1_exW_MDL1 * xTerm * xTerm * (cos(TWO_PI * t) + 20) * (
 			3 * p_minus_pA * p_minus_pA * pPart2 * pPart3
 			+ pPart1 * 2 * p_minus_pB * pPart3
 			+ pPart1 * pPart2 * two_x_minus_xf
@@ -351,9 +351,9 @@ double exact_w_pDer_fcn_MDL1(double x, double p, double t) {
 
 // Source function for the T equation
 double source_T_fcn_MDL1(double T, double q, double u, double w, double x, double p, double t) {
-	return exact_T_tDer_fcn_MDL1(x, p, t)
-			+ exact_u_fcn_MDL1(x, p, t) * exact_T_xDer_fcn_MDL1(x, p, t)
-			+ exact_w_fcn_MDL1(x, p, t) * exact_T_pDer_fcn_MDL1(x, p, t);
+	return exact_TtDer_fcn_MDL1(x, p, t)
+			+ exact_U_fcn_MDL1(x, p, t) * exact_TxDer_fcn_MDL1(x, p, t)
+			+ exact_W_fcn_MDL1(x, p, t) * exact_TpDer_fcn_MDL1(x, p, t);
 }
 
 // Source function for the q equation
@@ -363,9 +363,9 @@ double source_q_fcn_MDL1(double T, double q, double u, double w, double x, doubl
 
 // Source function for the u equation
 double source_u_fcn_MDL1(double T, double q, double u, double w, double x, double p, double t) {
-	return exact_u_tDer_fcn_MDL1(x, p, t)
-			+ exact_u_fcn_MDL1(x, p, t) * exact_u_xDer_fcn_MDL1(x, p, t)
-			+ exact_w_fcn_MDL1(x, p, t) * exact_u_pDer_fcn_MDL1(x, p, t);
+	return exact_UtDer_fcn_MDL1(x, p, t)
+			+ exact_U_fcn_MDL1(x, p, t) * exact_UxDer_fcn_MDL1(x, p, t)
+			+ exact_W_fcn_MDL1(x, p, t) * exact_UpDer_fcn_MDL1(x, p, t);
 }
 
 // Set all parameters in model 1
@@ -374,8 +374,8 @@ void setPar_MDL1() {
 	x0 = 0.;
 	xf = 50000.;
 	pA = 200.;
-	pB_fcnPtr = &pB_fcn_MDL1;
-	pBxDer_fcnPtr = &pB_xDer_fcn_MDL1;
+	pB_fptr = &pB_fcn_MDL1;
+	pBxDer_fptr = &pBxDer_fcn_MDL1;
 	// Set function coefficients
 	setFcnCoef_MDL1();
 }

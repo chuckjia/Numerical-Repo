@@ -117,7 +117,7 @@ void testSourceFcns_helper(int numTestTimeSteps,
 	for (int tt = 0; tt < numTestTimeSteps; ++tt) {
 		for (int i = 0; i <= Nx; ++i) {
 			for (int j = 0; j < Np; ++j) {
-				double T = T_sl[i][j], q = q_sl[i][j], u = u_sl[i][j], w = w_sl[i][j];
+				double T = T_[i][j], q = q_[i][j], u = u_[i][j], w = w_[i][j];
 				double x = getCellCenterX(i, j), p = getCellCenterP(i, j), t = tt * Dt;
 				printf("%1.2f ", (*source_T_fcnPtr)(T, q, u, w, x, p, t));
 			}
@@ -191,15 +191,15 @@ void testQuadCell() {
 
 void testExactSolnInMDL1_helper(double x, double p, double t) {
 	double T_exactVal = exact_T_fcn_MDL1(x, p, t),
-			T_xDer_exactVal = exact_T_xDer_fcn_MDL1(x, p, t),
-			T_pDer_exactVal = exact_T_pDer_fcn_MDL1(x, p, t),
-			T_tDer_exactVal = exact_T_tDer_fcn_MDL1(x, p, t),
-			u_exactVal = exact_u_fcn_MDL1(x, p, t),
-			u_xDer_exactVal = exact_u_xDer_fcn_MDL1(x, p, t),
-			u_pDer_exactVal = exact_u_pDer_fcn_MDL1(x, p, t),
-			u_tDer_exactVal = exact_u_tDer_fcn_MDL1(x, p, t),
-			w_exactVal = exact_w_fcn_MDL1(x, p, t),
-			w_pDer_exactVal = exact_w_pDer_fcn_MDL1(x, p, t);
+			T_xDer_exactVal = exact_TxDer_fcn_MDL1(x, p, t),
+			T_pDer_exactVal = exact_TpDer_fcn_MDL1(x, p, t),
+			T_tDer_exactVal = exact_TtDer_fcn_MDL1(x, p, t),
+			u_exactVal = exact_U_fcn_MDL1(x, p, t),
+			u_xDer_exactVal = exact_UxDer_fcn_MDL1(x, p, t),
+			u_pDer_exactVal = exact_UpDer_fcn_MDL1(x, p, t),
+			u_tDer_exactVal = exact_UtDer_fcn_MDL1(x, p, t),
+			w_exactVal = exact_W_fcn_MDL1(x, p, t),
+			w_pDer_exactVal = exact_WpDer_fcn_MDL1(x, p, t);
 
 	printf("\n>> Testing On the Manufactured Solutions in Test Case 1\n");
 	printf("\nAt (x, p, t) = (%1.2f, %1.2f, %1.2f), the exact solutions are evaluated as\n",
@@ -281,11 +281,11 @@ void calcFluxes_upwind_reduced_MDL3_test() {
 			double wTopSideVal = exact_w_fcn_MDL3(x, p, 0);
 			double velocity = Dx * wTopSideVal;
 			if (velocity >= 0) {
-				GG_T[i][j] =	 velocity * T_sl[i][j];
-				GG_q[i][j] =	 velocity * q_sl[i][j];
+				GG_T[i][j] =	 velocity * T_[i][j];
+				GG_q[i][j] =	 velocity * q_[i][j];
 			} else {
-				GG_T[i][j] =	 velocity * T_sl[i][j + 1];
-				GG_q[i][j] =	 velocity * q_sl[i][j + 1];
+				GG_T[i][j] =	 velocity * T_[i][j + 1];
+				GG_q[i][j] =	 velocity * q_[i][j + 1];
 			}
 		}
 
@@ -296,11 +296,11 @@ void calcFluxes_upwind_reduced_MDL3_test() {
 			double uRightSideVal = exact_u_fcn_MDL3(x, p, 0);
 			double velocity = getCellRightDp(i, j) * uRightSideVal;
 			if (velocity >= 0) {
-				FF_T[i][j] =	 velocity * T_sl[i][j];
-				FF_q[i][j] =	 velocity * q_sl[i][j];
+				FF_T[i][j] =	 velocity * T_[i][j];
+				FF_q[i][j] =	 velocity * q_[i][j];
 			} else {
-				FF_T[i][j] =	 velocity * T_sl[i + 1][j];
-				FF_q[i][j] =	 velocity * q_sl[i + 1][j];
+				FF_T[i][j] =	 velocity * T_[i + 1][j];
+				FF_q[i][j] =	 velocity * q_[i + 1][j];
 			}
 		}
 }
@@ -354,12 +354,12 @@ void test_pB_xDer_MDL0() {
 
 // Enforce initial conditions on u for testing purposes
 void enforceIC_exactVelocity(double t) {
-	for (int i = 0; i < numCellsX; ++i) {
+	for (int i = 0; i < numCellX; ++i) {
 		double x = getCellCenterX(i);
-		for (int j = 0; j < numCellsP; ++j) {
+		for (int j = 0; j < numCellP; ++j) {
 			double p = getCellCenterP(i, j);
-			u_sl[i][j] = (*IC_u_fcnPtr)(x, p, t);
-			w_sl[i][j] = (*IC_w_fcnPtr)(x, p, t);
+			u_[i][j] = (*IC_u_fcnPtr)(x, p, t);
+			w_[i][j] = (*IC_w_fcnPtr)(x, p, t);
 		}
 	}
 	//enforceBC_topBD_numer_MDL1();
@@ -395,7 +395,7 @@ void rk4_decoupledVelocity_MDL102() {
 
 		update_k_rk_fcnPtr = &update_k_rk_directAssign;
 		preForwardEuler();
-		forwardEuler_singleStep(t, halfDt, T_sl, q_sl, u_sl, ONE_SIXTH_CONST);
+		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
 
 		// RK4 Step 2
@@ -403,7 +403,7 @@ void rk4_decoupledVelocity_MDL102() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 3
@@ -411,7 +411,7 @@ void rk4_decoupledVelocity_MDL102() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 4
@@ -422,9 +422,9 @@ void rk4_decoupledVelocity_MDL102() {
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
-				T_sl[i][j] += k_rk_T[i][j];
-				q_sl[i][j] += k_rk_q[i][j];
-				u_sl[i][j] += k_rk_u[i][j];
+				T_[i][j] += k_rk_T[i][j];
+				q_[i][j] += k_rk_q[i][j];
+				u_[i][j] += k_rk_u[i][j];
 			}
 		postForwardEuler();
 	}
@@ -445,11 +445,11 @@ void testRun_MDL102() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void calc_w_exact(double t) {
-	for (int i = 0; i < numCellsX; ++i) {
+	for (int i = 0; i < numCellX; ++i) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < Np; ++j) {
 			double p = getCellCenterP(i, j);
-			w_sl[i][j] = (*IC_w_fcnPtr)(x, p, t);
+			w_[i][j] = (*IC_w_fcnPtr)(x, p, t);
 		}
 	}
 	enforceNonPenetrationBC_topBD_numer();
@@ -484,7 +484,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 		update_k_rk_fcnPtr = &update_k_rk_directAssign;
 		preForwardEuler();
-		forwardEuler_singleStep(t, halfDt, T_sl, q_sl, u_sl, ONE_SIXTH_CONST);
+		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
 
 
@@ -493,7 +493,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 3
@@ -501,7 +501,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD_CONST);
+		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 4
@@ -512,9 +512,9 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
-				T_sl[i][j] += k_rk_T[i][j];
-				q_sl[i][j] += k_rk_q[i][j];
-				u_sl[i][j] += k_rk_u[i][j];
+				T_[i][j] += k_rk_T[i][j];
+				q_[i][j] += k_rk_q[i][j];
+				u_[i][j] += k_rk_u[i][j];
 			}
 		postForwardEuler();
 	}
@@ -536,10 +536,10 @@ void printPhixErrToFile(double t) {
 		double x = getCellCenterX(i), DpVal = getCellCenterDp(i), sum = 0;
 		for (int j = 1; j <= Np; ++j) {
 			double p = getCellCenterP(i, j), pInCurrCell = p - (j - 1) * DpVal;
-			double T_xDer_val = exact_T_xDer_fcn_MDL1(x, p, t);
+			double T_xDer_val = exact_TxDer_fcn_MDL1(x, p, t);
 			double phixVal = sum - R_CONST * T_xDer_val / p * pInCurrCell;
 			sum -= R_CONST * T_xDer_val / p * DpVal;
-			fprintf(f, "%1.20e ", phixVal - phix_sl[i][j]);
+			fprintf(f, "%1.20e ", phixVal - phix_[i][j]);
 		}
 	}
 	fclose(f);

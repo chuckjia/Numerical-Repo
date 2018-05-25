@@ -64,8 +64,8 @@ void fillCache_diagMatInv_quadCell() {
 
 // Return the interpolated value of u in the quadrilateral cells
 double getCellTopRightU(int i, int j) {
-	return a1_quadCell * u_sl[i][j] + a2_quadCell[i][j] * u_sl[i + 1][j] +
-			a3_quadCell[i][j] * u_sl[i][j + 1] + a4_quadCell[i][j] * u_sl[i + 1][j + 1];
+	return a1_quadCell * u_[i][j] + a2_quadCell[i][j] * u_[i + 1][j] +
+			a3_quadCell[i][j] * u_[i][j + 1] + a4_quadCell[i][j] * u_[i + 1][j + 1];
 }
 
 // Getters for gradient_h u_h over the quadrilateral cell (i,j+1/2)
@@ -73,18 +73,18 @@ double getCellTopRightU(int i, int j) {
 
 double getGradhU_x(int i, int j) {
 	return e11_diagMatInv_quadCell * (getCellTopRightU(i, j) - getCellTopRightU(i - 1, j)) +
-			e12_diagMatInv_quadCell[i][j] * (u_sl[i][j + 1] - u_sl[i][j]);
+			e12_diagMatInv_quadCell[i][j] * (u_[i][j + 1] - u_[i][j]);
 }
 
 // This getter assumes that the (2, 1) element of the inverse matrix is 0
 double getGradhU_p(int i, int j) {
-	return e22_diagMatInv_quadCell[i][j] * (u_sl[i][j + 1] - u_sl[i][j]);
+	return e22_diagMatInv_quadCell[i][j] * (u_[i][j + 1] - u_[i][j]);
 }
 
 // Return the interpolated value of T in the quadrilateral cells
 double getCellTopRightT(int i, int j) {
-	return a1_quadCell * T_sl[i][j] + a2_quadCell[i][j] * T_sl[i + 1][j] +
-			a3_quadCell[i][j] * T_sl[i][j + 1] + a4_quadCell[i][j] * T_sl[i + 1][j + 1];
+	return a1_quadCell * T_[i][j] + a2_quadCell[i][j] * T_[i + 1][j] +
+			a3_quadCell[i][j] * T_[i][j + 1] + a4_quadCell[i][j] * T_[i + 1][j + 1];
 }
 
 // Getters for gradient_h T_h over the quadrilateral cell (i,j+1/2)
@@ -92,11 +92,11 @@ double getCellTopRightT(int i, int j) {
 
 double getGradhT_x(int i, int j) {
 	return e11_diagMatInv_quadCell * (getCellTopRightT(i, j) - getCellTopRightT(i - 1, j)) +
-			e12_diagMatInv_quadCell[i][j] * (T_sl[i][j + 1] - T_sl[i][j]);
+			e12_diagMatInv_quadCell[i][j] * (T_[i][j + 1] - T_[i][j]);
 }
 
 double getGradhT_p(int i, int j) {
-	return e22_diagMatInv_quadCell[i][j] * (T_sl[i][j + 1] - T_sl[i][j]);
+	return e22_diagMatInv_quadCell[i][j] * (T_[i][j + 1] - T_[i][j]);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

@@ -28,7 +28,7 @@ int timeMethod = 4;
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 200;  // Number of space divisions in both x and p directions
+const int numDivision = 200;  // Number of space divisions in both x and p directions
 
 int numTimeStep = 10000;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
@@ -43,19 +43,19 @@ double finalTime = numTimeStep * Dt;  // Final time
  * ----- ----- ----- ----- ----- ----- */
 
 // The frequency of using the average method
-bool averageResult_opt = true;
+bool _aveResult_ = true;
 int aveFreq = 20;
 // Choose whether to calculate, show, and print to file the L2 errors during computation
-bool calcL2err_opt = true;
+bool _calcL2err_ = true;
 
 /* ----- ----- ----- ----- ----- -----
  * For testing cases
  * ----- ----- ----- ----- ----- -----*/
 
 // Choose whether to print numerical SOLUTION and ERRORS to file at the END of computation
-bool printResToFile_opt = true;
+bool _printResultToFile_ = true;
 // Choose if print EXACT solutions to file at the END of computation
-bool printExactSolnToFile_opt = false;
+bool _printExactSolnToFile_ = false;
 
 /* ----- ----- ----- ----- ----- -----
  * Settings for movie I/O

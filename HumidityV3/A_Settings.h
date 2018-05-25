@@ -1,8 +1,10 @@
 /*
- * Constants.h
+ * A_Settings.h
  *
  *  Created on: Oct 11, 2017
  *      Author: chuckjia
+ *
+ *  This file includes variables that controls the basic settings for the simulation.
  */
 
 #ifndef A_SETTINGS_H_
@@ -18,68 +20,36 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 0;  // Model number. 0 = original physical model; other number = test models
+int modelNo = 1;  // Model number: 0 = original physical model; other number = test models
+int timeMethod = 4;  // Time method: 1 = Forward Euler, 2 = RK2, 4 = RK4
 
-// Select time method
-// 1 = Forward Euler, 2 = RK2, 4 = RK4
-int timeMethod = 4;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivisions = 200;  // Number of space divisions in both x and p directions
+const int numDivision = 100;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 20000;  // Number of time steps
-double Dt = 0.5;  // Size of one time step
+int numTimeStep = 100;  // Number of time steps
+double Dt = 0.01;  // Size of one time step
+
 double finalTime = numTimeStep * Dt;  // Final time
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-/* ----- ----- ----- ----- ----- -----
- * Physical Simulations
- * ----- ----- ----- ----- ----- ----- */
+//  Physical Simulations
+bool _aveResult_ = false;  // Choose to average result or not
+int aveFreq = 25;  // The frequency of using the average method
+bool _calcL2err_ = false;  // Choose whether to calculate, show, and print to file the L2 errors during computation
 
-// The frequency of using the average method
-bool averageResult_opt = true;
-int aveFreq = 25;
-// Choose whether to calculate, show, and print to file the L2 errors during computation
-bool calcL2err_opt = false;
+// Test cases
+bool _printResultToFile_ = true;  // Choose if print numerical SOLUTION and ERRORS to file at the END of computation
+bool _printExactSolnToFile_ = false;  // Choose if print EXACT solutions to file at the END of computation
 
-/* ----- ----- ----- ----- ----- -----
- * For testing cases
- * ----- ----- ----- ----- ----- ----- */
-
-// Choose whether to print numerical SOLUTION and ERRORS to file at the END of computation
-bool printResToFile_opt = true;
-// Choose if print EXACT solutions to file at the END of computation
-bool printExactSolnToFile_opt = false;
-
-/* ----- ----- ----- ----- ----- -----
- * Settings for movie I/O
- * ----- ----- ----- ----- ----- -----*/
-
-// The frequency of printing results to file for movie frames
-int movieFrameFreq = 100;
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Set All Parameter in This File
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-void setAllSettings() {
-	// Empty for now
-}
-
-/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
- * Testing
- * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
-
-// Print out messages for testing purposes
-void tm() {
-	printf("\n===== ===== ===== ===== ===== \n");
-	printf("The program passed here.\n===== ===== ===== ===== =====\n");
-}
+// Movie I/O
+int movieFrameFreq = 10000;  // The frequency of printing results to file as movie frames
 
 #endif /* A_SETTINGS_H_ */

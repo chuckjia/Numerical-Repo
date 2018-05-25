@@ -55,19 +55,19 @@ void calcFluxes_upwind() {
 	// GG: fluxes on the TOP sides of cells
 	for (int i = 1; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			double uTopSideVal = 0.5 * (u_sl[i][j] + u_sl[i][j + 1]),
-					wTopSideVal = 0.5 * (w_sl[i][j] + w_sl[i][j + 1]);
+			double uTopSideVal = 0.5 * (u_[i][j] + u_[i][j + 1]),
+					wTopSideVal = 0.5 * (w_[i][j] + w_[i][j + 1]);
 			double velocity = getCellTopSideLen(i, j) * (
-					getCellTopSideNormX(i, j) * uTopSideVal +
-					getCellTopSideNormP(i, j) * wTopSideVal);
+					getCellTopSideNormVecX(i, j) * uTopSideVal +
+					getCellTopSideNormVecP(i, j) * wTopSideVal);
 			if (velocity >= 0) {
-				GG_T[i][j] =	 velocity * T_sl[i][j];
-				GG_q[i][j] =	 velocity * q_sl[i][j];
-				GG_u[i][j] =	 velocity * u_sl[i][j];
+				GG_T[i][j] =	 velocity * T_[i][j];
+				GG_q[i][j] =	 velocity * q_[i][j];
+				GG_u[i][j] =	 velocity * u_[i][j];
 			} else {
-				GG_T[i][j] =	 velocity * T_sl[i][j + 1];
-				GG_q[i][j] =	 velocity * q_sl[i][j + 1];
-				GG_u[i][j] =	 velocity * u_sl[i][j + 1];
+				GG_T[i][j] =	 velocity * T_[i][j + 1];
+				GG_q[i][j] =	 velocity * q_[i][j + 1];
+				GG_u[i][j] =	 velocity * u_[i][j + 1];
 			}
 		}
 
@@ -76,15 +76,15 @@ void calcFluxes_upwind() {
 		for (int j = 1; j <= Np; ++j) {
 			double r = get_r_uInterp(i, j);
 			double velocity = getCellRightSideLen(i, j) *
-					(r * u_sl[i + 1][j] + (1 - r) * u_sl[i][j]);
+					(r * u_[i + 1][j] + (1 - r) * u_[i][j]);
 			if (velocity >= 0) {
-				FF_T[i][j] =	 velocity * T_sl[i][j];
-				FF_q[i][j] =	 velocity * q_sl[i][j];
-				FF_u[i][j] =	 velocity * u_sl[i][j];
+				FF_T[i][j] =	 velocity * T_[i][j];
+				FF_q[i][j] =	 velocity * q_[i][j];
+				FF_u[i][j] =	 velocity * u_[i][j];
 			} else {
-				FF_T[i][j] =	 velocity * T_sl[i + 1][j];
-				FF_q[i][j] =	 velocity * q_sl[i + 1][j];
-				FF_u[i][j] =	 velocity * u_sl[i + 1][j];
+				FF_T[i][j] =	 velocity * T_[i + 1][j];
+				FF_q[i][j] =	 velocity * q_[i + 1][j];
+				FF_u[i][j] =	 velocity * u_[i + 1][j];
 			}
 		}
 }

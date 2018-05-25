@@ -27,11 +27,11 @@ titleLine2 = "time = " + num2str(time) + "s";
 % No ghost cells
 centersX_noGhost = centersX(2:end-1, 2:end-1);
 centersP_noGhost = centersP(2:end-1, 2:end-1);
-% if viewAngle == false
-%     fig = graphSoln(solnFilename, centersX_noGhost, centersP_noGhost, titleLine1, titleLine2);
-% else
-%     fig = graphSoln(solnFilename, centersX_noGhost, centersP_noGhost, titleLine1, titleLine2, viewAngle);
-% end
+if viewAngle == false
+    fig = graphSoln(solnFilename, centersX_noGhost, centersP_noGhost, titleLine1, titleLine2);
+else
+    fig = graphSoln(solnFilename, centersX_noGhost, centersP_noGhost, titleLine1, titleLine2, viewAngle);
+end
 
 % Print pdf
 if saveToPDF
@@ -40,10 +40,10 @@ if saveToPDF
 end
 
 contourLevels = selectContourLevels(solnName);
-figure
-if viewAngle == false
-    graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2);
-else
-    graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, viewAngle);
-end
+% figure
+% if viewAngle == false
+%     graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2);
+% else
+%     graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, viewAngle);
+% end
 
