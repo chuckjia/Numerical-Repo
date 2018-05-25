@@ -1,6 +1,6 @@
 # Humidity Project Documentation
 
-This code performs numerical simulations for inviscid hydrostatic primitive equation models in the paper *Numerical Simulations of the Humid Atmosphere*.
+This code performs numerical simulations for inviscid hydrostatic primitive equation models in the paper *Numerical Simulations of the Humid Atmosphere Above A Mountain*.
 
 ## Change Logs
 #### Version 3.180524
@@ -12,21 +12,21 @@ This code performs numerical simulations for inviscid hydrostatic primitive equa
 
 To run the code, you can either compile the driver file or simply use the included makefile.
 * To manually compile, find the driver file and compile with C++ compilers. For example, if using `g++`, use the following to compile
-~~~~
-g++ Driver.cpp -o output_filename
-~~~~
-The compiled C++ file can be found under the directory `Output`.
-To execute the compiled binary file, use
-~~~~
-./output_filename
-~~~~
-The driver cpp file might vary slightly across versions.
+  ~~~~
+  g++ Driver.cpp -o output_filename
+  ~~~~
+  The compiled C++ file can be found under the directory `Output`.
+  To execute the compiled binary file, use
+  ~~~~
+  ./output_filename
+  ~~~~
+  The driver cpp file might vary slightly across versions.
 
 * To use makefile, in terminal, navigate to the project directory and use
-~~~~
-make
-~~~~
-This will compile and run the code.
+  ~~~~
+  make
+  ~~~~
+  This will compile and run the code.
 
 To change model settings, e.g. time step size, mesh size, etc., change variable values in the `Settings.h` file. To write new model equations, use the file `Models.h`.
 

@@ -42,51 +42,51 @@ double u_[numCellX][numCellP], w_[numCellX][numCellP], phix_[numCellX][numCellP]
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 double Dx;  // x step size, defined in calcGridPts()
-double cellLeftDp_cache[numGridPtX];  // Stores the Dp values on cell left sides, defined in calcGridPts()
+double cellLeftDp_[numGridPtX];  // Stores the Dp values on cell left sides, defined in calcGridPts()
 
 // The following two arrays store the grid point coordinates. meshGridX stores x coord on cell
 // left sides, and meshGridP stores p coord on cell bottom-left sides
-double meshGridX[numGridPtX];  // Stores x_{i-1/2,j}, independent of j
-double meshGridP[numGridPtX][numGridPtP];  // Stores p_{i-1/2,j-1/2}
+double meshGridX_[numGridPtX];  // Stores x_{i-1/2,j}, independent of j
+double meshGridP_[numGridPtX][numGridPtP];  // Stores p_{i-1/2,j-1/2}
 
 // Calculate and store grid points coordinates in cache
 void calcGridPts() {
 	Dx = (xf - x0) / Nx;
 	for (int i = 0; i < numGridPtX; ++i) {
 		double x = x0 + (i - 1) * Dx;
-		meshGridX[i] = x;
+		meshGridX_[i] = x;
 		double Dp = ((*pB_fptr)(x) - pA) / Np;
-		cellLeftDp_cache[i] = Dp;
+		cellLeftDp_[i] = Dp;
 		for (int j = 0; j < numGridPtP; ++j)
-			meshGridP[i][j] = pA + (j - 1) * Dp;
+			meshGridP_[i][j] = pA + (j - 1) * Dp;
 	}
 }
 
 /**
  * Getters for the Dp values
  */
-double getCellLeftDp(int i, int j) { return cellLeftDp_cache[i]; }
-double getCellLeftDp(int i) { return cellLeftDp_cache[i]; }
+double getCellLeftDp(int i, int j) { return cellLeftDp_[i]; }
+double getCellLeftDp(int i) { return cellLeftDp_[i]; }
 
-double getCellRightDp(int i, int j) { return cellLeftDp_cache[i + 1]; }
-double getCellRightDp(int i) { return cellLeftDp_cache[i + 1]; }
+double getCellRightDp(int i, int j) { return cellLeftDp_[i + 1]; }
+double getCellRightDp(int i) { return cellLeftDp_[i + 1]; }
 
 /**
  * Getters for x coordinates on grid points
  */
-double getCellLeftX(int i, int j) { return meshGridX[i]; }
-double getCellLeftX(int i) { return meshGridX[i]; }
+double getCellLeftX(int i, int j) { return meshGridX_[i]; }
+double getCellLeftX(int i) { return meshGridX_[i]; }
 
-double getCellRightX(int i, int j) { return meshGridX[i + 1]; }
-double getCellRightX(int i) { return meshGridX[i + 1]; }
+double getCellRightX(int i, int j) { return meshGridX_[i + 1]; }
+double getCellRightX(int i) { return meshGridX_[i + 1]; }
 
 /**
  * Getters for p coordinates on grid points
  */
-double getCellBottLeftP(int i, int j) { return meshGridP[i][j]; }
-double getCellBottRightP(int i, int j) { return meshGridP[i + 1][j]; }
-double getCellTopLeftP(int i, int j) { return meshGridP[i][j + 1]; }
-double getCellTopRightP(int i, int j) { return meshGridP[i + 1][j + 1]; }
+double getCellBottLeftP(int i, int j) { return meshGridP_[i][j]; }
+double getCellBottRightP(int i, int j) { return meshGridP_[i + 1][j]; }
+double getCellTopLeftP(int i, int j) { return meshGridP_[i][j + 1]; }
+double getCellTopRightP(int i, int j) { return meshGridP_[i + 1][j + 1]; }
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -141,29 +141,29 @@ double getCellCenterP(int i, int j) { return cellCenterP[i][j]; }
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Stores the length of cell bottom sides
-double cellBottSideLen_cache[numCellX][numCellP];
+double cellBottSideLen[numCellX][numCellP];
 
 // Calculate all cell sides length: calculate bottom side length of cell (i, j)
 void calcCellSideLen() {
 	for (int i = 0; i < numCellX; ++i)
 		for (int j = 0; j < numCellP; ++j) {
 			double diffP = getCellBottRightP(i, j) - getCellBottLeftP(i, j);
-			cellBottSideLen_cache[i][j] = sqrt(Dx * Dx + diffP * diffP);
+			cellBottSideLen[i][j] = sqrt(Dx * Dx + diffP * diffP);
 		}
 }
 
 /*
  * Getters for cell side lengths
  */
-double getCellBottSideLen(int i, int j) { return cellBottSideLen_cache[i][j]; }
+double getCellBottSideLen(int i, int j) { return cellBottSideLen[i][j]; }
 
-double getCellTopSideLen(int i, int j) { return cellBottSideLen_cache[i][j + 1]; }
+double getCellTopSideLen(int i, int j) { return cellBottSideLen[i][j + 1]; }
 
-double getCellLeftSideLen(int i, int j) { return cellLeftDp_cache[i]; }
-double getCellLeftSideLen(int i) { return cellLeftDp_cache[i]; }
+double getCellLeftSideLen(int i, int j) { return cellLeftDp_[i]; }
+double getCellLeftSideLen(int i) { return cellLeftDp_[i]; }
 
-double getCellRightSideLen(int i, int j) { return cellLeftDp_cache[i + 1]; }
-double getCellRightSideLen(int i) { return cellLeftDp_cache[i + 1]; }
+double getCellRightSideLen(int i, int j) { return cellLeftDp_[i + 1]; }
+double getCellRightSideLen(int i) { return cellLeftDp_[i + 1]; }
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -171,22 +171,22 @@ double getCellRightSideLen(int i) { return cellLeftDp_cache[i + 1]; }
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Store the volumes of all cells. Made 2D to accommodate flat control volumes
-double cellVol_cache[numCellX][numCellP];
+double cellVol[numCellX][numCellP];
 
 // Calculate cell volumes. Require cells to be trapezoids
 void calcCellVol() {
 	for (int i = 0; i < numCellX; ++i)
 		for (int j = 0; j < numCellP; ++j)
-			cellVol_cache[i][j] = 0.5 * (getCellLeftDp(i) + getCellRightDp(i)) * Dx;
+			cellVol[i][j] = 0.5 * (getCellLeftDp(i) + getCellRightDp(i)) * Dx;
 }
 
 /*
  * Getters for cell volumes
  */
-double getCellVol(int i, int j) { return cellVol_cache[i][j]; }
+double getCellVol(int i, int j) { return cellVol[i][j]; }
 
 // This getter function is NOT compatible with flat control volumes
-double getCellVol(int i) { return cellVol_cache[i][1]; }
+double getCellVol(int i) { return cellVol[i][1]; }
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -195,7 +195,7 @@ double getCellVol(int i) { return cellVol_cache[i][1]; }
 
 // Stores the normal vectors of on cell top sides
 // We chose to store the top side normal vectors to be consistent with notations in the aritcle
-double cellTopSideNormVecX_cache[numCellX][numCellP], cellTopSideNormVecP_cache[numCellX][numCellP];
+double cellTopSideNormVecX[numCellX][numCellP], cellTopSideNormVecP[numCellX][numCellP];
 
 // Calculate the normal vectors on the cell sides
 void calcCellSideNormVec() {
@@ -203,8 +203,8 @@ void calcCellSideNormVec() {
 		for (int j = 0; j <= Np; ++j) {
 			double pDiff = getCellTopRightP(i, j) - getCellTopLeftP(i, j),
 					topSideNormVecSize = sqrt(pDiff * pDiff + Dx * Dx);
-			cellTopSideNormVecX_cache[i][j] = -pDiff / topSideNormVecSize;
-			cellTopSideNormVecP_cache[i][j] = Dx / topSideNormVecSize;
+			cellTopSideNormVecX[i][j] = -pDiff / topSideNormVecSize;
+			cellTopSideNormVecP[i][j] = Dx / topSideNormVecSize;
 		}
 }
 
@@ -212,8 +212,8 @@ void calcCellSideNormVec() {
  * Getters for normal vectors on cell TOP sides. Getters for the bottom sides are not defined
  * on purpose, to be consistent with the notations in the article
  */
-double getCellTopSideNormVecX(int i, int j) { return cellTopSideNormVecX_cache[i][j]; }
-double getCellTopSideNormVecP(int i, int j) { return cellTopSideNormVecP_cache[i][j]; }
+double getCellTopSideNormVecX(int i, int j) { return cellTopSideNormVecX[i][j]; }
+double getCellTopSideNormVecP(int i, int j) { return cellTopSideNormVecP[i][j]; }
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

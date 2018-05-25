@@ -21,14 +21,14 @@ void printMeshGridToFile(const char* filenameX, const char* filenameP) {
 	int last_j = numGridPtP - 1;  // Used to print the last entry of each row, which does not have commas following
 
 	for (int i = 0; i < numGridPtX; ++i) {
-		double gridX = meshGridX[i];
+		double gridX = meshGridX_[i];
 		for (int j = 0; j < last_j; ++j) {
-			double gridP = meshGridP[i][j];
+			double gridP = meshGridP_[i][j];
 			fprintf(fx, "%1.20e,", gridX);
 			fprintf(fp, "%1.20e,", gridP);
 		}
 		fprintf(fx, "%1.20e\n", gridX);
-		fprintf(fp, "%1.20e\n", meshGridP[i][last_j]);
+		fprintf(fp, "%1.20e\n", meshGridP_[i][last_j]);
 	}
 
 	fclose(fx); fclose(fp);
