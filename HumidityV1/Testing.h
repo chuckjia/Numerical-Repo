@@ -35,8 +35,8 @@ void setTest1_gaussElimProj() {
 			test_c[5] = {2, 3, 1, 0, 3};
 	for (int i = 1; i < Nx; ++i) {
 		aInv_proj[i] = 1 / test_a[i - 1];
-		b_proj[i] = test_b[i - 1];
-		lambda_x_proj[i] = test_c[i - 1];
+		b_proj_[i] = test_b[i - 1];
+		lambdax_proj_[i] = test_c[i - 1];
 	}
 }
 
@@ -49,8 +49,8 @@ void setTest2_gaussElimProj() {
 			test_c[5] = {3, 2, 5, 1, 4};
 	for (int i = 1; i < Nx; ++i) {
 		aInv_proj[i] = 1 / test_a[i - 1];
-		b_proj[i] = test_b[i - 1];
-		lambda_x_proj[i] = test_c[i - 1];
+		b_proj_[i] = test_b[i - 1];
+		lambdax_proj_[i] = test_c[i - 1];
 	}
 }
 
@@ -63,8 +63,8 @@ void setTest3_gaussElimProj() {
 			test_c[9] = {3, 2, 5, 1, 3, 5, 6, 7, 8};
 	for (int i = 1; i <= Nx; ++i) {
 		aInv_proj[i] = 1 / test_a[i - 1];
-		b_proj[i] = test_b[i - 1];
-		lambda_x_proj[i] = test_c[i - 1];
+		b_proj_[i] = test_b[i - 1];
+		lambdax_proj_[i] = test_c[i - 1];
 	}
 }
 
@@ -88,10 +88,10 @@ void test_GaussElimProj() {
 			if (i == j)
 				printf("  %1.2f", 1 / aInv_proj[i]);
 			else if (i == j - 1)
-				printf("  %1.2f", b_proj[i]);
+				printf("  %1.2f", b_proj_[i]);
 			else
 				printf("  %1.2f", 0.);
-		printf("  %1.2f\n", lambda_x_proj[i]);
+		printf("  %1.2f\n", lambdax_proj_[i]);
 	}
 	for (int j = 1; j <= Nx; ++j)
 		printf("  %1.2f", 1.);
@@ -99,12 +99,12 @@ void test_GaussElimProj() {
 
 	// Perform Gaussian elimination
 	fillCache_d_proj();
-	calcLambdax_gaussElim_proj();
+	calcLambdax_proj();
 
 	// Print result
 	printf("\n- Result of the the Gaussian Elimination is\n[");
 	for (int i = 1; i <= Nx; ++i)
-		printf(" %1.15f;", lambda_x_proj[i]);
+		printf(" %1.15f;", lambdax_proj_[i]);
 	printf(" ]\n");
 }
 
@@ -178,8 +178,8 @@ void printQuadCellDiagMatToFile() {
 }
 
 void testQuadCell() {
-	printParamToFile();
-	printResToFile();
+	writeCSV_param();
+	writeCSV_finalSolnErr();
 	printMeshToFile();
 	printQuadCellCoefToFile();
 	printQuadCellDiagMatToFile();
@@ -232,7 +232,7 @@ void testExactSolnInMDL1() {
 void print_r_uInterp_upwind_toFile() {
 	FILE *f = fopen("Results/r_uInterp_upwind.txt", "wb");
 	for (int i = 0; i <= Nx; ++i)
-		fprintf(f, "%1.20e ", r_uInterp_cache[i]);
+		fprintf(f, "%1.20e ", r_uInterp_[i]);
 	fclose(f);
 }
 
@@ -260,9 +260,9 @@ void calcFluxes_upwind_MDL3_test() {
 void timeSteps_upwind_MDL3_test() {
 	if (modelNo != 3)
 		throw "Error: This test only works with Model 3!";
-	calc_phix_fcnPtr = &emptyFcn;
-	projU_fcnPtr = &emptyFcn;
-	calc_w_fcnPtr = &emptyFcn;
+	calcPhix_fptr = &emptyFcn;
+	projU_fptr = &emptyFcn;
+	calcW_fptr = &emptyFcn;
 	calcFluxes = &calcFluxes_upwind_MDL3_test;
 	forwardEuler();
 	//rk4();
@@ -308,9 +308,9 @@ void calcFluxes_upwind_reduced_MDL3_test() {
 void timeSteps_upwind_reduced_MDL3_test() {
 	if (modelNo != 3)
 		throw "Error: This test only works with Model 3!";
-	calc_phix_fcnPtr = &emptyFcn;
-	projU_fcnPtr = &emptyFcn;
-	calc_w_fcnPtr = &emptyFcn;
+	calcPhix_fptr = &emptyFcn;
+	projU_fptr = &emptyFcn;
+	calcW_fptr = &emptyFcn;
 	calcFluxes = &calcFluxes_upwind_reduced_MDL3_test;
 	//forwardEuler();
 	rk4();
@@ -358,8 +358,8 @@ void enforceIC_exactVelocity(double t) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellP; ++j) {
 			double p = getCellCenterP(i, j);
-			u_[i][j] = (*IC_u_fcnPtr)(x, p, t);
-			w_[i][j] = (*IC_w_fcnPtr)(x, p, t);
+			u_[i][j] = (*initU_fptr)(x, p, t);
+			w_[i][j] = (*initW_fptr)(x, p, t);
 		}
 	}
 	//enforceBC_topBD_numer_MDL1();
@@ -374,8 +374,8 @@ void rk4_decoupledVelocity_MDL102() {
 
 	// The initial condition
 	enforceIC();
-	(*projU_fcnPtr)();
-	(*calc_w_fcnPtr)();
+	(*projU_fptr)();
+	(*calcW_fptr)();
 
 	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
@@ -388,7 +388,7 @@ void rk4_decoupledVelocity_MDL102() {
 		double t = Dt * tt;
 
 		// RK4 Step 0
-		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+		copySoln(T_copy_, q_copy_, u_copy_);
 
 		// RK4 Step 1
 		enforceIC_exactVelocity(t);
@@ -403,7 +403,7 @@ void rk4_decoupledVelocity_MDL102() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
+		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 3
@@ -411,7 +411,7 @@ void rk4_decoupledVelocity_MDL102() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
+		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 4
@@ -419,7 +419,7 @@ void rk4_decoupledVelocity_MDL102() {
 
 		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
 		preForwardEuler();
-		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
+		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
 				T_[i][j] += k_rk_T[i][j];
@@ -449,10 +449,10 @@ void calc_w_exact(double t) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < Np; ++j) {
 			double p = getCellCenterP(i, j);
-			w_[i][j] = (*IC_w_fcnPtr)(x, p, t);
+			w_[i][j] = (*initW_fptr)(x, p, t);
 		}
 	}
-	enforceNonPenetrationBC_topBD_numer();
+	enforceNonPenetrationBC_topBD();
 }
 
 // Use exact w but numerically enforce non-penetration BC on the top for w
@@ -464,7 +464,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 	// The initial condition
 	enforceIC();
-	(*projU_fcnPtr)();
+	(*projU_fptr)();
 
 	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
@@ -477,7 +477,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		double t = Dt * tt;
 
 		// RK4 Step 0
-		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+		copySoln(T_copy_, q_copy_, u_copy_);
 
 		// RK4 Step 1
 		calc_w_exact(t);
@@ -493,7 +493,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
+		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 3
@@ -501,7 +501,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
+		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 4
@@ -509,7 +509,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 
 		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
 		preForwardEuler();
-		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
+		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
 				T_[i][j] += k_rk_T[i][j];

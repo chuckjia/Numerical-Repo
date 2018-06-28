@@ -32,27 +32,27 @@
 
 // Refer to notes for details.
 
-double aInv_proj[Nx], b_proj[Nx];  // Only values from 1 to Nx-1 are used
-double d_proj[Nx + 1]; // Only values from 1 to Nx are used
-double lambda_x_proj[Nx + 1];  // Only values from 1 to Nx are used
+double aInv_proj[Nx], b_proj_[Nx];  // Only values from 1 to Nx-1 are used
+double d_proj_[Nx + 1]; // Only values from 1 to Nx are used
+double lambdax_proj_[Nx + 1];  // Only values from 1 to Nx are used
 
 // Calculate a and b values
 void fillCache_ab_proj() {
 	for (int i = 1; i < Nx; ++i) {
 		double x = getCellCenterX(i);
 		double bThis = ((*pB_fptr)(x) - pA) * DxInv;
-		b_proj[i] = bThis;
+		b_proj_[i] = bThis;
 		aInv_proj[i] = 1 / ((*pBxDer_fptr)(x) - bThis);
 	}
 }
 
 // Calculate d values. It is separated from the calculation of a and b for testing reasons
 void fillCache_d_proj() {
-	d_proj[1] = 1;
+	d_proj_[1] = 1;
 	for (int i = 1; i < Nx; ++i) {
-		double temp = d_proj[i] * aInv_proj[i];
-		d_proj[i] = temp;
-		d_proj[i + 1] = 1 - b_proj[i] * temp;
+		double temp = d_proj_[i] * aInv_proj[i];
+		d_proj_[i] = temp;
+		d_proj_[i + 1] = 1 - b_proj_[i] * temp;
 	}
 }
 
@@ -69,32 +69,32 @@ void calc_c_proj() {
 		for (int j = 1; j <= lastRealIndexP; j++)
 			sum += u_[i][j];
 		sum *= getCellCenterDp(i);
-		lambda_x_proj[i] = sum;
+		lambdax_proj_[i] = sum;
 	}
 	// Now calculate the real c_proj values
 	for (int i = 1; i < Nx; ++i)
-		lambda_x_proj[i] = (lambda_x_proj[i + 1] - lambda_x_proj[i]) * DxInv;
+		lambdax_proj_[i] = (lambdax_proj_[i + 1] - lambdax_proj_[i]) * DxInv;
 }
 
 // Perform Gaussian elimination to calculate lambda_x
-void calcLambdax_gaussElim_proj() {
+void calcLambdax_proj() {
 	calc_c_proj();
 	double sum = 0;
 	for (int i = 1; i < Nx; ++i)
-		sum += lambda_x_proj[i] * d_proj[i];
-	lambda_x_proj[Nx] = -sum / d_proj[Nx];
+		sum += lambdax_proj_[i] * d_proj_[i];
+	lambdax_proj_[Nx] = -sum / d_proj_[Nx];
 	for (int i = Nx - 1; i >= 1; --i)
-		lambda_x_proj[i] = (lambda_x_proj[i] - b_proj[i] * lambda_x_proj[i + 1]) * aInv_proj[i];
+		lambdax_proj_[i] = (lambdax_proj_[i] - b_proj_[i] * lambdax_proj_[i + 1]) * aInv_proj[i];
 }
 
 // Perform the projection method on uTilde to calculate u
-void (*projU_fcnPtr)();
+void (*projU_fptr)();
 
 // Perform the projection method on uTilde to calculate u
 void projU_orig() {
-	calcLambdax_gaussElim_proj();
+	calcLambdax_proj();
 	for (int i = 1; i < Nx; ++i) {
-		double lambda_x = lambda_x_proj[i];
+		double lambda_x = lambdax_proj_[i];
 		for (int j = 1; j < lastRealIndexP; ++j)
 			u_[i][j] -= lambda_x;
 	}
@@ -104,7 +104,7 @@ void projU_orig() {
 void print_lambdax() {
 	printf("\n");
 	for (int i = 1; i <= Nx; ++i)
-		printf("lambda_x[%d] = %1.2e  ", i, lambda_x_proj[i]);
+		printf("lambda_x[%d] = %1.2e  ", i, lambdax_proj_[i]);
 	printf("\n");
 }
 
@@ -115,7 +115,7 @@ void print_lambdax() {
 void setProjection() {
 	fillCache_ab_proj();
 	fillCache_d_proj();
-	projU_fcnPtr = &projU_orig;
+	projU_fptr = &projU_orig;
 }
 
 

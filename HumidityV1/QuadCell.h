@@ -105,7 +105,7 @@ double getGradhT_p(int i, int j) {
  * Set All Parameters And Calculate All Cache Values For the Quadrilateral Cells
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void setQuadCells() {
+void setQuadCell() {
 	fillCache_quadCell();
 	fillCache_diagMatInv_quadCell();
 }

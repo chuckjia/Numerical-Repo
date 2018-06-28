@@ -9,11 +9,11 @@
 #define ANALYSIS_H_
 #include "Conditions.h"
 
-const double GRTD_PREC_CONST = 1e-15;  // Guaranteed precision
+const double GRTD_PREC = 1e-15;  // Guaranteed precision
 double computationTime = 0;
-double relative_L2Err_T_global, relative_L2Err_q_global,
-relative_L2Err_u_global, relative_L2Err_w_global;
-FILE *T_norm_filePtr, *q_norm_filePtr, *u_norm_filePtr, *w_norm_filePtr, *time_filePtr;
+double relatL2Err_T_, relatL2Err_q_,
+relatL2Err_u_, relatL2Err_w_;
+FILE *T_norm_file, *q_norm_file, *u_norm_file, *w_norm_file, *time_file;
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Print Messages
@@ -48,7 +48,7 @@ void printDiagnostics() {
 			getCellLeftDp(1), getCellLeftDp(lastRealIndexX / 2), getCellLeftDp(lastRealIndexX));
 }
 
-void printSchemeDescription() {
+void printSchemeSummary() {
 	printf("\n>> SCHEME DESCRIPTION\n");
 	printf("\n  MODEL %d:  \n", modelNo);
 
@@ -105,14 +105,14 @@ void printMeshToFile() {
  * Calculate and Print Errors
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double cellErr_helper(double numericalVal, double exactVal, double vol) {
+double absL2ErrInACell_helper(double numericalVal, double exactVal, double vol) {
 	return vol * pow(exactVal - numericalVal, 2);
 }
 
-double relativeL2Err_helper(double num, double denom) {
-	if (denom > GRTD_PREC_CONST)
+double relatL2Err_helper(double num, double denom) {
+	if (denom > GRTD_PREC)
 		return sqrt(num / denom);
-	else if (num < GRTD_PREC_CONST)
+	else if (num < GRTD_PREC)
 		return 0;
 	return -99999e10;
 }
@@ -125,15 +125,15 @@ void showL2Errors(double t) {
 		double x = getCellCenterX(i);
 		for (int j = 1; j < lastGhostIndexP; ++j) {
 			double p = getCellCenterP(i, j), vol = getCellVol(i, j);
-			double exactVal_T = (*IC_T_fcnPtr)(x, p, t),
-					exactVal_q = (*IC_q_fcnPtr)(x, p, t),
-					exactVal_u = (*IC_u_fcnPtr)(x, p, t),
-					exactVal_w = (*IC_w_fcnPtr)(x, p, t);
+			double exactVal_T = (*initT_fptr)(x, p, t),
+					exactVal_q = (*initQ_fptr)(x, p, t),
+					exactVal_u = (*initU_fptr)(x, p, t),
+					exactVal_w = (*initW_fptr)(x, p, t);
 			// Calculate errors
-			num_T += cellErr_helper(exactVal_T, T_[i][j], vol);
-			num_q += cellErr_helper(exactVal_q, q_[i][j], vol);
-			num_u += cellErr_helper(exactVal_u, u_[i][j], vol);
-			num_w += cellErr_helper(exactVal_w, w_[i][j], vol);
+			num_T += absL2ErrInACell_helper(exactVal_T, T_[i][j], vol);
+			num_q += absL2ErrInACell_helper(exactVal_q, q_[i][j], vol);
+			num_u += absL2ErrInACell_helper(exactVal_u, u_[i][j], vol);
+			num_w += absL2ErrInACell_helper(exactVal_w, w_[i][j], vol);
 			denom_T += vol * pow(exactVal_T, 2);
 			denom_q += vol * pow(exactVal_q, 2);
 			denom_u += vol * pow(exactVal_u, 2);
@@ -142,10 +142,10 @@ void showL2Errors(double t) {
 	}
 	double absL2Err_T = sqrt(num_T), absL2Err_q = sqrt(num_q),
 			absL2Err_u = sqrt(num_u), absL2Err_w(num_w);
-	double relativeL2Err_T = relativeL2Err_helper(num_T, denom_T),
-			relativeL2Err_q = relativeL2Err_helper(num_q, denom_q),
-			relativeL2Err_u = relativeL2Err_helper(num_u, denom_u),
-			relativeL2Err_w = relativeL2Err_helper(num_w, denom_w);
+	double relativeL2Err_T = relatL2Err_helper(num_T, denom_T),
+			relativeL2Err_q = relatL2Err_helper(num_q, denom_q),
+			relativeL2Err_u = relatL2Err_helper(num_u, denom_u),
+			relativeL2Err_w = relatL2Err_helper(num_w, denom_w);
 
 	printf("\n  - L2 relative error for T, q, u, w = [%1.7e, %1.7e, %1.7e, %1.7e]\n",
 			relativeL2Err_T, relativeL2Err_q, relativeL2Err_u, relativeL2Err_w);
@@ -153,10 +153,10 @@ void showL2Errors(double t) {
 			sqrt(denom_T), sqrt(denom_q), sqrt(denom_u), sqrt(denom_w));
 	printf("  - L2 absolute error for T, q, u, w = [%1.7e, %1.7e, %1.7e, %1.7e]\n",
 			absL2Err_T, absL2Err_q, absL2Err_u, absL2Err_w);
-	relative_L2Err_T_global = relativeL2Err_T;
-	relative_L2Err_q_global = relativeL2Err_q;
-	relative_L2Err_u_global = relativeL2Err_u;
-	relative_L2Err_w_global = relativeL2Err_w;
+	relatL2Err_T_ = relativeL2Err_T;
+	relatL2Err_q_ = relativeL2Err_q;
+	relatL2Err_u_ = relativeL2Err_u;
+	relatL2Err_w_ = relativeL2Err_w;
 }
 
 void showL2Errors() {
@@ -189,24 +189,24 @@ void calcL2Norm(double t) {
 	norm_T = sqrt(norm_T); norm_q = sqrt(norm_q); norm_u = sqrt(norm_u); norm_w = sqrt(norm_w);
 	printf("\n    L2 norm (T, q, u, w) = (%1.2f, %1.2f, %1.2f, %1.2f)",
 			norm_T - 2.055e6, norm_q, norm_u, norm_w);
-	fprintf(T_norm_filePtr, "%1.20e ", norm_T);
-	fprintf(q_norm_filePtr, "%1.20e ", norm_q);
-	fprintf(u_norm_filePtr, "%1.20e ", norm_u);
-	fprintf(w_norm_filePtr, "%1.20e ", norm_w);
-	fprintf(time_filePtr, "%1.20e ", t);
+	fprintf(T_norm_file, "%1.20e ", norm_T);
+	fprintf(q_norm_file, "%1.20e ", norm_q);
+	fprintf(u_norm_file, "%1.20e ", norm_u);
+	fprintf(w_norm_file, "%1.20e ", norm_w);
+	fprintf(time_file, "%1.20e ", t);
 }
 
-void printParamToFile() {
+void writeCSV_param() {
 	FILE *f = fopen("Results/par.txt", "wb");
 	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d %d %d",
 			x0, xf, pA, (*pB_fptr)(x0), (*pB_fptr)(xf), Nx, Np, Dt, numTimeStep,
-			movieFrameFreq, aveFreq);
+			movieFrameFreq, aveSolnFreq);
 	fclose(f);
 }
 
 // Write the result to file: res.txt for the solution and err.txt for the error
 // This function is used in plotting the solution and the error
-void printResToFile() {
+void writeCSV_finalSolnErr() {
 	// Numerical solution files
 	FILE *res_T = fopen("Results/T_soln.txt", "wb");
 	FILE *res_q = fopen("Results/q_soln.txt", "wb");
@@ -231,10 +231,10 @@ void printResToFile() {
 			fprintf(res_u, "%1.20e ", numer_u);
 			fprintf(res_w, "%1.20e ", numer_w);
 
-			double exact_T = (*IC_T_fcnPtr)(x, p, finalTime),
-					exact_q = (*IC_q_fcnPtr)(x, p, finalTime),
-					exact_u = (*IC_u_fcnPtr)(x, p, finalTime),
-					exact_w = (*IC_w_fcnPtr)(x, p, finalTime);
+			double exact_T = (*initT_fptr)(x, p, finalTime),
+					exact_q = (*initQ_fptr)(x, p, finalTime),
+					exact_u = (*initU_fptr)(x, p, finalTime),
+					exact_w = (*initW_fptr)(x, p, finalTime);
 			fprintf(err_T, "%1.20e ", numer_T - exact_T);
 			fprintf(err_q, "%1.20e ", numer_q - exact_q);
 			fprintf(err_u, "%1.20e ", numer_u - exact_u);
@@ -246,7 +246,7 @@ void printResToFile() {
 	fclose(err_T); fclose(err_q); fclose(err_u); fclose(err_w);
 }
 
-void printExactSolnToFile() {
+void writeCSV_exactSoln() {
 	// Write final numerical solution to files
 	FILE *exact_T = fopen("Results/T_exact.txt", "wb");
 	FILE *exact_q = fopen("Results/q_exact.txt", "wb");
@@ -257,10 +257,10 @@ void printExactSolnToFile() {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellP; ++j) {
 			double p = getCellCenterP(i, j);
-			fprintf(exact_T, "%1.20e ", (*IC_T_fcnPtr)(x, p, t));
-			fprintf(exact_q, "%1.20e ", (*IC_q_fcnPtr)(x, p, t));
-			fprintf(exact_u, "%1.20e ", (*IC_u_fcnPtr)(x, p, t));
-			fprintf(exact_w, "%1.20e ", (*IC_w_fcnPtr)(x, p, t));
+			fprintf(exact_T, "%1.20e ", (*initT_fptr)(x, p, t));
+			fprintf(exact_q, "%1.20e ", (*initQ_fptr)(x, p, t));
+			fprintf(exact_u, "%1.20e ", (*initU_fptr)(x, p, t));
+			fprintf(exact_w, "%1.20e ", (*initW_fptr)(x, p, t));
 		}
 	}
 	fclose(exact_T); fclose(exact_q); fclose(exact_u); fclose(exact_w);
@@ -287,7 +287,7 @@ void writeResToFileForMovie_T_test(int tt) {
 			double numerVal = T_[i][j];
 			fprintf(res, "%1.20e ", numerVal);
 
-			double exactVal = (*IC_T_fcnPtr)(x, p, t);
+			double exactVal = (*initT_fptr)(x, p, t);
 			fprintf(err, "%1.20e ", numerVal - exactVal);
 			// fprintf(exact, "%1.20e ", exactVal);
 
@@ -296,7 +296,7 @@ void writeResToFileForMovie_T_test(int tt) {
 	fclose(res); fclose(err); //fclose(exact);
 }
 
-void printSolnToFile(int tt) {
+void writeMovie_soln(int tt) {
 	if (tt % movieFrameFreq)
 		return;
 	char filename[20];
@@ -319,7 +319,7 @@ void printSolnToFile(int tt) {
 	fclose(res_T); fclose(res_q); fclose(res_u); fclose(res_w);
 }
 
-void printExactVelocityToFile(int tt) {
+void printExactVelocityToMovie(int tt) {
 	if (tt % movieFrameFreq)
 		return;
 
@@ -335,8 +335,8 @@ void printExactVelocityToFile(int tt) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellP; ++j) {
 			double p = getCellCenterP(i, j);
-			fprintf(u_ex, "%1.20e ", (*IC_u_fcnPtr)(x, p, t));
-			fprintf(w_ex, "%1.20e ", (*IC_w_fcnPtr)(x, p, t));
+			fprintf(u_ex, "%1.20e ", (*initU_fptr)(x, p, t));
+			fprintf(w_ex, "%1.20e ", (*initW_fptr)(x, p, t));
 		}
 	}
 	fclose(u_ex); fclose(w_ex);
@@ -345,30 +345,30 @@ void printExactVelocityToFile(int tt) {
 void printExactVelocityToFile() {
 	printf("\n>> Printing velocity field.\n");
 	for (int tt = 1; tt <= numTimeStep; ++tt)
-		printExactVelocityToFile(tt);
+		printExactVelocityToMovie(tt);
 	printf("\n\nExact velocity field printed.\n");
-	printParamToFile();
+	writeCSV_param();
 	printMeshToFile();
-	printResToFile();
+	writeCSV_finalSolnErr();
 }
 
 void peformAnalysis() {
 	clock_t start = clock();
 
-	printSchemeDescription();
+	printSchemeSummary();
 	showL2Errors();
 	if (_printResultToFile_) {
-		printParamToFile();
+		writeCSV_param();
 		printMeshToFile();
-		printResToFile();
+		writeCSV_finalSolnErr();
 	}
 	if (_printExactSolnToFile_)
-		printExactSolnToFile();
+		writeCSV_exactSoln();
 	printf("\n- Analysis complete. Time used = %1.2fs.\n",
 			((double) (clock() - start)) / CLOCKS_PER_SEC);
 }
 
-void (*aveSoln_fcnPtr)(int tt);
+void (*aveSoln_fptr)(int tt);
 
 void aveSoln_oneTerm(double sl[numCellX][numCellP]) {
 	for (int i = 1; i <= Nx; ++i)
@@ -377,7 +377,7 @@ void aveSoln_oneTerm(double sl[numCellX][numCellP]) {
 }
 
 void aveSoln(int tt) {
-	if (tt % aveFreq == 0) {
+	if (tt % aveSolnFreq == 0) {
 		aveSoln_oneTerm(T_);
 		// aveSoln_oneTerm(q_sl);
 	}
@@ -393,29 +393,29 @@ void noAveSoln(int tt) {
 void printResToFile_convAnalysis() {
 	FILE *f = fopen("Results/ConvAnalysis.txt", "a");
 	fprintf(f, "%d  %1.7e  %1.7e  % 1.7e  %1.7e  %1.2f\n",
-			Nx, relative_L2Err_T_global, relative_L2Err_q_global,
-			relative_L2Err_u_global, relative_L2Err_w_global,
+			Nx, relatL2Err_T_, relatL2Err_q_,
+			relatL2Err_u_, relatL2Err_w_,
 			computationTime);
 	fclose(f);
 }
 
-void closeFiles_analysis() {
-	fclose(T_norm_filePtr); fclose(q_norm_filePtr);
-	fclose(u_norm_filePtr); fclose(w_norm_filePtr);
-	fclose(time_filePtr);
+void closeGlobalFiles_IO() {
+	fclose(T_norm_file); fclose(q_norm_file);
+	fclose(u_norm_file); fclose(w_norm_file);
+	fclose(time_file);
 }
 
 void setAnalysis() {
-	T_norm_filePtr = fopen("Results/T_norm.txt", "wb");
-	q_norm_filePtr = fopen("Results/q_norm.txt", "wb");
-	u_norm_filePtr = fopen("Results/u_norm.txt", "wb");
-	w_norm_filePtr = fopen("Results/w_norm.txt", "wb");
-	time_filePtr = fopen("Results/time.txt", "wb");
+	T_norm_file = fopen("Results/T_norm.txt", "wb");
+	q_norm_file = fopen("Results/q_norm.txt", "wb");
+	u_norm_file = fopen("Results/u_norm.txt", "wb");
+	w_norm_file = fopen("Results/w_norm.txt", "wb");
+	time_file = fopen("Results/time.txt", "wb");
 
 	if (_aveResult_)
-		aveSoln_fcnPtr = &aveSoln;
+		aveSoln_fptr = &aveSoln;
 	else
-		aveSoln_fcnPtr = &noAveSoln;
+		aveSoln_fptr = &noAveSoln;
 }
 
 #endif /* ANALYSIS_H_ */

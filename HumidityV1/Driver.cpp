@@ -12,7 +12,7 @@ void setAll() {
 	setConstants();
 	setModels();
 	setMesh();
-	setQuadCells();
+	setQuadCell();
 	setProjection();
 	setWPhix();
 	setConditions();
@@ -22,7 +22,7 @@ void setAll() {
 }
 
 void fileManagement() {
-	closeFiles_analysis();
+	closeGlobalFiles_IO();
 }
 
 int main() {

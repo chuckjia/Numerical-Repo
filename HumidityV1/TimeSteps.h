@@ -13,8 +13,8 @@
  * Copies of Numerical Solutions
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double T_sl_copy[numCellX][numCellP], q_sl_copy[numCellX][numCellP],
-u_sl_copy[numCellX][numCellP];
+double T_copy_[numCellX][numCellP], q_copy_[numCellX][numCellP],
+u_copy_[numCellX][numCellP];
 
 double k_rk_T[numCellX][numCellP], k_rk_q[numCellX][numCellP], k_rk_u[numCellX][numCellP];
 
@@ -99,11 +99,11 @@ void forwardEuler() {
 		// Numerical calculation
 		double t = Dt * tt;
 		(*calcFluxes)();  // Calculate numerical fluxes
-		(*calc_phix_fcnPtr)();  // Calculate phi_x value at the beginning of each time step
+		(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
 		forwardEuler_singleStep(t, Dt, T_, q_, u_, 0);
-		(*projU_fcnPtr)();  // Projection method on u
-		(*calc_w_fcnPtr)();  // Calculate w
-		(*enforceBC_fcnPtr)();  // Enforce boundary conditions
+		(*projU_fptr)();  // Projection method on u
+		(*calcW_fptr)();  // Calculate w
+		(*enforceBC_fptr)();  // Enforce boundary conditions
 
 		//showL2Errors(t);
 		//writeResToFileForMovie_T_test(tt + 1);
@@ -127,7 +127,7 @@ void copySoln(double T_copy[numCellX][numCellP], double q_copy[numCellX][numCell
 
 void preForwardEuler() {
 	(*calcFluxes)();  // Calculate numerical fluxes
-	(*calc_phix_fcnPtr)();  // Calculate phi_x value at the beginning of each time step
+	(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
 }
 
 void subExactVelocity(double t) {
@@ -135,17 +135,17 @@ void subExactVelocity(double t) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < numCellP; ++j) {
 			double p = getCellCenterP(i, j);
-			u_[i][j] = (*IC_u_fcnPtr)(x, p, t);
-			w_[i][j] = (*IC_q_fcnPtr)(x, p, t);
+			u_[i][j] = (*initU_fptr)(x, p, t);
+			w_[i][j] = (*initQ_fptr)(x, p, t);
 		}
 	}
 }
 
 void postForwardEuler() {
-	(*projU_fcnPtr)();  // Projection method on u
-	(*enforceBC_fcnPtr)();  // Enforce boundary conditions
-	(*calc_w_fcnPtr)();  // Calculate w
-	(*enforceBC_fcnPtr)();  // Enforce boundary conditions
+	(*projU_fptr)();  // Projection method on u
+	(*enforceBC_fptr)();  // Enforce boundary conditions
+	(*calcW_fptr)();  // Calculate w
+	(*enforceBC_fptr)();  // Enforce boundary conditions
 }
 
 void rk2() {
@@ -166,7 +166,7 @@ void rk2() {
 		double t = Dt * tt;
 
 		// RK2 Step 0
-		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+		copySoln(T_copy_, q_copy_, u_copy_);
 
 		// RK2 Step 1
 		preForwardEuler();
@@ -175,7 +175,7 @@ void rk2() {
 
 		// RK2 Step 2
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
+		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, 0);
 		postForwardEuler();
 
 		//showL2Errors(t);
@@ -207,12 +207,12 @@ void rk4() {
 				calcL2Norm(t);
 		}
 
-		printSolnToFile(tt);
+		writeMovie_soln(tt);
 
 		// Numerical calculation
 
 		// RK4 Step 0
-		copySoln(T_sl_copy, q_sl_copy, u_sl_copy);
+		copySoln(T_copy_, q_copy_, u_copy_);
 
 		// RK4 Step 1
 		update_k_rk_fcnPtr = &update_k_rk_directAssign;
@@ -223,19 +223,19 @@ void rk4() {
 		// RK4 Step 2
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, halfDt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
+		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 3
 		update_k_rk_fcnPtr = &update_k_rk_accum;
 		preForwardEuler();
-		forwardEuler_singleStep(t + halfDt, Dt, T_sl_copy, q_sl_copy, u_sl_copy, ONE_THIRD);
+		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 4
 		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
 		preForwardEuler();
-		forwardEuler_singleStep(t + Dt, oneSixthDt, T_sl_copy, q_sl_copy, u_sl_copy, 0);
+		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
 				T_[i][j] += k_rk_T[i][j];
@@ -246,9 +246,9 @@ void rk4() {
 
 		//showL2Errors(t);
 		//writeResToFileForMovie_T_test(tt + 1);
-		(*aveSoln_fcnPtr)(tt + 1);
+		(*aveSoln_fptr)(tt + 1);
 	}
-	printSolnToFile(numTimeStep);
+	writeMovie_soln(numTimeStep);
 	printf("\r  - Runge-Kutta 4 method complete\n");
 }
 

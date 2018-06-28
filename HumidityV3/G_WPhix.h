@@ -1,44 +1,48 @@
 /*
- * w.h
+ * WPhix.h
  *
  *  Created on: Oct 21, 2017
  *      Author: chuckjia
+ *
+ *  Functions that computes w and phi_x.
  */
 
-#ifndef H_WPHIX_H_
-#define H_WPHIX_H_
-#include "G_Projection.h"
+#ifndef G_WPHIX_H_
+#define G_WPHIX_H_
+#include "F_Projection.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Calculate the w Function
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void (*calc_w_fcnPtr)();
+void (*calcW_fptr)();
 
-void calc_w_orig() {
-	for (int i = 1; i <= Nx; ++i)
+// Calculate values of w
+void calcW_orig() {
+	for (int i = 1; i <= Nx; ++i) {
+		w_[i][0] = 0;  // Might be unnecessary, just to be safe
 		for (int j = 0; j < Np; ++j)
-			w_[i][j + 1] = w_[i][j] - (getCellCenterP(i, j + 1) - getCellCenterP(i, j)) *
-					getGradhU_x(i, j);
+			w_[i][j + 1] = w_[i][j] - (getCellCenterP(i, j + 1) - getCellCenterP(i, j)) * getGradhU_x(i, j);
+	}
 }
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Calculate the phi_x Function
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void (*calc_phix_fcnPtr)();
+void (*calcPhix_fptr)();
 
 // This function uses formula in (3.42): questionable calculation
-void calc_phix_orig() {
+void calcPhix_orig() {
 	for (int i = 1; i <= Nx; ++i) {
+		phix_[i][0] = 0;  // Might be unnecessary, just to be safe
+		phix_[i][1] = 0;
 		double sum = 0;
-		// factor = -R * (p_{i,j+1/2} - p_{i,j-1/2})
-		double factor = -R_CONST * getCellCenterDp(i);
 		for (int j = 1; j < Np; ++j) {
-			sum += factor / getCellCenterP(i, j) * getGradhT_x(i, j);
-			phix_[i][j + 1] = sum;
+			sum += R_CONST * (getCellTopCenterP(i, j) - getCellBottCenterP(i, j)) / getCellCenterP(i, j) * getGradhT_x(i, j);
+			phix_[i][j + 1] = -sum;
 		}
-		// phix_sl[i][1] = phix_sl[i][2];
 	}
 }
 
@@ -47,8 +51,8 @@ void calc_phix_orig() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setWPhix() {
-	calc_w_fcnPtr = &calc_w_orig;
-	calc_phix_fcnPtr = &calc_phix_orig;
+	calcW_fptr = &calcW_orig;
+	calcPhix_fptr = &calcPhix_orig;
 }
 
-#endif /* H_WPHIX_H_ */
+#endif /* G_WPHIX_H_ */

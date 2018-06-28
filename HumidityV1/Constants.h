@@ -44,7 +44,7 @@ double finalTime = numTimeStep * Dt;  // Final time
 
 // The frequency of using the average method
 bool _aveResult_ = true;
-int aveFreq = 20;
+int aveSolnFreq = 20;
 // Choose whether to calculate, show, and print to file the L2 errors during computation
 bool _calcL2err_ = true;
 

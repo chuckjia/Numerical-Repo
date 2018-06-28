@@ -5,13 +5,13 @@
  *      Author: chuckjia
  */
 
-#include "M_Testing.h"
+#include "L_Testing.h"
 
 void setAll() {
 	printTitle();
 	setModels();
 	setMesh();
-	setQuadCells();
+	setQuadCell();
 	setProjection();
 	setWPhix();
 	setConditions();
@@ -21,13 +21,13 @@ void setAll() {
 }
 
 void fileManagement() {
-	closeFiles_analysis();
+	closeGlobalFiles_IO();
 }
 
 int main() {
 	setAll();
-	// printCellCentersToFile();
-	// printParamToFile();
-	// runTimeSteps();
-	// showL2Errors();
+	// writeCSV_cellCenters();
+	// writeCSV_param();
+	runTimeSteps();
+	showL2Errors();
 }

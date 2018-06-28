@@ -3,11 +3,13 @@
  *
  *  Created on: Oct 23, 2017
  *      Author: chuckjia
+ *
+ *  This file contains global arrays and functions that computes quadrilateral cell interpolations.
  */
 
-#ifndef F_QUADCELL_H_
-#define F_QUADCELL_H_
-#include "E_FileIO.h"
+#ifndef E_QUADCELL_H_
+#define E_QUADCELL_H_
+#include "D_Mesh.h"
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Interpolation Coefficients for The Quadrilateral Cells
@@ -53,41 +55,44 @@ void fillCache_diagMatInv_quadCell() {
 	e11_MInv_quad = 1. / Dx;
 	e21_MInv_quad = 0;
 	for (int i = 0; i <= Nx; ++i)
-		for (int j = 1; j <= Np; ++j) {
+		for (int j = 0; j <= Np; ++j) {  // Variables a, b, and d correspond to the variables used in the notes
 			double b = getCellTopRightP(i, j) - getCellTopLeftP(i, j),
-					dInv = 1 / (getCellCenterP(i, j + 1) - getCellCenterP(i, j));
-			e12_MInv_quad_[i][j] = - b * dInv / Dx;
-			e22_MInv_quad_[i][j] = dInv;
+					d = getCellCenterP(i, j + 1) - getCellCenterP(i, j);
+			e12_MInv_quad_[i][j] = -b / (Dx * d);
+			e22_MInv_quad_[i][j] = 1. / d;
 		}
 }
 
-// Return the interpolated value of u in the quadrilateral cells
+// Return u_{i+1/2, j+1/2}, i.e. the interpolated value of u in the quadrilateral cells. See (3.14)
 double getCellTopRightU(int i, int j) {
 	return a1_quad * u_[i][j] + a2_quad_[i][j] * u_[i + 1][j] +
 			a3_quad_[i][j] * u_[i][j + 1] + a4_quad_[i][j] * u_[i + 1][j + 1];
 }
 
-// Getters for gradient_h u_h over the quadrilateral cell (i,j+1/2)
-// The two components for the results are separated because only getGradhU_x will be used
+/*
+ * Getters for gradient_h u_h over the quadrilateral cell (i,j+1/2). See (3.15)
+ *   - The two components for the results are separated because only getGradhU_x will be used
+ */
 
 double getGradhU_x(int i, int j) {
 	return e11_MInv_quad * (getCellTopRightU(i, j) - getCellTopRightU(i - 1, j)) +
 			e12_MInv_quad_[i][j] * (u_[i][j + 1] - u_[i][j]);
 }
 
-// This getter assumes that the (2, 1) element of the inverse matrix is 0
 double getGradhU_p(int i, int j) {
-	return e22_MInv_quad_[i][j] * (u_[i][j + 1] - u_[i][j]);
+	return e22_MInv_quad_[i][j] * (u_[i][j + 1] - u_[i][j]);  // Assuming the (2, 1) element of the inverse matrix is 0
 }
 
-// Return the interpolated value of T in the quadrilateral cells
+// Return T_{i+1/2, j+1/2}, i.e. the interpolated value of T in the quadrilateral cells
 double getCellTopRightT(int i, int j) {
 	return a1_quad * T_[i][j] + a2_quad_[i][j] * T_[i + 1][j] +
 			a3_quad_[i][j] * T_[i][j + 1] + a4_quad_[i][j] * T_[i + 1][j + 1];
 }
 
-// Getters for gradient_h T_h over the quadrilateral cell (i,j+1/2)
-// The two components for the results are separated because only getGradhT_x will be used
+/*
+ * Getters for gradient_h T_h over the quadrilateral cell (i,j+1/2)
+ *   - The two components for the results are separated because only getGradhT_x will be used
+ */
 
 double getGradhT_x(int i, int j) {
 	return e11_MInv_quad * (getCellTopRightT(i, j) - getCellTopRightT(i - 1, j)) +
@@ -98,13 +103,14 @@ double getGradhT_p(int i, int j) {
 	return e22_MInv_quad_[i][j] * (T_[i][j + 1] - T_[i][j]);
 }
 
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Parameters And Calculate All Cache Values For the Quadrilateral Cells
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void setQuadCells() {
+void setQuadCell() {
 	fillCache_quadCell();
 	fillCache_diagMatInv_quadCell();
 }
 
-#endif /* F_QUADCELL_H_ */
+#endif /* E_QUADCELL_H_ */

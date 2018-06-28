@@ -15,7 +15,7 @@
 
 // Cache to store interpolation coefficient r used in (3.31) for u_{i+1/2,j} values. r[i][j] is
 // used to interpolate for the u value on the right side of cell(i,j)
-double r_uInterp_cache[Nx + 1];
+double r_uInterp_[Nx + 1];
 
 // Calculate r values
 void fillCache_r_uInterp() {
@@ -24,18 +24,18 @@ void fillCache_r_uInterp() {
 		double xCommonBD = getCellRightX(i),
 				leftPortion = xCommonBD - getCellCenterX(i),
 				rightPortion = getCellCenterX(i + 1) - xCommonBD;
-		r_uInterp_cache[i] = leftPortion / (leftPortion + rightPortion);
+		r_uInterp_[i] = leftPortion / (leftPortion + rightPortion);
 	}
 }
 
 // Return r value for the calculation of u_{i+1/2,j}
 double get_r_uInterp(int i, int j) {
-	return r_uInterp_cache[i];
+	return r_uInterp_[i];
 }
 
 // Return r value for the calculation of u_{i+1/2,j}
 double get_r_uInterp(int i) {
-	return r_uInterp_cache[i];
+	return r_uInterp_[i];
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

@@ -238,8 +238,30 @@ void calcCellCenterDp() {
 /*
  * Getters for Dp values at cell centers
  */
+
 double getCellCenterDp(int i, int j) { return cellCenterDp_[i]; }
 double getCellCenterDp(int i) { return cellCenterDp_[i]; }
+
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Cell Top and Bottom Center p-coordinates
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+double cellBottCenterP_[numCellX][numGridPtP];
+
+void calcCellBottCenterP() {
+	for (int i = 0; i < numCellX; ++i) {
+		double x = getCellCenterX(i), xLeft = getCellLeftX(i), xRight = getCellRightX(i);
+		for (int j = 0; j < numGridPtP; ++j) {
+			double pLeft = getCellBottLeftP(i, j), pRight = getCellBottRightP(i, j);
+			cellBottCenterP_[i][j] = (pRight - pLeft) / (xRight - xLeft) * (x - xLeft) + pLeft;
+		}
+	}
+}
+
+double getCellBottCenterP(int i, int j) { return cellBottCenterP_[i][j]; }
+
+double getCellTopCenterP(int i, int j) { return cellBottCenterP_[i][j + 1]; }
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -255,6 +277,7 @@ void setMesh() {
 	calcCellVol();
 	calcCellSideNormVec();
 	calcCellCenterDp();
+	calcCellBottCenterP();
 
 	printTimeUsed(start, clock(), "ms", "Mesh building completed.");
 }
