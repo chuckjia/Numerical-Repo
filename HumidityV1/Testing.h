@@ -247,8 +247,8 @@ void emptyFcn() {
 void elimFluxes_u() {
 	for (int i = 0; i <= Nx; ++i)
 		for (int j = 0; j <= Np; ++j) {
-			GG_u[i][j] = 0;
-			FF_u[i][j] = 0;
+			GG_u_[i][j] = 0;
+			FF_u_[i][j] = 0;
 		}
 }
 
@@ -281,11 +281,11 @@ void calcFluxes_upwind_reduced_MDL3_test() {
 			double wTopSideVal = exact_w_fcn_MDL3(x, p, 0);
 			double velocity = Dx * wTopSideVal;
 			if (velocity >= 0) {
-				GG_T[i][j] =	 velocity * T_[i][j];
-				GG_q[i][j] =	 velocity * q_[i][j];
+				GG_T_[i][j] =	 velocity * T_[i][j];
+				GG_q_[i][j] =	 velocity * q_[i][j];
 			} else {
-				GG_T[i][j] =	 velocity * T_[i][j + 1];
-				GG_q[i][j] =	 velocity * q_[i][j + 1];
+				GG_T_[i][j] =	 velocity * T_[i][j + 1];
+				GG_q_[i][j] =	 velocity * q_[i][j + 1];
 			}
 		}
 
@@ -296,11 +296,11 @@ void calcFluxes_upwind_reduced_MDL3_test() {
 			double uRightSideVal = exact_u_fcn_MDL3(x, p, 0);
 			double velocity = getCellRightDp(i, j) * uRightSideVal;
 			if (velocity >= 0) {
-				FF_T[i][j] =	 velocity * T_[i][j];
-				FF_q[i][j] =	 velocity * q_[i][j];
+				FF_T_[i][j] =	 velocity * T_[i][j];
+				FF_q_[i][j] =	 velocity * q_[i][j];
 			} else {
-				FF_T[i][j] =	 velocity * T_[i + 1][j];
-				FF_q[i][j] =	 velocity * q_[i + 1][j];
+				FF_T_[i][j] =	 velocity * T_[i + 1][j];
+				FF_q_[i][j] =	 velocity * q_[i + 1][j];
 			}
 		}
 }
@@ -393,7 +393,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 1
 		enforceIC_exactVelocity(t);
 
-		update_k_rk_fcnPtr = &update_k_rk_directAssign;
+		update_k_rk_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
@@ -401,7 +401,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 2
 		enforceIC_exactVelocity(t + halfDt);
 
-		update_k_rk_fcnPtr = &update_k_rk_accum;
+		update_k_rk_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -409,7 +409,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 3
 		enforceIC_exactVelocity(t + halfDt);
 
-		update_k_rk_fcnPtr = &update_k_rk_accum;
+		update_k_rk_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -417,7 +417,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 4
 		enforceIC_exactVelocity(t + Dt);
 
-		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
+		update_k_rk_fptr = &update_k_RK_noUpdate;
 		preForwardEuler();
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
@@ -482,7 +482,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 1
 		calc_w_exact(t);
 
-		update_k_rk_fcnPtr = &update_k_rk_directAssign;
+		update_k_rk_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
@@ -491,7 +491,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 2
 		calc_w_exact(t + halfDt);
 
-		update_k_rk_fcnPtr = &update_k_rk_accum;
+		update_k_rk_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -499,7 +499,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 3
 		calc_w_exact(t + halfDt);
 
-		update_k_rk_fcnPtr = &update_k_rk_accum;
+		update_k_rk_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -507,7 +507,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 4
 		calc_w_exact(t + Dt);
 
-		update_k_rk_fcnPtr = &update_k_rk_noUpdate;
+		update_k_rk_fptr = &update_k_RK_noUpdate;
 		preForwardEuler();
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)

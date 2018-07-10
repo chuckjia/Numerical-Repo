@@ -40,9 +40,9 @@ double get_r_uInterp(int i) { return r_uInterp_[i]; }
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // FF: fluxes on the RIGHT side of cell (i, j), with 0 <= i <= Nx, 0 <= j <= Np
-double FF_T[Nx + 1][Np + 1], FF_q[Nx + 1][Np + 1], FF_u[Nx + 1][Np + 1];  // FF_{i+1/2,j}
+double FF_T_[Nx + 1][Np + 1], FF_q_[Nx + 1][Np + 1], FF_u_[Nx + 1][Np + 1];  // FF_{i+1/2,j}
 // GG: fluxes on the TOP side of cell (i, j), with 0 <= i <= Nx, 0 <= j <= Np
-double GG_T[Nx + 1][Np + 1], GG_q[Nx + 1][Np + 1], GG_u[Nx + 1][Np + 1];  // GG_{i,j+1/2}
+double GG_T_[Nx + 1][Np + 1], GG_q_[Nx + 1][Np + 1], GG_u_[Nx + 1][Np + 1];  // GG_{i,j+1/2}
 
 // Function pointer: function to calculate all fluxes
 void (*calcFluxes)();
@@ -57,13 +57,13 @@ void calcFluxes_upwind() {
 			double velocity = getCellTopSideLen(i, j) * (
 					getCellTopSideNormVecX(i, j) * uTopSideVal + getCellTopSideNormVecP(i, j) * wTopSideVal);
 			if (velocity >= 0) {
-				GG_T[i][j] = velocity * T_[i][j];
-				GG_q[i][j] = velocity * q_[i][j];
-				GG_u[i][j] = velocity * u_[i][j];
+				GG_T_[i][j] = velocity * T_[i][j];
+				GG_q_[i][j] = velocity * q_[i][j];
+				GG_u_[i][j] = velocity * u_[i][j];
 			} else {
-				GG_T[i][j] = velocity * T_[i][j + 1];
-				GG_q[i][j] = velocity * q_[i][j + 1];
-				GG_u[i][j] = velocity * u_[i][j + 1];
+				GG_T_[i][j] = velocity * T_[i][j + 1];
+				GG_q_[i][j] = velocity * q_[i][j + 1];
+				GG_u_[i][j] = velocity * u_[i][j + 1];
 			}
 		}
 
@@ -73,13 +73,13 @@ void calcFluxes_upwind() {
 		for (int j = 1; j <= Np; ++j) {
 			double velocity = getCellRightSideLen(i, j) * (r * u_[i + 1][j] + (1 - r) * u_[i][j]);
 			if (velocity >= 0) {
-				FF_T[i][j] = velocity * T_[i][j];
-				FF_q[i][j] = velocity * q_[i][j];
-				FF_u[i][j] = velocity * u_[i][j];
+				FF_T_[i][j] = velocity * T_[i][j];
+				FF_q_[i][j] = velocity * q_[i][j];
+				FF_u_[i][j] = velocity * u_[i][j];
 			} else {
-				FF_T[i][j] = velocity * T_[i + 1][j];
-				FF_q[i][j] = velocity * q_[i + 1][j];
-				FF_u[i][j] = velocity * u_[i + 1][j];
+				FF_T_[i][j] = velocity * T_[i + 1][j];
+				FF_q_[i][j] = velocity * q_[i + 1][j];
+				FF_u_[i][j] = velocity * u_[i + 1][j];
 			}
 		}
 	}
