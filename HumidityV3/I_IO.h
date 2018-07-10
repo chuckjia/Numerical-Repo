@@ -279,7 +279,7 @@ void writeCSV_exactSoln() {
 	FILE *exact_u = fopen("Output/u_exact.txt", "wb");
 	FILE *exact_w = fopen("Output/w_exact.txt", "wb");
 
-	int last_j = numCellP;
+	int last_j = numCellP - 1;
 	for (int i = 0; i < numCellX; ++i) {
 		double x = getCellCenterX(i);
 		for (int j = 0; j < last_j; ++j) {

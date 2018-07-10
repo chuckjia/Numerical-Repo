@@ -422,9 +422,9 @@ void rk4_decoupledVelocity_MDL102() {
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
-				T_[i][j] += k_rk_T[i][j];
-				q_[i][j] += k_rk_q[i][j];
-				u_[i][j] += k_rk_u[i][j];
+				T_[i][j] += k_rk_T_[i][j];
+				q_[i][j] += k_rk_q_[i][j];
+				u_[i][j] += k_rk_u_[i][j];
 			}
 		postForwardEuler();
 	}
@@ -512,9 +512,9 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
-				T_[i][j] += k_rk_T[i][j];
-				q_[i][j] += k_rk_q[i][j];
-				u_[i][j] += k_rk_u[i][j];
+				T_[i][j] += k_rk_T_[i][j];
+				q_[i][j] += k_rk_q_[i][j];
+				u_[i][j] += k_rk_u_[i][j];
 			}
 		postForwardEuler();
 	}

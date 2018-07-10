@@ -26,8 +26,8 @@ void fileManagement() {
 
 int main() {
 	setAll();
-	// writeCSV_cellCenters();
-	// writeCSV_param();
-	runTimeSteps();
-	showL2Errors();
+	writeCSV_cellCenters();
+	writeCSV_param();
+	// runTimeSteps();
+	// showL2Errors();
 }

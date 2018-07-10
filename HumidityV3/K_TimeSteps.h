@@ -15,26 +15,22 @@
 
 double T_copy_[numCellX][numCellP], q_copy_[numCellX][numCellP], u_copy_[numCellX][numCellP];
 
-double k_rk_T[numCellX][numCellP], k_rk_q[numCellX][numCellP], k_rk_u[numCellX][numCellP];
+double k_rk_T_[numCellX][numCellP], k_rk_q_[numCellX][numCellP], k_rk_u_[numCellX][numCellP];
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Functions for RK family methods
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-double calcFluxes_OneCell(int i, int j, double GG[Nx + 1][Np + 1], double FF[Nx + 1][Np + 1]) {
+double calcFlux_1Cell(int i, int j, double GG[Nx + 1][Np + 1], double FF[Nx + 1][Np + 1]) {
 	return GG[i][j] - GG[i][j - 1] + FF[i][j] - FF[i - 1][j];
 }
 
-void (*update_k_rk_fcnPtr)(double k_rk[numCellX][numCellP], int i, int j,
-		double rkCoef, double kVal);
+void (*update_k_rk_fcnPtr)(double k_rk[numCellX][numCellP], int i, int j, double rkCoef, double kVal);
 
-void update_k_rk_noUpdate(double k_rk[numCellX][numCellP], int i, int j,
-		double rkCoef, double kVal) {
-	// Empty
-}
+void update_k_rk_noUpdate(double k_rk[numCellX][numCellP], int i, int j, double rkCoef, double kVal) { }  // Empty function, as placeholder
 
-void update_k_rk_accum(double k_rk[numCellX][numCellP], int i, int j,
-		double rkCoef, double kVal) {
+void update_k_rk_accum(double k_rk[numCellX][numCellP], int i, int j, double rkCoef, double kVal) {
 	k_rk[i][j] += rkCoef * Dt * kVal;
 }
 
@@ -55,22 +51,22 @@ void forwardEuler_singleStep(double t, double stepSize, double T_arr[numCellX][n
 					p = getCellCenterP(i, j);
 			double RHS;
 			// Updating T
-			RHS = -volInv * calcFluxes_OneCell(i, j, GG_T, FF_T) +
+			RHS = -volInv * calcFlux_1Cell(i, j, GG_T, FF_T) +
 					(*source_T_fcnPtr)(T, q, u, w, x, p, t);
 			T_[i][j] = T_arr[i][j] + RHS * stepSize;
-			(*update_k_rk_fcnPtr)(k_rk_T, i, j, rkCoef, RHS);
+			(*update_k_rk_fcnPtr)(k_rk_T_, i, j, rkCoef, RHS);
 
 			// Updating q
-			RHS = -volInv * calcFluxes_OneCell(i, j, GG_q, FF_q) +
+			RHS = -volInv * calcFlux_1Cell(i, j, GG_q, FF_q) +
 					(*source_q_fcnPtr)(T, q, u, w, x, p, t);
 			q_[i][j] = q_arr[i][j] + RHS * stepSize;
-			(*update_k_rk_fcnPtr)(k_rk_q, i, j, rkCoef, RHS);
+			(*update_k_rk_fcnPtr)(k_rk_q_, i, j, rkCoef, RHS);
 
 			// Updating u
-			RHS = -volInv * calcFluxes_OneCell(i, j, GG_u, FF_u) - phix_[i][j] +
+			RHS = -volInv * calcFlux_1Cell(i, j, GG_u, FF_u) - phix_[i][j] +
 					(*source_u_fcnPtr)(T, q, u, w, x, p, t);
 			u_[i][j] = u_arr[i][j] + RHS * stepSize;
-			(*update_k_rk_fcnPtr)(k_rk_u, i, j, rkCoef, RHS);
+			(*update_k_rk_fcnPtr)(k_rk_u_, i, j, rkCoef, RHS);
 		}
 	}
 }
@@ -249,9 +245,9 @@ void rk4() {
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
-				T_[i][j] += k_rk_T[i][j];
-				q_[i][j] += k_rk_q[i][j];
-				u_[i][j] += k_rk_u[i][j];
+				T_[i][j] += k_rk_T_[i][j];
+				q_[i][j] += k_rk_q_[i][j];
+				u_[i][j] += k_rk_u_[i][j];
 			}
 		postForwardEuler();
 

@@ -2,7 +2,7 @@ clear; clc
 
 % Settings
 solnName = "q";
-stepNo = 20000;
+stepNo = 10000;
 saveToPDF = false;
 viewAngle = [0, -90];
 
@@ -40,10 +40,10 @@ if saveToPDF
 end
 
 contourLevels = selectContourLevels(solnName);
-% figure
-% if viewAngle == false
-%     graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2);
-% else
-%     graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, viewAngle);
-% end
+figure
+if viewAngle == false
+    graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2);
+else
+    graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, viewAngle);
+end
 
