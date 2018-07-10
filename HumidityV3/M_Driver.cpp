@@ -28,6 +28,6 @@ int main() {
 	setAll();
 	writeCSV_cellCenters();
 	writeCSV_param();
-	// runTimeSteps();
-	// showL2Errors();
+	runTimeSteps();
+	showL2Errors();
 }

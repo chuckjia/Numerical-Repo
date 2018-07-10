@@ -21,7 +21,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 0;  // Model number: 0 = original physical model; other number = test models
+int modelNo = 1;  // Model number: 0 = original physical model; other number = test models
 int timeMethod = 4;  // Time method: 1 = Forward Euler, 2 = RK2, 4 = RK4
 
 
@@ -31,7 +31,7 @@ int timeMethod = 4;  // Time method: 1 = Forward Euler, 2 = RK2, 4 = RK4
 
 const int numDivision = 200;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 10000;  // Number of time steps
+int numTimeStep = 100;  // Number of time steps
 double Dt = 0.01;  // Size of one time step
 
 double finalTime = numTimeStep * Dt;  // Final time

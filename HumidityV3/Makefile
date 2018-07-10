@@ -1,5 +1,5 @@
 run:
-	g++ driver.cpp -o Output/out
+	g++ M_Driver.cpp -o Output/out
 	Output/./out
 
 all:

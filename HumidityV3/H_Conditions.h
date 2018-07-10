@@ -288,7 +288,7 @@ void setConditions() {
 		initT_fptr = &exact_T_fcn_MDL1;
 		initQ_fptr = &exact_q_fcn_MDL1;
 		initU_fptr = &exact_U_fcn_MDL1;
-		initW_fptr = &zero_fcn;
+		initW_fptr = &exact_W_fcn_MDL1;
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL1;
 		// Source functions
