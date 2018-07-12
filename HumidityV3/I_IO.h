@@ -93,6 +93,8 @@ void writeMovie_soln(int tt) {
 
 	sprintf(filename, "MovieFrames/w_%d.csv", tt);
 	writeCSV_matrix(w_, filename);
+
+	printf("\n      - All 4 solutions at step no.%d printed to MovieFrames\n", tt);
 }
 
 
@@ -158,7 +160,7 @@ double relatL2Err_helper(double num, double denom) {
 		return sqrt(num / denom);
 	else if (num < GRTD_PREC)
 		return 0;
-	return -99999e10;
+	return -987654321e10;
 }
 
 double relatL2Err_T_, relatL2Err_q_, relatL2Err_u_, relatL2Err_w_;
@@ -217,15 +219,15 @@ void showL2Errors() {
 // !!AlphaVersion!!
 void writeCSV_finalSolnErr() {
 	// Numerical solution files
-	FILE *res_T = fopen("Output/T_soln.txt", "wb");
-	FILE *res_q = fopen("Output/q_soln.txt", "wb");
-	FILE *res_u = fopen("Output/u_soln.txt", "wb");
-	FILE *res_w = fopen("Output/w_soln.txt", "wb");
+	FILE *res_T = fopen("Output/T_soln.csv", "wb");
+	FILE *res_q = fopen("Output/q_soln.csv", "wb");
+	FILE *res_u = fopen("Output/u_soln.csv", "wb");
+	FILE *res_w = fopen("Output/w_soln.csv", "wb");
 	// Numerical errors files
-	FILE *err_T = fopen("Output/T_err.txt", "wb");
-	FILE *err_q = fopen("Output/q_err.txt", "wb");
-	FILE *err_u = fopen("Output/u_err.txt", "wb");
-	FILE *err_w = fopen("Output/w_err.txt", "wb");
+	FILE *err_T = fopen("Output/T_err.csv", "wb");
+	FILE *err_q = fopen("Output/q_err.csv", "wb");
+	FILE *err_u = fopen("Output/u_err.csv", "wb");
+	FILE *err_w = fopen("Output/w_err.csv", "wb");
 
 	// Write data to files
 	int last_j = numCellP - 1;
@@ -274,10 +276,10 @@ void writeCSV_finalSolnErr() {
 // !!AlphaVersion!!
 void writeCSV_exactSoln() {
 	// Write final numerical solution to files
-	FILE *exact_T = fopen("Output/T_exact.txt", "wb");
-	FILE *exact_q = fopen("Output/q_exact.txt", "wb");
-	FILE *exact_u = fopen("Output/u_exact.txt", "wb");
-	FILE *exact_w = fopen("Output/w_exact.txt", "wb");
+	FILE *exact_T = fopen("Output/T_exact.csv", "wb");
+	FILE *exact_q = fopen("Output/q_exact.csv", "wb");
+	FILE *exact_u = fopen("Output/u_exact.csv", "wb");
+	FILE *exact_w = fopen("Output/w_exact.csv", "wb");
 
 	int last_j = numCellP - 1;
 	for (int i = 0; i < numCellX; ++i) {

@@ -393,7 +393,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 1
 		enforceIC_exactVelocity(t);
 
-		update_k_rk_fptr = &update_k_RK_directAssign;
+		update_k_RK_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
@@ -401,7 +401,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 2
 		enforceIC_exactVelocity(t + halfDt);
 
-		update_k_rk_fptr = &update_k_RK_accum;
+		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -409,7 +409,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 3
 		enforceIC_exactVelocity(t + halfDt);
 
-		update_k_rk_fptr = &update_k_RK_accum;
+		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -417,7 +417,7 @@ void rk4_decoupledVelocity_MDL102() {
 		// RK4 Step 4
 		enforceIC_exactVelocity(t + Dt);
 
-		update_k_rk_fptr = &update_k_RK_noUpdate;
+		update_k_RK_fptr = &update_k_RK_noUpdate;
 		preForwardEuler();
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
@@ -482,7 +482,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 1
 		calc_w_exact(t);
 
-		update_k_rk_fptr = &update_k_RK_directAssign;
+		update_k_RK_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
@@ -491,7 +491,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 2
 		calc_w_exact(t + halfDt);
 
-		update_k_rk_fptr = &update_k_RK_accum;
+		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -499,7 +499,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 3
 		calc_w_exact(t + halfDt);
 
-		update_k_rk_fptr = &update_k_RK_accum;
+		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
@@ -507,7 +507,7 @@ void rk4_exactW_withTopBC_MDL1_test() {
 		// RK4 Step 4
 		calc_w_exact(t + Dt);
 
-		update_k_rk_fptr = &update_k_RK_noUpdate;
+		update_k_RK_fptr = &update_k_RK_noUpdate;
 		preForwardEuler();
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)

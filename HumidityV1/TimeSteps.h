@@ -27,7 +27,7 @@ double calcFluxes_OneCell(int i, int j,
 	return GG[i][j] - GG[i][j - 1] + FF[i][j] - FF[i - 1][j];
 }
 
-void (*update_k_rk_fptr)(double k_rk[numCellX][numCellP], int i, int j,
+void (*update_k_RK_fptr)(double k_rk[numCellX][numCellP], int i, int j,
 		double rkCoef, double kVal);
 
 void update_k_RK_noUpdate(double k_rk[numCellX][numCellP], int i, int j,
@@ -60,19 +60,19 @@ void forwardEuler_singleStep(double t, double stepSize, double T_arr[numCellX][n
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_T_, FF_T_) +
 					(*source_T_fcnPtr)(T, q, u, w, x, p, t);
 			T_[i][j] = T_arr[i][j] + RHS * stepSize;
-			(*update_k_rk_fptr)(k_rk_T_, i, j, rkCoef, RHS);
+			(*update_k_RK_fptr)(k_rk_T_, i, j, rkCoef, RHS);
 
 			// Updating q
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_q_, FF_q_) +
 					(*source_q_fcnPtr)(T, q, u, w, x, p, t);
 			q_[i][j] = q_arr[i][j] + RHS * stepSize;
-			(*update_k_rk_fptr)(k_rk_q_, i, j, rkCoef, RHS);
+			(*update_k_RK_fptr)(k_rk_q_, i, j, rkCoef, RHS);
 
 			// Updating u
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_u_, FF_u_) - phix_[i][j] +
 					(*source_u_fcnPtr)(T, q, u, w, x, p, t);
 			u_[i][j] = u_arr[i][j] + RHS * stepSize;
-			(*update_k_rk_fptr)(k_rk_u_, i, j, rkCoef, RHS);
+			(*update_k_RK_fptr)(k_rk_u_, i, j, rkCoef, RHS);
 		}
 	}
 }
@@ -87,7 +87,7 @@ void forwardEuler() {
 
 	// The initial condition
 	enforceIC();
-	update_k_rk_fptr = &update_k_RK_noUpdate;
+	update_k_RK_fptr = &update_k_RK_noUpdate;
 
 	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
@@ -154,7 +154,7 @@ void rk2() {
 
 	// The initial condition
 	enforceIC();
-	update_k_rk_fptr = &update_k_RK_noUpdate;
+	update_k_RK_fptr = &update_k_RK_noUpdate;
 	for (int tt = 0; tt < numTimeStep; tt++) {
 		// Print messages on calculation progress
 		int progNew = tt * 100 / numTimeStep;
@@ -215,25 +215,25 @@ void rk4() {
 		copySoln(T_copy_, q_copy_, u_copy_);
 
 		// RK4 Step 1
-		update_k_rk_fptr = &update_k_RK_directAssign;
+		update_k_RK_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
 		postForwardEuler();
 
 		// RK4 Step 2
-		update_k_rk_fptr = &update_k_RK_accum;
+		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 3
-		update_k_rk_fptr = &update_k_RK_accum;
+		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
 		postForwardEuler();
 
 		// RK4 Step 4
-		update_k_rk_fptr = &update_k_RK_noUpdate;
+		update_k_RK_fptr = &update_k_RK_noUpdate;
 		preForwardEuler();
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)

@@ -26,8 +26,11 @@ void fileManagement() {
 
 int main() {
 	setAll();
+	printSchemeSummary();
 	writeCSV_cellCenters();
 	writeCSV_param();
 	runTimeSteps();
 	showL2Errors();
+	writeCSV_finalSolnErr();
+	printf("\n");
 }
