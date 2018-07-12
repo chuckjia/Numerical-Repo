@@ -11,6 +11,15 @@
 #define I_IO_H_
 #include "H_Conditions.h"
 
+#ifdef __APPLE__
+#define CURR_OS 0
+#elif __linux
+#define CURR_OS 1
+#elif _WIN32
+#define CURR_OS 2
+#error "Unknown OS"
+#endif
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * File I/O
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -93,8 +102,6 @@ void writeMovie_soln(int tt) {
 
 	sprintf(filename, "MovieFrames/w_%d.csv", tt);
 	writeCSV_matrix(w_, filename);
-
-	printf("\n      - All 4 solutions at step no.%d printed to MovieFrames\n", tt);
 }
 
 
@@ -138,6 +145,12 @@ void printSchemeSummary() {
 
 	printf("  [2] Mesh Specs:  ");
 	printf("Nx = %d, Np = %d\n", Nx, Np);
+
+	printf("  [3] Average Method:  ");
+	if (aveMethodApplied)
+		printf("Average method applied.\n");
+	else
+		printf("No averaging is applied.\n");
 }
 
 
@@ -345,7 +358,7 @@ void calcL2Norm(double t) {
 	norm_u = sqrt(norm_u);
 	norm_w = sqrt(norm_w);
 
-	printf("\n    L2 norm (T, q, u, w) = (%1.2f, %1.2f, %1.2f, %1.2f)", norm_T - 2.055e6, norm_q, norm_u, norm_w);
+	printf("      - L2 norm (T, q, u, w) = (%1.2f, %1.2f, %1.2f, %1.2f)", norm_T - 2.055e6, norm_q, norm_u, norm_w);
 	fprintf(T_norm_file, "%1.20e\n", norm_T);
 	fprintf(q_norm_file, "%1.20e\n", norm_q);
 	fprintf(u_norm_file, "%1.20e\n", norm_u);

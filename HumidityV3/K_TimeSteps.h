@@ -72,31 +72,46 @@ void forwardEuler_singleStep(double t, double _Dt,
 
 // Controls the frequency of progress messages. Print out messages every milestone number of steps
 int milestone = numTimeStep / numProgMsg > 1 ? numTimeStep / numProgMsg : 1;
+bool runInEclipse = false;
+
+// Calculate, show, and store information and statistics
+bool showProgInfo_helper(int tt) {
+	bool printMovieFrameThisStep = !(tt % movieFrameFreq), calcAndShowL2NormThisStep = !(tt % calcL2errFreq);
+	if (printMovieFrameThisStep || calcAndShowL2NormThisStep) {
+		if (!runInEclipse)
+			printf("\n");
+		if (printMovieFrameThisStep) {
+			writeMovie_soln(tt);
+			printf("      - All 4 solutions at step no. %d printed to MovieFrames\n", tt);
+		}
+		if (calcAndShowL2NormThisStep) {
+			double t = Dt * tt;
+			calcL2Norm(t);
+			printf("\n");
+		}
+		return true;
+	}
+	return false;
+}
 
 // Print messages on current progress
-void printProgMsg(int tt) {
-	if (tt % milestone)
-		return;
-	if (numTimeStep - 1 - tt < milestone) {
-		printf("\r  - Current progress: 100.00%%");
-		fflush(stdout);
-		return;
+void showProgInfo(int tt) {
+	if (runInEclipse) {
+		if (tt == numTimeStep - 1)
+			printf("  - Current progress: 100.00 %%\n");
+		else if (!(tt % milestone))
+			printf("  - Current progress: %1.2f %%, step no. %d", 100. * tt / numTimeStep, tt);
+		showProgInfo_helper(tt);
+	} else {
+		if (tt == numTimeStep - 1)
+			printf("\r  - Current progress: 100.00 %%\n");
+		else if (!(tt % milestone))
+			printf("\r  - Current progress: %1.2f %%, step no. %d", 100. * tt / numTimeStep, tt);
+		showProgInfo_helper(tt);
 	}
-	printf("\r  - Current progress: %1.2f%%", 100. * tt / numTimeStep);
 	fflush(stdout);
 }
 
-void printProgMsg_multiLine(int tt) {
-	if (tt % milestone)
-		return;
-	if (numTimeStep - 1 - tt < milestone) {
-		printf("\n  - Current progress: 100.00%%");
-		fflush(stdout);
-		return;
-	}
-	printf("\n  - Current progress: %1.2f%%", 100. * tt / numTimeStep);
-	fflush(stdout);
-}
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Control Experiment: Not Time Advancement
@@ -106,6 +121,7 @@ void controlExperiment_noTimeAdvance() {
 	enforceIC();
 	printf("  - End of control experiment. Initial conditions enforced.\n");
 }
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Forward-Euler Method On Time
@@ -119,10 +135,9 @@ void forwardEuler() {
 	update_k_RK_fptr = &update_k_RK_noUpdate;
 
 	for (int tt = 0; tt < numTimeStep; tt++) {
-		printProgMsg(tt);  // Print messages on computation progress
-
-		// Numerical calculation
 		double t = Dt * tt;
+		showProgInfo(tt);
+
 		(*calcFluxes)();  // Calculate numerical fluxes
 		(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
 		forwardEuler_singleStep(t, Dt, T_, q_, u_, 0);
@@ -130,12 +145,10 @@ void forwardEuler() {
 		(*calcW_fptr)();  // Calculate w
 		(*enforceBC_fptr)();  // Enforce boundary conditions
 
-		if (!(tt % movieFrameFreq)) {
-			calcL2Norm(t);
-			writeMovie_soln(tt + 1);
-		}
+		(*aveSoln_fptr)(tt);
 	}
-	writeMovie_soln(numTimeStep - 1);  // Final step number = numTimeStep - 1
+
+	writeMovie_soln(numTimeStep);  // Final step number = numTimeStep - 1
 	writeCSV_exactSoln();
 	printf("\r  - Forward Euler method complete\n");
 }
@@ -223,32 +236,15 @@ void rk2() {
  * Runge-Kutta 4
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-// Print messages on computation progress
-void showProgInfo_rk4(int tt, double t, int prog) {
-	int progNew = tt * 100 / numTimeStep;
-	if (progNew > prog) {
-		prog = progNew;
-		printf("\r  - Current progress: %d%%, Time = %1.2fs", prog, t);
-		fflush(stdout);
-		if (_calcL2err_)
-			calcL2Norm(t);
-	}
-}
-
 void rk4() {
 	printf("\n- Running Runge-Kutta 4 method on time\n");
-	int prog = -1;
 
 	// The initial condition
 	enforceIC();
 
 	for (int tt = 0; tt < numTimeStep; tt++) {
 		double t = Dt * tt;
-
-		showProgInfo_rk4(tt, t, prog);
-
-		if (!(tt % movieFrameFreq))
-			writeMovie_soln(tt);
+		showProgInfo(tt);
 
 		(*enforceBC_fptr)();  // Need to enforce at the beginning, as required by enforceIC(). B/c enforceIC does not apply any BC
 
@@ -337,7 +333,9 @@ void runTimeSteps() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void setTimeSteps() {
-	// Empty
+	// Make sure that progress messages are more frequent than movie frame prints and L2 norm messages
+	milestone = (milestone < movieFrameFreq) ? milestone : movieFrameFreq;
+	milestone = (milestone < calcL2errFreq) ? milestone : calcL2errFreq;
 }
 
 

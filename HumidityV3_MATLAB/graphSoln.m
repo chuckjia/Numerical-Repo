@@ -1,14 +1,14 @@
-function fig = graphSoln( filename, centersX, centersP, titleLine1, titleLine2, viewAngle )
+function fig = graphSoln(filename, centersX, centersP, titleLine1, titleLine2, viewAngle)
 %GRAPHSOLN Summary of this function goes here
 %   Detailed explanation goes here
 
 soln = csvread(filename);
-graph_size = size(centersX);
-soln_size = size(soln);
+graphSize = size(centersX);
+solnSize = size(soln);
 
-if isequal(graph_size + 2, soln_size)
-    soln = soln(2:graph_size(1)+1, 2:graph_size(2)+1);
-elseif ~isequal(graph_size, soln_size)
+if isequal(graphSize + 2, solnSize)
+    soln = soln(2:graphSize(1)+1, 2:graphSize(2)+1);
+elseif ~isequal(graphSize, solnSize)
     error("Mesh grid dimension size does not agree with solution matrix!");
     exit;
 end
@@ -19,11 +19,15 @@ if nargin == 4
     title(titleLine1);
 elseif nargin >= 5
     title({titleLine1, titleLine2, ""});
-    if nargin == 6
-        view(viewAngle);
-    end
 end
 
+if nargin < 6
+    viewAngle = false;
+end
+
+if length(viewAngle) == 2
+    view(viewAngle);
+end
 
 end
 

@@ -57,23 +57,25 @@ end
 graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepNo, graphGhostCells)
 
 
-%% Example 3: Graph solutions
-clear; clc
+%% Example 3: Graph contour plots of solutions
+
+clearAllScp
 
 % ===== ===== ===== =====
 % Settings
 % ===== ===== ===== =====
 
-projectPath = "/home/chuck/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
+projectPath = "~/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
 resultFolder = "MovieFrames/";  % Commonly used: "MovieFrames/" or "Output/"
 
 plotName = "Numerical Solution";  % "Solution", "Error", or "Exact Solution"
-solnName = "T";
-stepNo = 1001;
+solnName = "q";
+stepNo = 19500;
 
 saveToPDF = false;
 viewAngle = [0, -90];
 graphGhostCells = false;
+graphContourPlots = true;
 
 % ===== ===== ===== =====
 % Graph solution
@@ -81,21 +83,35 @@ graphGhostCells = false;
 
 param = readParam(projectPath + "Output/Param.csv");
 solnFileFullPath = genSolnFileFullPath(projectPath, resultFolder, solnName, stepNo);
-graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepNo, graphGhostCells)
+graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepNo, ...
+    graphGhostCells, graphContourPlots, viewAngle, saveToPDF)
 
 
-%%
+%% Wrapper function for graphing numerical solutions, numerical errors, or exact solutions
 
-% Wrapper function for graphing numerical solutions, numerical errors, or exact solutions
-function graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepNo, graphGhostCells, ...
-    viewAngle, saveToPDF)
+function graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepNo, ...
+    graphGhostCells, graphContourPlots, viewAngle, saveToPDF)
 
+% Parsing parameters
+if nargin < 7
+    graphGhostCells = false;
+end
 if nargin < 8
+    graphContourPlots = false;
+end
+if nargin < 9
     viewAngle = false;
-elseif nargin < 9
+end
+if nargin < 10
     saveToPDF = false;
 end
 
+contourProportion = 1;
+
+if ~exist(solnFileFullPath, 'file')
+    fprintf("File does not exist (yet)!\n");
+    return
+end
 fprintf("Opening file: " + solnFileFullPath + "\n");
 
 % Mesh grid: cell centers
@@ -131,8 +147,24 @@ if saveToPDF
     saveas(fig, char(filename), 'pdf');
 end
 
+% Graph contour plots
+if graphContourPlots
+    contourLevels = selectContourLevels(solnName);
+    figure
+    if graphGhostCells
+        fig = graphContour(solnFileFullPath, centersX, centersP, contourLevels, titleLine1, titleLine2, ...
+            viewAngle, contourProportion);
+    else
+        fig = graphContour(solnFileFullPath, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, ...
+            viewAngle, contourProportion);
+    end
+    if saveToPDF
+        filename = "Output/" + solnName + "_" + num2str(plotTime) + "s_contour";
+        saveas(fig, char(filename), 'pdf');
+    end
 end
 
+end
 
 
 

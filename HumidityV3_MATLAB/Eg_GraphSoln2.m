@@ -41,9 +41,6 @@ end
 
 contourLevels = selectContourLevels(solnName);
 figure
-if viewAngle == false
-    graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2);
-else
-    graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, viewAngle);
-end
+graphContour(solnFilename, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, viewAngle);
+
 

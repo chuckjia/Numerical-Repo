@@ -147,7 +147,7 @@ void fillCache_leftBdVal_MDL0() {
 	for (int j = 0; j < numCellP; ++j) {
 		double p = getCellCenterP(1, j), T = init_T_fcn_MDL0(x0, p, 0);
 		T_leftBdVal_[j] = T;  // Put T values in cache
-		q_leftBdVal_[j] = qs_fcn(T, p) - 0.0052;  // Put q values in cache
+		q_leftBdVal_[j] = qs_fcn(T, p);  // Put q values in cache
 		u_leftBdVal_[j] = init_u_fcn_MDL0(0, p, 0);  // Put u values in cache
 	}
 }
@@ -238,6 +238,7 @@ void enforceIC() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void (*aveSoln_fptr)(int tt);  // Function pointer to averaging method
+bool aveMethodApplied = true;
 
 // Average only a single solution
 // !!AlphaVersion!! This implementation uses information in the ghost cells
@@ -247,12 +248,21 @@ void aveSoln(double sl[numCellX][numCellP]) {
 			sl[i][j] = 0.5 * (sl[i][j] + sl[i - 1][j]);
 }
 
+void aveSoln_vertical(double sl[numCellX][numCellP]) {
+	for (int i = 1; i <= Nx; ++i)
+		for (int j = 2; j <= Np; ++j)
+			sl[i][j] = 0.5 * (sl[i][j - 1] + sl[i][j]);
+}
+
 // Apply average method on all solutions
 void aveSoln(int tt) {
-	if (aveSolnFreq <= 0) return;
+	if (aveSolnFreq <= 0 || tt == 0) return;
 
-	if (tt % aveSolnFreq == 0) aveSoln(T_);
-	// if (tt % 90000 == 0) aveSoln(q_);
+	if (tt % aveSolnFreq == 0) {
+		aveSoln(T_);
+	}
+//	if (tt % 500 == 0)
+//		aveSoln(q_);
 
 	aveSoln(u_);
 	aveSoln(w_);
@@ -281,6 +291,7 @@ void setConditions() {
 		source_u_fcnPtr = &source_u_fcn_MDL0;
 		// Averaging method
 		aveSoln_fptr = &aveSoln;
+		aveMethodApplied = true;
 		break;
 
 	case 1:
@@ -297,6 +308,7 @@ void setConditions() {
 		source_u_fcnPtr = &source_u_fcn_MDL1;
 		// Averaging method
 		aveSoln_fptr = &empty_fcn;
+		aveMethodApplied = false;
 		break;
 	}
 }
