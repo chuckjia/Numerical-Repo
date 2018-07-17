@@ -148,7 +148,7 @@ void printSchemeSummary() {
 
 	printf("  [3] Average Method:  ");
 	if (aveMethodApplied)
-		printf("Average method applied.\n");
+		printf("Average method applied every %d steps.\n", aveSolnFreq);
 	else
 		printf("No averaging is applied.\n");
 }

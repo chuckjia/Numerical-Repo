@@ -110,11 +110,11 @@ void enforceNonPenetrationBC_topBD_math() {
 void enforceNonPenetrationBC_topBD() {
 	// This method ensures the flux only comes from within the domain, not from the ghost cells, by mirroring within domain boundary cell
 	// values to ghost cells
-	for (int i = 1; i <= Nx; ++i) {
+	/*for (int i = 1; i <= Nx; ++i) {
 		T_[i][lastGhostIndexP] = T_[i][Np];
 		q_[i][lastGhostIndexP] = q_[i][Np];
 		u_[i][lastGhostIndexP] = u_[i][Np];
-	}
+	}*/
 
 	// This part ensures the upwind scheme only draws flux values from within the domain, not from ghost cells
 	for (int i = 1; i <= Nx; ++i) {
@@ -233,6 +233,7 @@ void enforceIC() {
 	(*calcW_fptr)();
 }
 
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Averaging Method
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
@@ -260,13 +261,13 @@ void aveSoln(int tt) {
 
 	if (tt % aveSolnFreq == 0) {
 		aveSoln(T_);
+		// aveSoln(q_);
 	}
-//	if (tt % 500 == 0)
-//		aveSoln(q_);
 
 	aveSoln(u_);
 	aveSoln(w_);
-	aveSoln(phix_);
+	if (!(tt % 10))
+		aveSoln(phix_);
 }
 
 

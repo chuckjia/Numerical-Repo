@@ -32,6 +32,18 @@ To change model settings, e.g. time step size, mesh size, etc., change variable 
 
 
 
+## Computation Results
+
+The results of the numerical simulation are stored in 2 directories: `Output` and `MovieFrames`.
+
+* The following results are printed to `.csv` files in the directory `Output`:
+    * the parameters used in the simulation: time and space step sizes, mesh size, etc.,
+    * the L2-norms of numerical solutions during the time evolution, and
+    * the numerical solution, the exact solution and the numerical errors at the final time.
+
+
+* The numerical solutions during some of the time steps are printed to `.csv` files in the directory `MovieFrames`. These solutions can be used to generate surface and contour plots of the solutions, as well as movies, using the graphing code.
+
 
 
 ## Naming Conventions

@@ -1,18 +1,28 @@
-clear; clc
+% This file is an example of making a movie of the numerical simulation.
+%
 
+clearAllScp
+
+% ===== ===== ===== ===== 
 % Settings
-solnName = "T";
+% ===== ===== ===== ===== 
 
+solnName = "q";
+steps = 0:500:17000;
 % Path and solution file names
-path = "/Users/chuckjia/Documents/Workspace/Git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
+projectPath = "/home/chuck/git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
+outputFilename = "Output/" + solnName + "_slow.avi";
+
+% ===== ===== ===== ===== 
+% Generate Movies
+% ===== ===== ===== ===== 
 
 % Mesh and paramters
-param = readParam(path + "Output/Param.csv"); 
-centersX = csvread(path + "Output/CellCenters_X.csv"); centersX = centersX(2:end-1, 2:end-1);
-centersP = csvread(path + "Output/CellCenters_P.csv"); centersP = centersP(2:end-1, 2:end-1);
+param = readParam(projectPath + "Output/Param.csv"); 
+centersX = csvread(projectPath + "Output/CellCenters_X.csv"); centersX = centersX(2:end-1, 2:end-1);
+centersP = csvread(projectPath + "Output/CellCenters_P.csv"); centersP = centersP(2:end-1, 2:end-1);
 
-steps = 100 * (1:200);
-F = genMovie(solnName, path + "MovieFrames/", param, centersX, centersP, steps, true);
-% slowMotion(F, 10, char("Output/q_slow.avi"));
+F = genMovie(solnName, projectPath + "MovieFrames/", param, centersX, centersP, steps, false);
+slowMotion(F, 10, char(outputFilename));  
 
 

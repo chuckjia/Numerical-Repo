@@ -1,5 +1,5 @@
 function F = genMovie( solnName, path, param, centersX, centersP, steps, saveToFile )
-%GENMOVIE Summary of this function goes here
+%GENMOVIE Generate movies for the numerical results from the HumidityV3 program
 %   Detailed explanation goes here
 
 contourLevels = selectContourLevels(solnName);

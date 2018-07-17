@@ -10,12 +10,13 @@ for i = 1:numFrame
     F2(i) = F(ceil(i / rate));
 end
 
-
 v = VideoWriter(movieName);
 v.FrameRate = 15;
 open(v);
 writeVideo(v, F2);
 close(v);
+
+fprintf("Slow motion movie generated and saved.\n");
 
 end
 

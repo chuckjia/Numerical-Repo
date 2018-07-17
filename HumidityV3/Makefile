@@ -1,5 +1,5 @@
 run:
-	g++ M_Driver.cpp -o Output/out
+	g++ Driver.cpp -o Output/out
 	Output/./out notInEclipse
 
 all:

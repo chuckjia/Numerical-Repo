@@ -30,7 +30,7 @@ int timeMethod = 4;  // Time method: 4 = RK4, 2 = RK2, 1 = Forward Euler, 0 = Co
 
 const int numDivision = 200;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 20000;  // Number of time steps
+int numTimeStep = 40000;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
 
 double finalTime = numTimeStep * Dt;  // Final time
@@ -41,20 +41,32 @@ double finalTime = numTimeStep * Dt;  // Final time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Averaging method
-int aveSolnFreq = 18;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
+int aveSolnFreq = 20;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
 
 // Total number of progress messages
-int numProgMsg = 1000;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
+int numProgMsg = 500;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
 
 // Movie I/O
 int movieFrameFreq = 500;  // The frequency of printing results to file as movie frames
 
 // Result evaluations
-int calcL2errFreq = 1000;  // Choose whether to calculate, show, and print to file the L2 errors during computation
+int calcL2errFreq = -1;  // Choose whether to calculate, show, and print to file the L2 errors during computation
 
 // Test cases
 bool _printResultToFile_ = true;  // Choose if print numerical SOLUTION and ERRORS to file at the END of computation
 bool _printExactSolnToFile_ = false;  // Choose if print EXACT solutions to file at the END of computation
+
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Validate Paramters
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+void validateProgramParameters() {
+	if (movieFrameFreq <= 0)
+		movieFrameFreq = numTimeStep + 1;  // Do not print movie frames
+	if (calcL2errFreq <= 0)
+		calcL2errFreq = numTimeStep + 1;  // Do not calculate and show L2 errors
+}
 
 
 #endif /* A_SETTINGS_H_ */

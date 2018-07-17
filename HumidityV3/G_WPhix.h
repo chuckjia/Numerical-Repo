@@ -20,7 +20,7 @@ void (*calcW_fptr)();
 // Calculate values of w
 void calcW_orig() {
 	for (int i = 1; i <= Nx; ++i) {
-		w_[i][0] = 0;  // Might be unnecessary, just to be safe
+		w_[i][0] = -w_[i][1];  // Might be unnecessary, just to be safe
 		for (int j = 0; j < Np; ++j)
 			w_[i][j + 1] = w_[i][j] - (getCellCenterP(i, j + 1) - getCellCenterP(i, j)) * getGradhU_x(i, j);
 	}
@@ -40,8 +40,8 @@ void calcPhix_orig() {
 		phix_[i][1] = 0;
 		double sum = 0;
 		for (int j = 1; j < Np; ++j) {
-			sum += R_CONST * (getCellTopCenterP(i, j) - getCellBottCenterP(i, j)) / getCellCenterP(i, j) * getGradhT_x(i, j);
-			phix_[i][j + 1] = -sum;
+			sum += (getCellTopCenterP(i, j) - getCellBottCenterP(i, j)) / getCellCenterP(i, j) * getGradhT_x(i, j);
+			phix_[i][j + 1] = -R_CONST * sum;
 		}
 	}
 }

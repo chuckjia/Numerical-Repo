@@ -1,5 +1,5 @@
 function fig = graphSoln(filename, centersX, centersP, titleLine1, titleLine2, viewAngle)
-%GRAPHSOLN Summary of this function goes here
+%GRAPHSOLN Graph numerical solutions
 %   Detailed explanation goes here
 
 soln = csvread(filename);
