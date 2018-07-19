@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../M_Driver.cpp 
+../Driver.cpp 
 
 OBJS += \
-./M_Driver.o 
+./Driver.o 
 
 CPP_DEPS += \
-./M_Driver.d 
+./Driver.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

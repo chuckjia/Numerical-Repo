@@ -8,7 +8,7 @@ clearAllScp
 % ===== ===== ===== ===== 
 
 solnName = "q";
-steps = 0:500:17000;
+steps = 0:500:40000;
 % Path and solution file names
 projectPath = "/home/chuck/git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
 outputFilename = "Output/" + solnName + "_slow.avi";

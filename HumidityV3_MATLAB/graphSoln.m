@@ -14,6 +14,7 @@ elseif ~isequal(graphSize, solnSize)
 end
 
 fig = surf(centersX, centersP, soln);
+xlabel('x-axis'); ylabel('p-axis');
 
 if nargin == 4
     title(titleLine1);

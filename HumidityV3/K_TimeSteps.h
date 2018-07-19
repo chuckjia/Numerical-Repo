@@ -76,7 +76,7 @@ bool runInEclipse = false;
 
 // Calculate, show, and store information and statistics
 bool showProgInfo_helper(int tt) {
-	bool printMovieFrameThisStep = !(tt % movieFrameFreq), calcAndShowL2NormThisStep = !(tt % calcL2errFreq);
+	bool printMovieFrameThisStep = !(tt % movieFrameFreq), calcAndShowL2NormThisStep = !(tt % calcL2NormFreq);
 	if (printMovieFrameThisStep || calcAndShowL2NormThisStep) {
 		if (!runInEclipse)
 			printf("\n");
@@ -335,7 +335,7 @@ void runTimeSteps() {
 void setTimeSteps() {
 	// Make sure that progress messages are more frequent than movie frame prints and L2 norm messages
 	milestone = (milestone < movieFrameFreq) ? milestone : movieFrameFreq;
-	milestone = (milestone < calcL2errFreq) ? milestone : calcL2errFreq;
+	milestone = (milestone < calcL2NormFreq) ? milestone : calcL2NormFreq;
 }
 
 

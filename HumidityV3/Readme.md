@@ -11,6 +11,13 @@ This code performs numerical simulations for inviscid hydrostatic primitive equa
 ## How to Run the Code
 
 To run the code, you can either compile the driver file or simply use the included makefile.
+
+* The recommended way is to use makefile. In terminal, navigate to the project directory and use
+  ~~~~
+  make
+  ~~~~
+  This will compile and run the code.
+
 * To manually compile, find the driver file and compile with C++ compilers. For example, if using `g++`, use the following to compile
   ~~~~
   g++ Driver.cpp -o output_filename
@@ -18,18 +25,34 @@ To run the code, you can either compile the driver file or simply use the includ
   The compiled C++ file can be found under the directory `Output`.
   To execute the compiled binary file, use
   ~~~~
-  ./output_filename
+  ./output_filename 1
   ~~~~
-  The name of the driver cpp file might vary slightly across versions.
+  The argument `1` here suppresses printout of multi-line progress information. It does not affect computation results. The command `./output_filename` would work just as fine computation-wise, except that it might produce many lines of progress information. This is designed to optimize Eclipse-style compilation.
 
-* To use makefile, in terminal, navigate to the project directory and use
-  ~~~~
-  make
-  ~~~~
-  This will compile and run the code.
 
-To change model settings, e.g. time step size, mesh size, etc., change variable values in the `Settings.h` file. To write new model equations, use the file `Models.h`.
+## Change Model Settings
 
+In general, to change model settings, e.g. time step size, mesh size, etc., change variable values in the `Settings.h` file. To write new model equations, use the file `Models.h`.
+
+In the file `Settings.h`:
+* `numDivision` controls the size of the mesh on the physical domain. For example, if `numDivision` is set to be 50, then the model uses a mesh of size 50x50. Currently, we assume that the number of divisions on the x- and p- directions are the same. If needed, this can be easily changed by setting `Nx` and `Np` different values in `Mesh.h`.
+
+* `timeMethod` controls the time method. A value of 1 indicates that the first order forward Euler methods will be used. A value of 2 means the RK2 method is used. And a value of 4 means the RK4 method is used.
+
+* `numTimeStep` is the number of time steps in the time advancement. `Dt` is the size of a single time step. And `finalTime` is the final time in the computation, calculated from the previous two variables.
+
+* `aveSolnFreq` controls the frequency of averaging. For example, a value of 20 means the averaging method is applied to T every 20 time steps. The averaging method is applied to u, w, and phi every time step.
+
+* `numProgMsg` controls the frequency of console printouts on current progress. For example, a value of 500 indicates during the computation, a total of 500 messages will be printed to console in the style of
+~~~~
+Current progress: 1.20 %, step no. 10
+~~~~
+
+* `movieFrameFreq` controls the frequency of writing solutions to files. Each of such files is a `.csv` file representing a numerical solution as a matrix. A value of 100 would indicate that the program writes to file every 100 time steps. These files will serve as the source of movie frames when making a movie of the simulation.
+Note that a negative value indicates no such files are to be written during the life of the program.
+
+
+* `calcL2NormFreq` controls the frequency of calculating and show L2 norms. A value of 100 indicates L2 norms is calculated and shown every 100 steps. A negative value means no L2 norms will be calculated during simulation. 
 
 
 ## Computation Results

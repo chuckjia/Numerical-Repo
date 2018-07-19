@@ -128,27 +128,27 @@ void enforceNonPenetrationBC_topBD() {
  * ----- ----- ----- ----- ----- ----- */
 
 // Helpers for projecting u values on the left side of domain at initial time t = 0
-// double helper1_fillCache_leftBdVal_MDL0(double p) { return sin(M_PI * p / p0_CONST); }
-// double helper2_fillCache_leftBdVal_MDL0(double x) { return cos(TWO_PI * _n_initU_MDL0 / xf * x); }
-// void enforceIC();  // Initialize function as it will be used in fillCache_leftBdVal_MDL0()
+double helper1_fillCache_leftBdVal_MDL0(double p) { return sin(M_PI * p / p0_CONST); }
+double helper2_fillCache_leftBdVal_MDL0(double x) { return cos(TWO_PI * _n_initU_MDL0 / xf * x); }
+void enforceIC();  // Initialize function as it will be used in fillCache_leftBdVal_MDL0()
 
 // !!AlphaVersion!!
 // Pre-calculate the left boundary values and store in cache
 void fillCache_leftBdVal_MDL0() {
-	/*// The following is to project u for the left boundary values
+	// The following is to project u for the left boundary values
 	enforceIC();
 	// Calculate lambda_x(x0)
 	double pB = pB_fcn_MDL0(x0), x1 = getCellCenterX(1),
 			lambda_x_leftBdVal =  lambdax_proj_[1] -
 			2 * p0_CONST / (M_PI * (pB - pA))
-	 * (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
-	 * (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));*/
+			* (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
+			* (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));
 
 	for (int j = 0; j < numCellP; ++j) {
 		double p = getCellCenterP(1, j), T = init_T_fcn_MDL0(x0, p, 0);
 		T_leftBdVal_[j] = T;  // Put T values in cache
 		q_leftBdVal_[j] = qs_fcn(T, p);  // Put q values in cache
-		u_leftBdVal_[j] = init_u_fcn_MDL0(0, p, 0);  // Put u values in cache
+		u_leftBdVal_[j] = init_u_fcn_MDL0(0, p, 0) - lambda_x_leftBdVal;  // Put u values in cache
 	}
 }
 

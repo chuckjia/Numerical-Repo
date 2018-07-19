@@ -50,7 +50,7 @@ int numProgMsg = 500;  // Progress messages are more frequent than movie frame p
 int movieFrameFreq = 500;  // The frequency of printing results to file as movie frames
 
 // Result evaluations
-int calcL2errFreq = -1;  // Choose whether to calculate, show, and print to file the L2 errors during computation
+int calcL2NormFreq = -1;  // Choose whether to calculate, show, and print to file the L2 errors during computation
 
 // Test cases
 bool _printResultToFile_ = true;  // Choose if print numerical SOLUTION and ERRORS to file at the END of computation
@@ -64,8 +64,8 @@ bool _printExactSolnToFile_ = false;  // Choose if print EXACT solutions to file
 void validateProgramParameters() {
 	if (movieFrameFreq <= 0)
 		movieFrameFreq = numTimeStep + 1;  // Do not print movie frames
-	if (calcL2errFreq <= 0)
-		calcL2errFreq = numTimeStep + 1;  // Do not calculate and show L2 errors
+	if (calcL2NormFreq <= 0)
+		calcL2NormFreq = numTimeStep + 1;  // Do not calculate and show L2 errors
 }
 
 
