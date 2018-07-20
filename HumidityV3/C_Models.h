@@ -70,7 +70,7 @@ double init_T_fcn_MDL0(double x, double p, double t) {
 // Initial q function
 double init_q_fcn_MDL0(double x, double p, double t) {
 	double T = init_T_fcn_MDL0(x, p, 0);
-	return qs_fcn(T, p) - 0.000052;
+	return qs_fcn(T, p) - 0.0052;
 }
 
 // Initial u function

@@ -41,7 +41,7 @@ double finalTime = numTimeStep * Dt;  // Final time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Averaging method
-int aveSolnFreq = 20;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
+int aveSolnFreq = 18;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
 
 // Total number of progress messages
 int numProgMsg = 500;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
@@ -50,7 +50,7 @@ int numProgMsg = 500;  // Progress messages are more frequent than movie frame p
 int movieFrameFreq = 500;  // The frequency of printing results to file as movie frames
 
 // Result evaluations
-int calcL2NormFreq = -1;  // Choose whether to calculate, show, and print to file the L2 errors during computation
+int calcL2NormFreq = 500;  // Choose whether to calculate, show, and print to file the L2 errors during computation
 
 // Test cases
 bool _printResultToFile_ = true;  // Choose if print numerical SOLUTION and ERRORS to file at the END of computation

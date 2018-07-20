@@ -7,7 +7,7 @@ clearAllScp
 % Settings
 % ===== ===== ===== =====
 
-solnName = "T";
+solnName = "q";
 stepNo = -1;  % A value of -1 indicates graph the latest solution
 
 projectPath = "~/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder

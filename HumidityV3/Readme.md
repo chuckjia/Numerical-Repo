@@ -25,9 +25,9 @@ To run the code, you can either compile the driver file or simply use the includ
   The compiled C++ file can be found under the directory `Output`.
   To execute the compiled binary file, use
   ~~~~
-  ./output_filename 1
+  ./output_filename 0
   ~~~~
-  The argument `1` here suppresses printout of multi-line progress information. It does not affect computation results. The command `./output_filename` would work just as fine computation-wise, except that it might produce many lines of progress information. This is designed to optimize Eclipse-style compilation.
+  The argument `0` here suppresses printout of multi-line progress information. It does not affect computation results. The command `./output_filename` would work just as fine computation-wise, except that it might produce many lines of progress information. This is designed to work with Eclipse-style optimization in compilation of the code.
 
 
 ## Change Model Settings
@@ -35,7 +35,7 @@ To run the code, you can either compile the driver file or simply use the includ
 In general, to change model settings, e.g. time step size, mesh size, etc., change variable values in the `Settings.h` file. To write new model equations, use the file `Models.h`.
 
 In the file `Settings.h`:
-* `numDivision` controls the size of the mesh on the physical domain. For example, if `numDivision` is set to be 50, then the model uses a mesh of size 50x50. Currently, we assume that the number of divisions on the x- and p- directions are the same. If needed, this can be easily changed by setting `Nx` and `Np` different values in `Mesh.h`.
+* `numDivision` controls the size of the mesh on the physical domain. For example, if `numDivision` is set to be 50, then the model uses a mesh of size 50x50. Currently, we assume that the number of divisions on the x- and p- directions are the same. If needed, this can be easily changed by setting `Nx` and `Np` to different values in `Mesh.h`.
 
 * `timeMethod` controls the time method. A value of 1 indicates that the first order forward Euler methods will be used. A value of 2 means the RK2 method is used. And a value of 4 means the RK4 method is used.
 
@@ -52,7 +52,19 @@ Current progress: 1.20 %, step no. 10
 Note that a negative value indicates no such files are to be written during the life of the program.
 
 
-* `calcL2NormFreq` controls the frequency of calculating and show L2 norms. A value of 100 indicates L2 norms is calculated and shown every 100 steps. A negative value means no L2 norms will be calculated during simulation. 
+* `calcL2NormFreq` controls the frequency of calculating and show L2 norms. A value of 100 indicates L2 norms is calculated and shown every 100 steps. A negative value means no L2 norms will be calculated during simulation.
+
+
+
+In the file `models.h`:
+* Two models are given. Model 0 is the physical case, while model 1 is the analytical case. All functions with suffix `_MDL0` are written for model 0, and functions with `_MDL1` are for model 1.
+
+* Model and domain functions are constructed using function pointers to increase generality of code. To add new models, set function pointer values in the functions `setModels` and `setConditions`, which select model functions according to `modelNo` in `Settings.h`. The latter function, `setConditions`, is in the file `Conditions.h`. For example, the pB function, which describes the boundary geometry along the mountain surface, is represented by the function pointer `pB_fptr`. A function named `pB_fcn_MDL0` is written in `models.h` for the physical model as its pB function. Then when `modelNo` from `Settings.h` is set to be `0`, the value of `pB_fptr` will be set to `&pB_fcn_MDL0` in the function `setModels`.
+
+
+
+
+
 
 
 ## Computation Results

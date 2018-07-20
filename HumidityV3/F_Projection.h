@@ -15,36 +15,35 @@
  * Projection Method For u
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-// Coefficients for the linear system (3.33) + (3.35) in the projection method. To get the
-// corresponding matrix, we choose to put (3.35) as the last row. Then we directly reduce
-// the last row to make the matrix upper triangular, and we solve the system backwards.
-
-// Our a and b are different from those in the article:
-// a_this[i][j] = a_orig[i][j] - b_orig[i][j] / Dx, b_this[i][j] = b_orig[i][j] / Dx.
-// In our program here, a and b are chosen to be exactly the matrix entries in (3.33).
-// Note: we only store the inverse of a.
-
-// d values represent the last row of the matrix, corresponding to (3.35). They store the
-// original last matrix row and the intermediate values in the calculation of a and b. More
-// importantly, d stores the linear transformation on c to directly make the matrix upper
-// triangular.
-
-// During the life of this program, the cache values of a, b, and d will remain the same once
-// calculated.
-
-// Refer to notes for details.
+void (*projU_fptr)();  // Function pointer for the projection method
 
 int first_i_proj = 0, last_i_proj = Nx + 1;  // Range of the index for the projection method
 
+// Coefficients for the linear system (3.33) + (3.35) in the projection method.
 double a_proj_[Nx + 2], b_proj_[Nx + 2];  // Only values from first_i_proj to (last_i_proj-1) are used
 double d_proj_[Nx + 2];  // Values from first_i_proj to last_i_proj are used
 double lambdax_proj_[Nx + 2];  // Only values from 0/1 to Nx are used
 
+// To get the corresponding matrix, we choose to put (3.35) as the last row. Then we directly reduce the last row to make
+// the matrix upper triangular, and we solve the system backwards.
+
+// Our a and b are different from those in the article:
+// a_this[i][j] = a_orig[i][j] - b_orig[i][j] / Dx,    b_this[i][j] = b_orig[i][j] / Dx.
+// In our program here, a and b are chosen to be exactly the matrix entries in (3.33).
+// Note: In the last version, we only store the inverse of a. We now store the values of a directly.
+
+// d values represent the last row of the matrix, corresponding to (3.35). They store the original last matrix row and the
+// intermediate values in the calculation of a and b. More importantly, d stores the linear transformation on c to directly
+// make the matrix upper triangular.
+
+// During the life of this program, the cache values of a, b, and d will remain the same once calculated.
+
+// Refer to notes for details.
+
 // Calculate a and b values
 void fillCache_ab_proj() {
 	for (int i = first_i_proj; i < last_i_proj; ++i) {  // Last index is last_i_proj - 1, see (3.33)
-		double x = getCellCenterX(i);
-		double b = (*pB_fptr)(x) - pA;
+		double x = getCellCenterX(i), b = (*pB_fptr)(x) - pA;
 		b_proj_[i] = b;
 		a_proj_[i] = (*pBxDer_fptr)(x) * Dx - b;
 	}
@@ -52,15 +51,12 @@ void fillCache_ab_proj() {
 
 // Calculate d values. It is separated from the calculation of a and b for testing reasons
 void fillCache_d_proj() {
-	d_proj_[first_i_proj] = 1;
-	for (int i = first_i_proj; i < last_i_proj; ++i) {  // Only up to (last_i_proj - 1), as each iteration calculates value of d[i+1]
-		double factor = d_proj_[i] / a_proj_[i];
-		d_proj_[i + 1] = 1 - b_proj_[i] * factor;
-		d_proj_[i] = factor;
-	}
+	d_proj_[first_i_proj] = 1 / a_proj_[1];
+	for (int i = first_i_proj; i < last_i_proj; ++i)  // Only up to (last_i_proj - 1), as each iteration calculates value of d[i+1]
+		d_proj_[i + 1] = (1 - b_proj_[i] * d_proj_[i]) / a_proj_[i + 1];
 }
 
-// Calculate the c_i's as in (3.34). Note that c_i changes in each time step
+// Calculate the c_i's as in (3.34). Note that c_i changes in each time step.
 // In this program, we do not have an array for c_i. Instead, we use lambda_x[] to hold the c_i values. Later after applying
 // Gaussian elimination, lambda_x[] will naturally hold the lambda_x values as the solution of the linear system.
 void calc_c_proj() {
@@ -90,7 +86,21 @@ void calcLambdax_proj() {
 		lambdax_proj_[i] = (lambdax_proj_[i] - b_proj_[i] * lambdax_proj_[i + 1]) / a_proj_[i];
 }
 
-void (*projU_fptr)();  // Function pointer for the projection method
+void projU_diagnostics() {
+	printf("\n");
+	double prevSum = 0;
+	for (int i = 1; i <= Nx; ++i)
+		if (!(i % 10)) {
+			double currSum = 0;
+			for (int j = 1; j <= Np; ++j)
+				currSum += u_[i][j];
+			currSum *= getCellCenterDp(i);
+			// printf("Int u[%d] = %1.4f,  ", i, currSum);
+			printf("Dx Int u[%d] = %1.4f,  ", i, (currSum - prevSum) / Dx);
+			prevSum = currSum;
+		}
+	printf("\n");
+}
 
 // Perform the projection method on uTilde to calculate u
 void projU_orig() {
@@ -100,6 +110,7 @@ void projU_orig() {
 		for (int j = 1; j <= Np; ++j)
 			u_[i][j] -= lambdax;
 	}
+	// projU_diagnostics();
 }
 
 // For testing
@@ -118,6 +129,7 @@ void setProjection() {
 	fillCache_ab_proj();
 	fillCache_d_proj();
 	projU_fptr = &projU_orig;
+	//	projU_fptr = &empty_fcn;
 }
 
 

@@ -74,8 +74,7 @@ double L_fcn(double T) { // @suppress("Name convention for function")
 
 // F function defined in (2.2) on p.100
 double F_fcn(double T, double qsVal, double LVal) { // @suppress("Name convention for function")
-	return qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T)
-			/ (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
+	return qsVal * T * (LVal * R_CONST - Cp_CONST * Rv_CONST * T) / (Cp_CONST * Rv_CONST * T * T + qsVal * LVal * LVal);
 }
 
 /**

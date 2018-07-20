@@ -169,9 +169,6 @@ void copySoln(double T_copy[numCellX][numCellP], double q_copy[numCellX][numCell
 }
 
 void preForwardEuler() {
-	//enforceNeumannBC_topBD(u_sl);
-	//enforceNeumannBC_topBD(w_sl);
-	enforceNonPenetrationBC_topBD();
 	(*calcFluxes)();  // Calculate numerical fluxes
 	(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
 }
@@ -189,7 +186,6 @@ void subExactVelocity(double t) {
 
 void postForwardEuler() {
 	(*projU_fptr)();  // Projection method on u
-	// (*enforceBC_fcnPtr)();  // Enforce boundary conditions
 	(*calcW_fptr)();  // Calculate w
 	(*enforceBC_fptr)();  // Enforce boundary conditions
 }
