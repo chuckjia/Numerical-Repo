@@ -41,7 +41,7 @@ double finalTime = numTimeStep * Dt;  // Final time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Averaging method
-int aveSolnFreq = 18;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
+int aveSolnFreq = 20;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
 
 // Total number of progress messages
 int numProgMsg = 500;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
