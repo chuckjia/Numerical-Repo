@@ -27,7 +27,7 @@ To run the code, you can either compile the driver file or simply use the includ
   ~~~~
   ./output_filename 0
   ~~~~
-  The argument `0` here suppresses printout of multi-line progress information. It does not affect computation results. The command `./output_filename` would work just as fine computation-wise, except that it might produce many lines of progress information. This is designed to work with Eclipse-style optimization in compilation of the code.
+  The argument `0` here suppresses printout of multi-line progress information. It does not affect computation results. The command `./output_filename` would work just as fine computation-wise, except that it might produce many lines of progress information. This is designed to work with Eclipse-style optimization on compilation of the code.
 
 
 ## Change Model Settings

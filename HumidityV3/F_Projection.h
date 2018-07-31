@@ -17,7 +17,7 @@
 
 void (*projU_fptr)();  // Function pointer for the projection method
 
-int first_i_proj = 0, last_i_proj = Nx + 1;  // Range of the index for the projection method
+int first_i_proj = 1, last_i_proj = Nx;  // Range of the index for the projection method
 
 // Coefficients for the linear system (3.33) + (3.35) in the projection method.
 double a_proj_[Nx + 2], b_proj_[Nx + 2];  // Only values from first_i_proj to (last_i_proj-1) are used
@@ -75,6 +75,14 @@ void calc_c_proj() {
 	lambdax_proj_[last_i_proj] = 0;  // This is in fact not necessary, since we directly assign values to c_i in the Gaussian elimination
 }
 
+void writeLambdaxToFile_test() {
+	FILE *f = fopen("Output/lambdax.csv", "wb");
+	for (int i = 1; i < Nx; ++i)
+		fprintf(f, "%1.20e,", lambdax_proj_[i]);
+	fprintf(f, "%1.20e\n", lambdax_proj_[Nx]);
+	fclose(f);
+}
+
 // Perform Gaussian elimination to calculate lambda_x
 void calcLambdax_proj() {
 	calc_c_proj();
@@ -86,39 +94,28 @@ void calcLambdax_proj() {
 		lambdax_proj_[i] = (lambdax_proj_[i] - b_proj_[i] * lambdax_proj_[i + 1]) / a_proj_[i];
 }
 
-void projU_diagnostics() {
-	printf("\n");
-	double prevSum = 0;
-	for (int i = 1; i <= Nx; ++i)
-		if (!(i % 10)) {
-			double currSum = 0;
-			for (int j = 1; j <= Np; ++j)
-				currSum += u_[i][j];
-			currSum *= getCellCenterDp(i);
-			// printf("Int u[%d] = %1.4f,  ", i, currSum);
-			printf("Dx Int u[%d] = %1.4f,  ", i, (currSum - prevSum) / Dx);
-			prevSum = currSum;
-		}
-	printf("\n");
-}
-
 // Perform the projection method on uTilde to calculate u
 void projU_orig() {
+	// printf("The function projU_orig has been called.\n");
 	calcLambdax_proj();
 	for (int i = first_i_proj; i <= last_i_proj; ++i) {
 		double lambdax = lambdax_proj_[i];
 		for (int j = 1; j <= Np; ++j)
 			u_[i][j] -= lambdax;
 	}
-	// projU_diagnostics();
 }
 
 // For testing
 void print_lambdax() {
+	FILE *f = fopen("Output/lambdax_diagnostics.csv", "wb");
 	printf("\n");
-	for (int i = first_i_proj; i <= last_i_proj; ++i)
+	for (int i = first_i_proj; i < last_i_proj; ++i) {
 		printf("lambda_x[%d] = %1.2e  ", i, lambdax_proj_[i]);
+		fprintf(f, "%1.20e,", lambdax_proj_[i]);
+	}
+	fprintf(f, "%1.20e\n", lambdax_proj_[last_i_proj]);
 	printf("\n");
+	fclose(f);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
