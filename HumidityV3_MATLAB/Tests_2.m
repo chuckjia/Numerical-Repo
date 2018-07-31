@@ -1,18 +1,23 @@
 clearAllScp
 
-x0 = 0;  xf = 75000; pA = 250;
-meshN = 400;  Nx = meshN; Np = meshN;
+% ===== ===== ===== ===== ===== ===== 
+% Mesh Paramters
+% ===== ===== ===== ===== ===== ===== 
+
+x0 = 0;  xf = 75000;  pA = 250;
+meshN = 200;  Nx = meshN; Np = meshN;
 Dx = (xf-x0) / Nx;
 meshX = x0:Dx:xf;
 
 outputFolder = '~/git/Numerical-Repo/HumidityV3/Output/';
-cellCenterX = csvread(outputFolder + "CellCenters_X.csv");  cellCenterP = csvread(outputFolder + "CellCenters_P.csv");
-cellCenterX = cellCenterX(2:end-1, 2);  cellCenterP = cellCenterP(2:end-1, 2:end-1);
+cellCenterX_2D = csvread(outputFolder + "CellCenters_X.csv");  cellCenterP = csvread(outputFolder + "CellCenters_P.csv");
+cellCenterX_2D = cellCenterX_2D(2:end-1, 2:end-1);  cellCenterX = cellCenterX_2D(:, 1);
+cellCenterP = cellCenterP(2:end-1, 2:end-1);
 DpMat = calc_DpMat(Nx, Np, cellCenterX, x0, pA, Dx);
 
 a_vec = pBx_fcn(cellCenterX);
 b_vec = pB_fcn(cellCenterX) - pA;
-uTildeMat = uTilde_fcn(cellCenterX, cellCenterP);
+uTildeMat = uTilde_fcn(cellCenterX_2D, cellCenterP);
 int_u_vec = calc_int_u_vec(uTildeMat, DpMat);
 
 c_vec = zeros(Nx, 1);
@@ -31,11 +36,26 @@ A(Nx, :) = 1;
 lambdax_vec = A\c_vec;
 
 c_res = csvread(outputFolder + "lambdax_diagnostics.csv")';
-lambdax_vec - c_res
+% lambdax_vec - c_res;
 
 uMat_after_proj = apply_proj(uTildeMat, c_res);
 new_int_u_vec = calc_int_u_vec(uMat_after_proj, DpMat);
 max(abs(calc_der_x_int_u(new_int_u_vec, Dx)))
+
+
+%%
+
+surf(cellCenterX_2D, cellCenterP, uTildeMat)
+view(0, -90)
+
+
+
+
+
+
+
+
+
 
 
 %%
@@ -62,26 +82,36 @@ end
 
 function DpMat = calc_DpMat(Nx, Np, cellCenterX, x0, pA, Dx)
 DpMat = zeros(Nx, Np);
+% for i = 1:Nx
+%     xCenter = cellCenterX(i);
+%     xLeft = x0 + (i - 1) * Dx;
+%     xRight = xLeft + Dx;
+%     cellLeftDp = (pB_fcn(xLeft) - pA) / Np;
+%     cellRightDp = (pB_fcn(xRight) - pA) / Np;
+%     r = (xCenter - xLeft) / Dx;
+%     
+%     for j = 1:Np
+%         pBottLeft = pA + (j - 1) * cellLeftDp;
+%         pTopLeft = pA + j * cellLeftDp;
+%         pBottRight = pA + (j - 1) * cellRightDp;
+%         pTopRight = pA + j * cellRightDp;
+%         
+%         pTopCenter = pTopLeft + r * (pTopRight - pTopLeft);
+%         pBottCenter = pBottLeft + r * (pBottRight - pBottLeft);
+%         
+%         DpMat(i, j) = pTopCenter - pBottCenter;
+%     end
+% end
+
 for i = 1:Nx
-    xCenter = cellCenterX(i);
     xLeft = x0 + (i - 1) * Dx;
     xRight = xLeft + Dx;
     cellLeftDp = (pB_fcn(xLeft) - pA) / Np;
     cellRightDp = (pB_fcn(xRight) - pA) / Np;
-    r = (xCenter - xLeft) / Dx;
     
-    for j = 1:Np
-        pBottLeft = pA + (j - 1) * cellLeftDp;
-        pTopLeft = pA + j * cellLeftDp;
-        pBottRight = pA + (j - 1) * cellRightDp;
-        pTopRight = pA + j * cellRightDp;
-        
-        pTopCenter = pTopLeft + r * (pTopRight - pTopLeft);
-        pBottCenter = pBottLeft + r * (pBottRight - pBottLeft);
-        
-        DpMat(i, j) = pTopCenter - pBottCenter;
-    end
+    DpMat(i, :) = 0.5 * (cellLeftDp + cellRightDp);
 end
+
 end
 
 function res = calc_der_x_int_u(int_u_ver, Dx)
