@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
 	printSchemeSummary();
 	writeCSV_cellCenters();
 	writeCSV_param();
-	// runTimeSteps();
+	runTimeSteps();
 	testing();
-	//showL2Errors();
+	showL2Errors();
 	// writeCSV_finalSolnErr();
 	printf("\n");
 }

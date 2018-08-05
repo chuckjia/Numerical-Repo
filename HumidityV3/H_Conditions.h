@@ -198,7 +198,7 @@ void enforceBC_MDL1() {
 	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
 
 	// Top boundary: for u and w
-	enforceNonPenetrationBC_topBD();
+//	enforceNonPenetrationBC_topBD();
 }
 
 

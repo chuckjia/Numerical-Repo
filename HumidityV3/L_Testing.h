@@ -41,7 +41,7 @@ void projU_diagnostics() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	enforceIC();
-	print_lambdax();
+	//	enforceIC();
+	//	print_lambdax();
 }
 #endif /* L_TESTING_H_ */
