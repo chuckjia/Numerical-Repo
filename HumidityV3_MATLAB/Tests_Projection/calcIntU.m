@@ -1,4 +1,4 @@
-function intU_vec = calcIntU(u_mat, Dp_mat)
+function intU_vec = calcIntU(u_mat, Dp_vec)
 %CALCINTU Calculate the integral of u with respect to p, i.e. int_pA^pB u(x,p) dp.
 %   INPUTS:: u_mat: Matrix of size Nx by Np. Its (i,j) entry is the numerical value of u at (i,j) cell center
 %            Dp_mat: Matrix of size Nx by Np. Its (i,j) entry is the Dp value at the center of the (i,j) cell
@@ -8,7 +8,7 @@ function intU_vec = calcIntU(u_mat, Dp_mat)
 Nx = length(u_mat);
 intU_vec = zeros(Nx, 1);
 for i = 1:Nx
-    intU_vec(i) = sum(u_mat(i, :) .* Dp_mat(i, :));
+    intU_vec(i) = sum(u_mat(i, :) .* Dp_vec(i));
 end
 
 end

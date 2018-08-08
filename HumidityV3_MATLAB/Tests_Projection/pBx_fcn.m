@@ -1,6 +1,10 @@
-function y = pBx_fcn(x)
+function y = pBx_fcn(cellCentersX, Dx)
 %PBX_FCN The x-derivative of the pB function
 
-y = (1/72000) .* (x - 37500) .* exp(-((x-37500) ./ 6000).^2);
+len = length(cellCentersX);
+y = zeros(len + 1);
+for i = 1:len
+    y(i) = (pB_fcn(cellCentersX(i + 1)) - pB_fcn(cellCentersX(i))) / Dx;
+end
 
 end
