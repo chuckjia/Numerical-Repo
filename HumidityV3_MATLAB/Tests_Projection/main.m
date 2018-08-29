@@ -1,4 +1,4 @@
-function main()
+% function main()
 %MAIN Build mesh grid and apply projection method on the initial u values
 
 % ===== ===== ===== ===== ===== ===== 
@@ -9,7 +9,7 @@ function main()
 x0 = 0;  xf = 75000;  pA = 250;
 
 % Size of mesh used in the Finite Volume Method
-Nx = 200;  Np = 200;
+Nx = 10;  Np = 10;
 
 % Build mesh and calculate cell centers
 Dx = (xf - x0) / Nx;  % x step size
@@ -25,11 +25,14 @@ Dp_vec = calcDp_cellCenter(x0, pA, Dx, Nx, Np);
 % ===== ===== ===== ===== ===== ===== 
 
 % Now calculate cooefficients a_i, b_i, and c_i as in (3.34)
-a_vec = pBx_fcn(cellCentersX, Dx);  % Coefficients a_i
-b_vec = pB_fcn(cellCentersX) - pA;  % Coefficient b_i
+a_vec = pBx_fcn(cellCentersX(1:Nx-1, 1), Dx);  % Coefficients a_i
+b_vec = pB_fcn(cellCentersX(1:Nx-1, 1)) - pA;  % Coefficient b_i
 
 uTilde_mat = uTilde_fcn(cellCentersX, cellCentersP);  % Initial condition of u
 intU_vec = calcIntU(uTilde_mat, Dp_vec);  % Integral of u with respect to p, i.e. int_pA^pB u(x,p) dp
+% result = calcDxIntU(intU_vec, Dx);
+% plot(cellCentersX(:,1), [result; 0]);
+
 c_vec = zeros(Nx, 1);  % Coefficient c_i
 for i = 1:(Nx-1)
     c_vec(i) = (intU_vec(i + 1) - intU_vec(i)) / Dx;
@@ -53,4 +56,4 @@ result = calcDxIntU(intU_afterProj, Dx);  % (d/dx)int_pA^pB u dp at each x_i
 [maxVal, maxInd] = max(abs(result));
 fprintf("The max of |(d/dx)int_pA^pB u dp| is %1.4e, which occurs at the point x_%d\n", maxVal, maxInd);
 
-end
+% end

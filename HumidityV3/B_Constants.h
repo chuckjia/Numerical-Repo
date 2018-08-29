@@ -83,6 +83,7 @@ double F_fcn(double T, double qsVal, double LVal) { // @suppress("Name conventio
 
 void empty_fcn() { }
 void empty_fcn(int x) { }  // Used by aveSoln_fptr
+void empty_fcn(double x) { }
 
 /**
  * Testing Functions

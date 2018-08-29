@@ -15,7 +15,7 @@
  * Projection Method For u
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void (*projU_fptr)();  // Function pointer for the projection method
+void (*projU_fptr)(double);  // Function pointer for the projection method
 
 int first_i_proj = 1, last_i_proj = Nx;  // Range of the index for the projection method
 
@@ -95,27 +95,14 @@ void calcLambdax_proj() {
 }
 
 // Perform the projection method on uTilde to calculate u
-void projU_orig() {
+void projU_orig(double s) {
 	// printf("The function projU_orig has been called.\n");
 	calcLambdax_proj();
 	for (int i = first_i_proj; i <= last_i_proj; ++i) {
-		double lambdax = lambdax_proj_[i];
+		double lambdax_term = lambdax_proj_[i] * s;
 		for (int j = 1; j <= Np; ++j)
-			u_[i][j] -= lambdax;
+			u_[i][j] -= lambdax_term;
 	}
-}
-
-// For testing
-void print_lambdax() {
-	FILE *f = fopen("Output/lambdax_diagnostics.csv", "wb");
-	printf("\n");
-	for (int i = first_i_proj; i < last_i_proj; ++i) {
-		printf("lambda_x[%d] = %1.2e  ", i, lambdax_proj_[i]);
-		fprintf(f, "%1.20e,", lambdax_proj_[i]);
-	}
-	fprintf(f, "%1.20e\n", lambdax_proj_[last_i_proj]);
-	printf("\n");
-	fclose(f);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -125,8 +112,10 @@ void print_lambdax() {
 void setProjection() {
 	fillCache_ab_proj();
 	fillCache_d_proj();
-	projU_fptr = &projU_orig;
-	//	projU_fptr = &empty_fcn;
+	if (modelNo == 1)
+		projU_fptr = &empty_fcn;
+	else
+		projU_fptr = &projU_orig;
 }
 
 

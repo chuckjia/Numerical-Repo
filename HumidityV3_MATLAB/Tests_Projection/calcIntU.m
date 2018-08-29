@@ -8,7 +8,7 @@ function intU_vec = calcIntU(u_mat, Dp_vec)
 Nx = length(u_mat);
 intU_vec = zeros(Nx, 1);
 for i = 1:Nx
-    intU_vec(i) = sum(u_mat(i, :) .* Dp_vec(i));
+    intU_vec(i) = sum(u_mat(i, :)) .* Dp_vec(i);
 end
 
 end

@@ -171,7 +171,7 @@ void enforceBC_MDL0() {
 	// Conditions are enforced directly in the calculation of the two solutions
 
 	// Top boundary: for u and w
-	enforceNonPenetrationBC_topBD();  // CHANGED!
+	// enforceNonPenetrationBC_topBD();  // CHANGED!
 	// enforceNonPenetrationBC_topBD_math();
 }
 
@@ -231,7 +231,7 @@ void enforceIC() {
 			q_[i][j] = (*initQ_fptr)(x, p, 0);
 			u_[i][j] = (*initU_fptr)(x, p, 0);
 		}
-	(*projU_fptr)();
+	// (*projU_fptr)();
 	(*calcW_fptr)();
 }
 
