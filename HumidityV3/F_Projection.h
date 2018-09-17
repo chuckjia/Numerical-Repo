@@ -45,7 +45,7 @@ void fillCache_ab_proj() {
 	for (int i = first_i_proj; i < last_i_proj; ++i) {  // Last index is last_i_proj - 1, see (3.33)
 		double x = getCellCenterX(i), b = (*pB_fptr)(x) - pA;
 		b_proj_[i] = b;
-		a_proj_[i] = (*pBxDer_fptr)(x) * Dx - b;
+		a_proj_[i] = getCellCenterX(i + 1) - getCellCenterX(i) - b;
 	}
 }
 
