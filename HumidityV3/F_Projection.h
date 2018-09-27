@@ -15,7 +15,7 @@
  * Projection Method For u
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void (*projU_fptr)(double);  // Function pointer for the projection method
+void (*projU_fptr)();  // Function pointer for the projection method
 
 int first_i_proj = 1, last_i_proj = Nx;  // Range of the index for the projection method
 
@@ -45,7 +45,7 @@ void fillCache_ab_proj() {
 	for (int i = first_i_proj; i < last_i_proj; ++i) {  // Last index is last_i_proj - 1, see (3.33)
 		double x = getCellCenterX(i), b = (*pB_fptr)(x) - pA;
 		b_proj_[i] = b;
-		a_proj_[i] = getCellCenterX(i + 1) - getCellCenterX(i) - b;
+		a_proj_[i] = (*pBxDer_fptr)(x) * Dx - b;
 	}
 }
 
@@ -54,6 +54,13 @@ void fillCache_d_proj() {
 	d_proj_[first_i_proj] = 1 / a_proj_[1];
 	for (int i = first_i_proj; i < last_i_proj; ++i)  // Only up to (last_i_proj - 1), as each iteration calculates value of d[i+1]
 		d_proj_[i + 1] = (1 - b_proj_[i] * d_proj_[i]) / a_proj_[i + 1];
+}
+
+void printLambdax() {
+	printf("Lambdax values:  ");
+	for (int i = 1; i < Nx; ++i)
+		printf("%1.5e  ", lambdax_proj_[i]);
+	printf("\n");
 }
 
 // Calculate the c_i's as in (3.34). Note that c_i changes in each time step.
@@ -95,13 +102,13 @@ void calcLambdax_proj() {
 }
 
 // Perform the projection method on uTilde to calculate u
-void projU_orig(double s) {
-	// printf("The function projU_orig has been called.\n");
+void projU_orig() {
 	calcLambdax_proj();
+	//printLambdax();
 	for (int i = first_i_proj; i <= last_i_proj; ++i) {
-		double lambdax_term = lambdax_proj_[i] * s;
+		double lambdax_val = lambdax_proj_[i];
 		for (int j = 1; j <= Np; ++j)
-			u_[i][j] -= lambdax_term;
+			u_[i][j] -= lambdax_val;
 	}
 }
 

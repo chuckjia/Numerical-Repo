@@ -141,7 +141,7 @@ void forwardEuler() {
 		(*calcFluxes)();  // Calculate numerical fluxes
 		(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
 		forwardEuler_singleStep(t, Dt, T_, q_, u_, 0);
-		(*projU_fptr)(Dt);  // Projection method on u ??
+		(*projU_fptr)();  // Projection method on u ??
 		(*calcW_fptr)();  // Calculate w
 		(*enforceBC_fptr)();  // Enforce boundary conditions
 
@@ -184,8 +184,8 @@ void subExactVelocity(double t) {
 	}
 }
 
-void postForwardEuler(double s) {
-	(*projU_fptr)(s);  // Projection method on u
+void postForwardEuler() {
+	(*projU_fptr)();  // Projection method on u
 	(*calcW_fptr)();  // Calculate w
 	(*enforceBC_fptr)();  // Enforce boundary conditions
 }
@@ -213,12 +213,12 @@ void rk2() {
 		// RK2 Step 1
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, 0);
-		postForwardEuler(halfDt);  // ?
+		postForwardEuler();  // ?
 
 		// RK2 Step 2
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, 0);
-		postForwardEuler(Dt);  // ?
+		postForwardEuler();  // ?
 
 		(*enforceBC_fptr)();
 
@@ -253,19 +253,19 @@ void rk4() {
 		update_k_RK_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
-		postForwardEuler(halfDt);
+		postForwardEuler();
 
 		// RK4 Step 2
 		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
-		postForwardEuler(halfDt);
+		postForwardEuler();
 
 		// RK4 Step 3
 		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
-		postForwardEuler(Dt);
+		postForwardEuler();
 
 		// RK4 Step 4
 		update_k_RK_fptr = &update_k_RK_noUpdate;
@@ -277,7 +277,7 @@ void rk4() {
 				q_[i][j] += k_rk_q_[i][j];
 				u_[i][j] += k_rk_u_[i][j];
 			}
-		postForwardEuler(Dt);
+		postForwardEuler();
 
 		//showL2Errors(t);
 		(*aveSoln_fptr)(tt + 1);

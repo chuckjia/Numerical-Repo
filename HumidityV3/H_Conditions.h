@@ -231,7 +231,7 @@ void enforceIC() {
 			q_[i][j] = (*initQ_fptr)(x, p, 0);
 			u_[i][j] = (*initU_fptr)(x, p, 0);
 		}
-	// (*projU_fptr)();
+	(*projU_fptr)();
 	(*calcW_fptr)();
 }
 
