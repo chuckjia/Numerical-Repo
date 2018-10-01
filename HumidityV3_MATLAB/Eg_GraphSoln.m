@@ -2,6 +2,7 @@
 %
 
 clearAllScp
+projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
 
 % ===== ===== ===== =====
 % Settings
@@ -10,7 +11,6 @@ clearAllScp
 solnName = "q";
 stepNo = -1;  % A value of -1 indicates graph the latest solution
 
-projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
 resultFolder = "MovieFrames/";  % Commonly used: "MovieFrames/" or "Output/"
 plotName = "Numerical Solution";  % "Solution", "Error", or "Exact Solution"
 
