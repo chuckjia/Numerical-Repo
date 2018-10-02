@@ -171,7 +171,7 @@ void enforceBC_MDL0() {
 	// Conditions are enforced directly in the calculation of the two solutions
 
 	// Top boundary: for u and w
-	// enforceNonPenetrationBC_topBD();  // CHANGED!
+	 enforceNonPenetrationBC_topBD();  // CHANGED!
 	// enforceNonPenetrationBC_topBD_math();
 }
 

@@ -1,7 +1,0 @@
-HeightFactor = 600
-
-Final time = 20000
-numDivisions = 200
-Dt = 0.5
-
-aveFreq = 20

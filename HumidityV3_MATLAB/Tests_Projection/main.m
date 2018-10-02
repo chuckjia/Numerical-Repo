@@ -1,4 +1,4 @@
-% function main()
+function u_mat_afterProj = main()
 %MAIN Build mesh grid and apply projection method on the initial u values
 
 % ===== ===== ===== ===== ===== ===== 
@@ -9,7 +9,7 @@
 x0 = 0;  xf = 75000;  pA = 250;
 
 % Size of mesh used in the Finite Volume Method
-Nx = 10;  Np = 10;
+Nx = 200;  Np = 200;
 
 % Build mesh and calculate cell centers
 Dx = (xf - x0) / Nx;  % x step size
@@ -56,4 +56,4 @@ result = calcDxIntU(intU_afterProj, Dx);  % (d/dx)int_pA^pB u dp at each x_i
 [maxVal, maxInd] = max(abs(result));
 fprintf("The max of |(d/dx)int_pA^pB u dp| is %1.4e, which occurs at the point x_%d\n", maxVal, maxInd);
 
-% end
+end

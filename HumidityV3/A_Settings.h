@@ -31,8 +31,8 @@ int timeMethod = 4;  // Time method: 4 = RK4, 2 = RK2, 1 = Forward Euler, 0 = Co
 
 const int numDivision = 200;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 20000;  // Number of time steps
-double Dt = 0.01;  // Size of one time step
+int numTimeStep = 1;  // Number of time steps
+double Dt = 0.5;  // Size of one time step
 
 double finalTime = numTimeStep * Dt;  // Final time
 

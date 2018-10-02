@@ -51,8 +51,8 @@ void fillCache_ab_proj() {
 
 // Calculate d values. It is separated from the calculation of a and b for testing reasons
 void fillCache_d_proj() {
-	d_proj_[first_i_proj] = 1 / a_proj_[1];
-	for (int i = first_i_proj; i < last_i_proj; ++i)  // Only up to (last_i_proj - 1), as each iteration calculates value of d[i+1]
+	d_proj_[first_i_proj] = 1 / a_proj_[first_i_proj];
+	for (int i = first_i_proj; i < last_i_proj; ++i)   // Only up to (last_i_proj - 1), as each iteration calculates value of d[i+1]
 		d_proj_[i + 1] = (1 - b_proj_[i] * d_proj_[i]) / a_proj_[i + 1];
 }
 
@@ -90,6 +90,12 @@ void writeLambdaxToFile_test() {
 	fclose(f);
 }
 
+void printFirstRowU_test() {
+	for (int i = 0; i < Nx; ++i)
+		printf("%1.4e, ", u_[i][Np]);
+	printf("\n");
+}
+
 // Perform Gaussian elimination to calculate lambda_x
 void calcLambdax_proj() {
 	calc_c_proj();
@@ -110,6 +116,7 @@ void projU_orig() {
 		for (int j = 1; j <= Np; ++j)
 			u_[i][j] -= lambdax_val;
 	}
+	printFirstRowU_test();
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
