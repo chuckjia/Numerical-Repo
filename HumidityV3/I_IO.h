@@ -59,18 +59,6 @@ void writeCSV_meshGrid() {
 	writeCSV_meshGrid("Output/MeshGrid_X.csv", "Output/MeshGrid_P.csv");
 }
 
-// Print matrices with the same size as the solution matrices to file
-void writeCSV_matrix(double mat[numCellX][numCellP], const char* filename) {
-	FILE *f = fopen(filename, "wb");
-	int last_j = numCellP - 1;
-	for (int i = 0; i < numCellX; ++i) {
-		for (int j = 0; j < last_j; ++j)
-			fprintf(f, "%1.20e,", mat[i][j]);
-		fprintf(f, "%1.20e\n", mat[i][last_j]);
-	}
-	fclose(f);
-}
-
 // Print cell center coordinates to file
 void writeCSV_cellCenters() {
 	// Print x-coordinates

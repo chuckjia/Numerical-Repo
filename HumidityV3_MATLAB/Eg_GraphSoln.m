@@ -3,13 +3,14 @@
 
 clearAllScp
 projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
+% projectPath = "~/git/Numerical-Repo/HumidityV3/";  % Path on Ubuntu
 
 % ===== ===== ===== =====
 % Settings
 % ===== ===== ===== =====
 
 solnName = "q";
-stepNo = -1;  % A value of -1 indicates graph the latest solution
+stepNo = 1500;  % A value of -1 indicates graph the latest solution
 
 resultFolder = "MovieFrames/";  % Commonly used: "MovieFrames/" or "Output/"
 plotName = "Numerical Solution";  % "Solution", "Error", or "Exact Solution"

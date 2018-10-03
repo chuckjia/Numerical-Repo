@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
 	writeCSV_cellCenters();
 	writeCSV_param();
 	runTimeSteps();
-	testing();
+	// testing();
 	showL2Errors();
-	// writeCSV_finalSolnErr();
+	writeCSV_finalSolnErr();
 	printf("\n");
 }

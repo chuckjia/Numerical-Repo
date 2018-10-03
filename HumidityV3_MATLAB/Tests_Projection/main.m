@@ -1,15 +1,25 @@
-function u_mat_afterProj = main()
+function [u_afterProj, u_beforeProj, derAfterProj, derBeforeProj, ...
+    a_vec, b_vec, c_vec, intU_vec, lambdax_vec] = main(Nx)
 %MAIN Build mesh grid and apply projection method on the initial u values
+%    INPUT::
+%             Nx: The number of spacial steps in the x-direction. The p-direction is assumed to have the same
+%                 number of steps Np = Nx. The default value is 100, if no number is passed in.
+%
+%    OUTPUT:: 
+%             u_afterProj: A matrix representing the values of u on the spacial mesh AFTER projection.
+%             u_beforeProj: A matrix representing the values of u on the spacial mesh BEFORE projection.
+%
 
 % ===== ===== ===== ===== ===== ===== 
 % Mesh Paramters
 % ===== ===== ===== ===== ===== ===== 
 
+% Size of mesh used in the Finite Volume Method
+if nargin < 1  Nx = 100;  end  % Default value for numDivisions
+Np = Nx;
+
 % Mountain geometry
 x0 = 0;  xf = 75000;  pA = 250;
-
-% Size of mesh used in the Finite Volume Method
-Nx = 200;  Np = 200;
 
 % Build mesh and calculate cell centers
 Dx = (xf - x0) / Nx;  % x step size
@@ -18,7 +28,7 @@ Dx = (xf - x0) / Nx;  % x step size
 
 % Calculate Dp, i.e. the p step size, for all cells. The (i,j) entry of the output matrix is the Dp value at 
 % the center of the cell
-Dp_vec = calcDp_cellCenter(x0, pA, Dx, Nx, Np);
+Dp_vec = calcDp_cellCenter(x0, pA, Dx, Nx, Np, cellCentersX);
 
 % ===== ===== ===== ===== ===== ===== 
 % Projection Method
@@ -28,8 +38,8 @@ Dp_vec = calcDp_cellCenter(x0, pA, Dx, Nx, Np);
 a_vec = pBx_fcn(cellCentersX(1:Nx-1, 1), Dx);  % Coefficients a_i
 b_vec = pB_fcn(cellCentersX(1:Nx-1, 1)) - pA;  % Coefficient b_i
 
-uTilde_mat = uTilde_fcn(cellCentersX, cellCentersP);  % Initial condition of u
-intU_vec = calcIntU(uTilde_mat, Dp_vec);  % Integral of u with respect to p, i.e. int_pA^pB u(x,p) dp
+u_beforeProj = uTilde_fcn(cellCentersX, cellCentersP);  % Initial condition of u
+intU_vec = calcIntU(u_beforeProj, Dp_vec);  % Integral of u with respect to p, i.e. int_pA^pB u(x,p) dp
 % result = calcDxIntU(intU_vec, Dx);
 % plot(cellCentersX(:,1), [result; 0]);
 
@@ -50,10 +60,22 @@ A(Nx, :) = 1;  % From (3.35)
 lambdax_vec = A \ c_vec;
 
 % Apply the projection method
-u_mat_afterProj = applyProj(uTilde_mat, lambdax_vec);  % Projected u
-intU_afterProj = calcIntU(u_mat_afterProj, Dp_vec);  % int_pA^pB u dp after projection
-result = calcDxIntU(intU_afterProj, Dx);  % (d/dx)int_pA^pB u dp at each x_i
-[maxVal, maxInd] = max(abs(result));
-fprintf("The max of |(d/dx)int_pA^pB u dp| is %1.4e, which occurs at the point x_%d\n", maxVal, maxInd);
+u_afterProj = applyProj(u_beforeProj, lambdax_vec);  % Projected u
+fprintf("Applied the projection method on the initial u with mesh size %dx%d.\n", Nx, Np);
+
+% Evaluation: before projection
+intU_beforeProj = calcIntU(u_beforeProj, Dp_vec);  % int_pA^pB u dp after projection
+derBeforeProj = calcDxIntU(intU_beforeProj, Dx);  % (d/dx)int_pA^pB u dp at each x_i
+[maxVal, maxInd] = max(abs(derBeforeProj));
+fprintf("Before projection: The max of |(d/dx)int_pA^pB u dp| is %1.4e, which occurs at the point x_%d=%1.4e.\n", ... 
+    maxVal, maxInd, cellCentersX(maxInd, 1));
+
+% Evaluation: after projection
+intU_afterProj = calcIntU(u_afterProj, Dp_vec);  % int_pA^pB u dp after projection
+derAfterProj = calcDxIntU(intU_afterProj, Dx);  % (d/dx)int_pA^pB u dp at each x_i
+[maxVal, maxInd] = max(abs(derAfterProj));
+
+fprintf("After projection: The max of |(d/dx)int_pA^pB u dp| is %1.4e, which occurs at the point x_%d=%1.4e.\n", ...
+    maxVal, maxInd, cellCentersX(maxInd, 1));
 
 end

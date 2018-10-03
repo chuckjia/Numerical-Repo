@@ -7,5 +7,6 @@ cd /Users/chuckjia/Documents/Workspace/git/Numerical-Repo/HumidityV3_MATLAB  % M
 %% Clear contents in MovieFrames: Macbook Pro
 
 delete ~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/MovieFrames/*.csv  % Macbook Pro
+delete ~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/Output/*.csv  % Macbook Pro
 fprintf("All CSV files with in MovieFrames cleared.\n");
 

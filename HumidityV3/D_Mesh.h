@@ -21,8 +21,8 @@ const int Np = numDivision;  // Number of space divisions, p-direction
 // Following constants are set up for code readability
 const int numCellX = Nx + 2;  // Number of cells, x-direction
 const int numCellP = Np + 2;  // Number of cells, p-direction
-int lastRealIndexX = Nx;  // Largest x-index of all non-ghost cells
-int lastRealIndexP = Np;  // Largest p-index of all non-ghost cells
+int lastRealIndexX = Nx;  // Largest x-index of all non-ghost cells; depreciated
+int lastRealIndexP = Np;  // Largest p-index of all non-ghost cells; depreciated
 int lastGhostIndexX = Nx + 1;  // x-index of ghost cells on the RIGHT side of domain
 int lastGhostIndexP = Np + 1;  // p-index of ghost cells on the TOP side of domain
 const int numGridPtX = numCellX + 1;  // Number of grid points, x-direction (including ghost cells)
@@ -72,7 +72,7 @@ double getCellRightDp(int i, int j) { return cellLeftDp_[i + 1]; }
 double getCellRightDp(int i) { return cellLeftDp_[i + 1]; }
 
 /**
- * Getters for x coordinates on grid points
+ * Getters for x coords on grid points
  */
 double getCellLeftX(int i, int j) { return meshGridX_[i]; }
 double getCellLeftX(int i) { return meshGridX_[i]; }
@@ -96,6 +96,7 @@ double getCellTopRightP(int i, int j) { return meshGridP_[i + 1][j + 1]; }
 // Store the coordinates for cell barycenters
 double cellCenterX_[numCellX], cellCenterP_[numCellX][numCellP];
 
+/*
 // Finds the intersection of 2 lines. For each line, coordinates of two points are given
 // Assume (x1, p1) and (x3, p3) are on line 1 with slope k1; (x2, p2) and (x4, p4) are on line 2 with slope k2. See details in notes
 // Calculates the coordinates of the intersection point (x, y) = (ans[0], ans[1])
@@ -113,18 +114,24 @@ void calcTrapezoidCenter(double center[2], double x1, double x2, double x3, doub
 	double p124 = (p1 + p2 + p4) / 3, p134 = (p1 + p3 + p4) / 3, p123 = (p1 + p2 + p3) / 3, p234 = (p2 + p3 + p4) / 3;
 	calcLineIntersection(center, x124, x123, x234, x134, p124, p123, p234, p134);
 }
+ */
 
 // Calculate cell barycenters. Require cells to be trapezoids
 void calcBaryCenters() {
-	for (int i = 0; i < numCellX; ++i)
+	double h = Dx / 3.;  // h = (x2_Outer - x1_Outer) / 3
+	for (int i = 0; i < numCellX; ++i) {
+		double x1_outer = getCellLeftX(i), x2_outer = getCellRightX(i), x1_inner = (2 * x1_outer + x2_outer) / 3.;
+		double DpVal_right = getCellRightDp(i), DpVal_left = getCellLeftDp(i);
+
+		double r1 = DpVal_right / (DpVal_right + DpVal_left);  // == a / (a + b)
+		cellCenterX_[i] = x1_inner + h * r1;
 		for (int j = 0; j < numCellP; ++j) {
-			double center[2];
-			double x1 = getCellLeftX(i, j), x2 = getCellRightX(i, j), x3 = x2, x4 = x1;
-			double p1 = getCellBottLeftP(i, j), p2 = getCellBottRightP(i, j), p3 = getCellTopRightP(i, j), p4 = getCellTopLeftP(i, j);
-			calcTrapezoidCenter(center, x1, x2, x3, x4, p1, p2, p3, p4);
-			cellCenterX_[i] = center[0];
-			cellCenterP_[i][j] = center[1];
+			double p1_outer = getCellBottLeftP(i, j), p2_outer = getCellBottRightP(i, j),
+					p3_outer = getCellTopRightP(i, j), p4_outer = getCellTopLeftP(i, j);
+			double p1_inner = (p1_outer + p2_outer + p4_outer) / 3;
+			cellCenterP_[i][j] = p1_inner + (DpVal_left - (p4_outer - p3_outer)) / 3 * r1;
 		}
+	}
 }
 
 /*
@@ -234,8 +241,12 @@ double cellCenterDp_[numCellX];  // Stores the Dp values at cell centers x
 
 // Calculate Dp values at cell centers
 void calcCellCenterDp() {
-	// Previous approach
-	// for (int i = 0; i < numCellX; ++i) { cellCenterDpVec[i] = ((*pB_fptr)(getCellCenterX(i)) - pA) /Np; }
+	// Approach 1: Exact to the real mountain surface
+	for (int i = 0; i < numCellX; ++i)
+		cellCenterDp_[i] = ((*pB_fptr)(getCellCenterX(i)) - pA) / Np;
+
+	/*
+	// Approach 2: Exact for the mesh
 	for (int i = 0; i < numCellX; ++i) {
 		double x4 = getCellLeftX(i), x3 = getCellRightX(i),  // Numbering follows the notes
 				p4 = getCellTopLeftP(i, Np), p3 = getCellTopRightP(i, Np),
@@ -243,6 +254,7 @@ void calcCellCenterDp() {
 				p = k * (xCenter - x4) + p4;
 		cellCenterDp_[i] = (p - pA) / Np;
 	}
+	 */
 }
 
 /*
@@ -272,6 +284,22 @@ void calcCellBottCenterP() {
 double getCellBottCenterP(int i, int j) { return cellBottCenterP_[i][j]; }
 
 double getCellTopCenterP(int i, int j) { return cellBottCenterP_[i][j + 1]; }
+
+/* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ * Test Methods
+ * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
+
+// Print matrices with the same size as the solution matrices to file
+void writeCSV_matrix(double mat[numCellX][numCellP], const char* filename) {
+	FILE *f = fopen(filename, "wb");
+	int last_j = numCellP - 1;
+	for (int i = 0; i < numCellX; ++i) {
+		for (int j = 0; j < last_j; ++j)
+			fprintf(f, "%1.20e,", mat[i][j]);
+		fprintf(f, "%1.20e\n", mat[i][last_j]);
+	}
+	fclose(f);
+}
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

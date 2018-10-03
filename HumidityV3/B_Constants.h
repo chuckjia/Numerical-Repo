@@ -23,11 +23,11 @@ double ONE_THIRD = 1. / 3.;
 double ONE_SIXTH = 1. / 6.;
 
 // Physical constants, defined on page 100
-double R_CONST = 287.;
+double R_CONST = 287.0;
 double Rv_CONST = 461.50;
-double Cp_CONST = 1004.;
+double Cp_CONST = 1004.0;
 double g_CONST = 9.8;
-double p0_CONST = 1000., p0Inv_CONST = 0.001;
+double p0_CONST = 1000.0, p0Inv_CONST = 0.001;
 
 // Physical constants used in the physical case, defined on page 115
 double T0_CONST = 300.;
@@ -35,7 +35,7 @@ double DeltaT_CONST = 50.;
 
 // For convenience
 double halfDt = 0.5 * Dt;
-double oneSixthDt = Dt / 6.;
+double oneSixthDt = Dt / 6.0;
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -105,7 +105,8 @@ void printTimeUsed(clock_t start, clock_t end, string unit, string msg) {
 }
 
 // Print out messages for testing purposes
-void tttt() { printf("\n===== ===== ===== ===== ===== \n>> The program passed here.\n"); printf("===== ===== ===== ===== =====\n"); }
-
+void ttt() { printf("\n===== ===== ===== ===== ===== \n>> The program passed here.\n"); printf("===== ===== ===== ===== =====\n"); }
+void ioWarning() { printf("\nThis function made a file I/O operation!\n"); };
+void ioWarning(string fcn_name) { printf("\nThis function %s made a file I/O operation!\n", fcn_name.c_str()); };
 
 #endif /* B_CONSTANTS_H_ */

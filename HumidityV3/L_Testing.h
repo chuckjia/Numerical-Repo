@@ -36,16 +36,22 @@ void projU_diagnostics() {
 	printf("\n");
 }
 
-void test_GaussionElimination() {
-
-}
+//void test_baryCenter(int i, int j) {
+//	double center[2];
+//	double x1 = getCellLeftX(i, j), x2 = getCellRightX(i, j), x3 = x2, x4 = x1;
+//	double p1 = getCellBottLeftP(i, j), p2 = getCellBottRightP(i, j), p3 = getCellTopRightP(i, j), p4 = getCellTopLeftP(i, j);
+//	calcTrapezoidCenter(center, x1, x2, x3, x4, p1, p2, p3, p4);
+//	printf(">> x_left = %1.5e, x_right = %1.5e\n", x1, x2);
+//	printf(">> p_bottLeft = %1.5e, p_bottRight = %1.5e, p_topRight = %1.5e, p_topLeft = %1.5e\n", p1, p2, p3, p4);
+//	printf(">> x_center =                   p_center = \n");
+//	printf("   %1.20e,  %1.20e\n\n", center[0], center[1]);
+//}
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	//	enforceIC();
-	//	print_lambdax();
+
 }
 #endif /* L_TESTING_H_ */

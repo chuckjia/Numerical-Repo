@@ -35,11 +35,11 @@ double _h_pB_MDL0, _c1_pBxDer_MDL0, _n_initU_MDL0, _cp_initU_MDL0, _cx_initU_MDL
 // Coefficients need to be initialized here, because some of them depend on x0, xf, etc
 void setFcnCoef_MDL0() {
 	_h_pB_MDL0 = 250.;  // Multiplicative factor that controls the height of mountain
-	_c1_pBxDer_MDL0 = _h_pB_MDL0 / 18e6;  // heightFactor * 2 / 6000^2
+	_c1_pBxDer_MDL0 = _h_pB_MDL0 / 1.8e7;  // heightFactor * 2 / 6000^2
 
 	_n_initU_MDL0 = 1.;   // n in (4.10)
-	_cp_initU_MDL0 = M_PI * p0Inv_CONST;   // Coefficient for p in (4.10)
-	_cx_initU_MDL0 = 2 * _n_initU_MDL0 * M_PI / xf;  // Coefficient for x in (4.10)
+	_cp_initU_MDL0 = M_PI / p0_CONST;   // Coefficient for p in (4.10)
+	_cx_initU_MDL0 = 2.0 * _n_initU_MDL0 * M_PI / xf;  // Coefficient for x in (4.10)
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -49,13 +49,13 @@ void setFcnCoef_MDL0() {
 // pB function
 double pB_fcn_MDL0(double x) {
 	double term = x - 37500.;
-	return 1000. - _h_pB_MDL0 * exp(-term * term / 36e6);
+	return 1000. - _h_pB_MDL0 * exp(-term * term / 3.6e7);
 }
 
 // Derivative of pB function
 double pBxDer_fcn_MDL0(double x) {
 	double term = x - 37500.;
-	return _c1_pBxDer_MDL0 * term * exp(-term * term / 36e6);
+	return _c1_pBxDer_MDL0 * term * exp(-term * term / 3.6e7);
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -64,7 +64,7 @@ double pBxDer_fcn_MDL0(double x) {
 
 // Initial T function
 double init_T_fcn_MDL0(double x, double p, double t) {
-	return T0_CONST - (1 - p * p0Inv_CONST) * DeltaT_CONST;
+	return T0_CONST - (1 - p / p0_CONST) * DeltaT_CONST;
 }
 
 // Initial q function
@@ -106,7 +106,7 @@ double source_u_fcn_MDL0(double T, double q, double u, double w, double x, doubl
 }
 
 // Set all parameters in Model 1
-void setPar_MDL0() {
+void setParam_MDL0() {
 	// Parameters for the domain geometry
 	x0 = 0.;
 	xf = 75000.;
@@ -295,7 +295,7 @@ double source_u_fcn_MDL1(double T, double q, double u, double w, double x, doubl
 }
 
 // Set all parameters in model 1
-void setPar_MDL1() {
+void setParam_MDL1() {
 	// Parameters on the domain geometry
 	x0 = 0.;
 	xf = 50000.;
@@ -317,10 +317,10 @@ void setModels() {
 		// Select model according to modelNo
 		switch (modelNo) {
 		case 0:
-			setPar_MDL0();
+			setParam_MDL0();
 			return;
 		case 1:
-			setPar_MDL1();
+			setParam_MDL1();
 			return;
 		default: // Throw error message when the model number does correspond to any model
 			throw "Error: Model does NOT exist!";

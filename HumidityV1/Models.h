@@ -369,7 +369,7 @@ double source_u_fcn_MDL1(double T, double q, double u, double w, double x, doubl
 }
 
 // Set all parameters in model 1
-void setPar_MDL1() {
+void setParam_MDL1() {
 	// Parameters on the domain geometry
 	x0 = 0.;
 	xf = 50000.;
@@ -393,7 +393,7 @@ void selectModel() {
 		return;
 	case 1:
 	case 102:
-		setPar_MDL1();
+		setParam_MDL1();
 		return;
 	case 101:
 		setPar_MDL101();
