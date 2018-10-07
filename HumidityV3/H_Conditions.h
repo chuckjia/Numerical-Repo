@@ -58,7 +58,7 @@ double T_leftBdVal_[numCellP], q_leftBdVal_[numCellP], u_leftBdVal_[numCellP];
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double bdVal_[numCellP]) {
 	for (int j = 1; j <= Np; ++j)
 		sl[0][j] = 2 * bdVal_[j] - sl[1][j];
-		// sl[0][j] = bdVal_[j];  // CHANGED!
+	// sl[0][j] = bdVal_[j];  // CHANGED!
 }
 
 // Enforce Neumann BCs on the left boundary
@@ -142,8 +142,8 @@ void fillCache_leftBdVal_MDL0() {
 	double pB = pB_fcn_MDL0(x0), x1 = getCellCenterX(1),
 			lambda_x_leftBdVal =  lambdax_proj_[1] -
 			2 * p0_CONST / (M_PI * (pB - pA))
-			* (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
-			* (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));*/
+	 * (helper1_fillCache_leftBdVal_MDL0(pB) - helper1_fillCache_leftBdVal_MDL0(pA))
+	 * (helper2_fillCache_leftBdVal_MDL0(x1) - helper2_fillCache_leftBdVal_MDL0(x0));*/
 
 	for (int j = 0; j < numCellP; ++j) {
 		double p = getCellCenterP(1, j), T = init_T_fcn_MDL0(x0, p, 0);
@@ -171,7 +171,7 @@ void enforceBC_MDL0() {
 	// Conditions are enforced directly in the calculation of the two solutions
 
 	// Top boundary: for u and w
-	 enforceNonPenetrationBC_topBD();  // CHANGED!
+	enforceNonPenetrationBC_topBD();  // CHANGED!
 	// enforceNonPenetrationBC_topBD_math();
 }
 
@@ -198,7 +198,7 @@ void enforceBC_MDL1() {
 	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
 
 	// Top boundary: for u and w
-//	enforceNonPenetrationBC_topBD();
+	//	enforceNonPenetrationBC_topBD();
 }
 
 

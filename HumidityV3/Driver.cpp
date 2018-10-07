@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 	setAll();
 	printSchemeSummary();
 	writeCSV_cellCenters();
+	writeCSV_meshGrid();
 	writeCSV_param();
 	runTimeSteps();
 	// testing();

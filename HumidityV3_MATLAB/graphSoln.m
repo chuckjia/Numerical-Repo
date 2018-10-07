@@ -1,4 +1,4 @@
-function fig = graphSoln(filename, centersX, centersP, titleLine1, titleLine2, viewAngle)
+function [fig, soln] = graphSoln(filename, centersX, centersP, titleLine1, titleLine2, viewAngle)
 %GRAPHSOLN Graph numerical solutions
 %   Detailed explanation goes here
 

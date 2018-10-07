@@ -39,6 +39,7 @@ if (plotCenter)
 end
 
 view(2)
+xlabel('x-axis');  ylabel('p-axis');
 hold off
 
 end

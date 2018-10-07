@@ -7,10 +7,10 @@ clearAllScp
 % Settings
 % ===== ===== ===== ===== 
 
-solnName = "q";
-steps = 0:500:40000;  % Vector of all the step numbers to be included in movie
+solnName = "T";
+steps = 0:500:20000;  % Vector of all the step numbers to be included in movie
 % Path and solution file names
-projectPath = "/home/chuck/git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
+projectPath = "~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
 outputFilename = "Output/" + solnName + "_slow.avi";
 
 % ===== ===== ===== ===== 

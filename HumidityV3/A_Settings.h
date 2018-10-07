@@ -29,9 +29,9 @@ int timeMethod = 4;  // Time method: 4 = RK4, 2 = RK2, 1 = Forward Euler, 0 = Co
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivision = 200;  // Number of space divisions in both x and p directions
+const int numDivision = 300;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 20000;  // Number of time steps
+int numTimeStep = 40000;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
 
 double finalTime = numTimeStep * Dt;  // Final time
@@ -42,13 +42,13 @@ double finalTime = numTimeStep * Dt;  // Final time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Averaging method
-int aveSolnFreq = 25;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
+int aveSolnFreq = 18;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
 
 // Total number of progress messages
 int numProgMsg = 200;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
 
 // Movie I/O
-int movieFrameFreq = 500;  // The frequency of printing results to file as movie frames
+int movieFrameFreq = 10;  // The frequency of printing results to file as movie frames
 
 // Result evaluations
 int calcL2NormFreq = 500;  // Choose whether to calculate, show, and print to file the L2 errors during computation
