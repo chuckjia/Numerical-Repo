@@ -25,7 +25,7 @@ for ii = 1:Nx+1
         p_rhs = meshGridP(ii+1, jj+1);
         
         A = [x2, x3, x4;
-            p1, p2, p3;
+            p2, p3, p4;
             1,  1,  1];
         b = [x_rhs - a1 * x1; p_rhs - a1 * p1; 1 - a1];
         a234 = A\b;

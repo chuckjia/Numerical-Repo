@@ -173,7 +173,8 @@ void setProjection() {
 	if (modelNo == 1)
 		projU_fptr = &empty_fcn;
 	else
-		projU_fptr = &projU_orig;
+		//		projU_fptr = &projU_orig;
+		projU_fptr = &empty_fcn;
 }
 
 

@@ -103,6 +103,25 @@ double getGradhT_p(int i, int j) {
 	return e22_MInv_quad_[i][j] * (T_[i][j + 1] - T_[i][j]);
 }
 
+void writeCSV_quadCoefs() {
+	FILE *f2 = fopen("Output/a2_quad.csv", "wb");
+	FILE *f3 = fopen("Output/a3_quad.csv", "wb");
+	FILE *f4 = fopen("Output/a4_quad.csv", "wb");
+
+	for (int i = 0; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j) {
+			fprintf(f2, "%1.20e,", a2_quad_[i][j]);
+			fprintf(f3, "%1.20e,", a3_quad_[i][j]);
+			fprintf(f4, "%1.20e,", a4_quad_[i][j]);
+		}
+		fprintf(f2, "%1.20e\n", a2_quad_[i][Np]);
+		fprintf(f3, "%1.20e\n", a3_quad_[i][Np]);
+		fprintf(f4, "%1.20e\n", a4_quad_[i][Np]);
+	}
+
+	fclose(f2); fclose(f3); fclose(f4);
+}
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Parameters And Calculate All Cache Values For the Quadrilateral Cells

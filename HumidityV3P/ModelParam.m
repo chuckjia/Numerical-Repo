@@ -10,6 +10,7 @@ classdef ModelParam
         x0
         xf
         pA
+        Dx
         
         % Mesh size
         Nx
@@ -48,17 +49,19 @@ classdef ModelParam
             obj.AveRate = AveRate;
             obj.NumMsg = NumMsg;
             
+            obj.Dx = (xf - x0) / Nx;
             obj.t_end = Dt * Nt;
         end
         
         % Extract parameters
-        function [x0, xf, pA, Nx, Np, Dt, Nt, t_end, AveRate, MovieFrameRate, NumMsg] = extractParam(obj)
+        function [x0, xf, pA, Nx, Np, Dx, Dt, Nt, t_end, AveRate, MovieFrameRate, NumMsg] = extractParam(obj)
             x0 = obj.x0;
             xf = obj.xf;
             pA = obj.pA;
             
             Nx = obj.Nx;
             Np = obj.Np;
+            Dx = obj.Dx;
             Dt = obj.Dt;
             Nt = obj.Nt;
             t_end = obj.t_end;

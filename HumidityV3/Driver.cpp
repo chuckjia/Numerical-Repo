@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	writeCSV_meshGrid();
 	writeCSV_param();
 	runTimeSteps();
-	// testing();
+	testing();
 	showL2Errors();
 	writeCSV_finalSolnErr();
 	printf("\n");

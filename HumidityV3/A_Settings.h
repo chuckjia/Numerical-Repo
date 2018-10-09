@@ -29,9 +29,9 @@ int timeMethod = 4;  // Time method: 4 = RK4, 2 = RK2, 1 = Forward Euler, 0 = Co
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivision = 300;  // Number of space divisions in both x and p directions
+const int numDivision = 10;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 40000;  // Number of time steps
+int numTimeStep = 0;  // Number of time steps
 double Dt = 0.5;  // Size of one time step
 
 double finalTime = numTimeStep * Dt;  // Final time

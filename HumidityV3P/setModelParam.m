@@ -6,8 +6,9 @@ xf = 75000;
 pA = 250;
 
 % Mesh size
-Nx = 200;
-Np = 200;
+NumSpacialSteps = 10;
+Nx = NumSpacialSteps;
+Np = NumSpacialSteps;
 Dt = 0.5;
 Nt = 100;
 
