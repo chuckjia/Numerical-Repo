@@ -48,7 +48,7 @@ int aveSolnFreq = 18;  // The frequency of using the averaging method. 0 or nega
 int numProgMsg = 200;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
 
 // Movie I/O
-int movieFrameFreq = 10;  // The frequency of printing results to file as movie frames
+int movieFrameFreq = 500;  // The frequency of printing results to file as movie frames
 
 // Result evaluations
 int calcL2NormFreq = 500;  // Choose whether to calculate, show, and print to file the L2 errors during computation

@@ -10,7 +10,7 @@ projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";  % Path to
 % ===== ===== ===== =====
 
 solnName = "q";
-stepNo = 70;  % A value of -1 indicates graph the latest solution
+stepNo = -1;  % A value of -1 indicates graph the latest solution
 
 resultFolder = "MovieFrames/";  % Commonly used: "MovieFrames/" or "Output/"
 plotName = "Numerical Solution";  % "Solution", "Error", or "Exact Solution"

@@ -81,8 +81,10 @@ bool showProgInfo_helper(int tt) {
 		if (!runInEclipse)
 			printf("\n");
 		if (printMovieFrameThisStep) {
+			clock_t start = clock();
 			writeMovie_soln(tt);
-			printf("      - All 4 solutions at step no. %d printed to MovieFrames\n", tt);
+			double time_used = ((double) (clock() - start)) / CLOCKS_PER_SEC;
+			printf("      - All 4 solutions at step no. %d printed to MovieFrames. Time used = %1.3fs\n", tt, time_used);
 		}
 		if (calcAndShowL2NormThisStep) {
 			double t = Dt * tt;
@@ -184,8 +186,9 @@ void subExactVelocity(double t) {
 	}
 }
 
-void postForwardEuler() {
-	(*projU_fptr)();  // Projection method on u
+void postForwardEuler(int tt) {
+	if (tt == 0)
+		(*projU_fptr)();  // Projection method on u
 	(*calcW_fptr)();  // Calculate w
 	(*enforceBC_fptr)();  // Enforce boundary conditions
 }
@@ -213,12 +216,12 @@ void rk2() {
 		// RK2 Step 1
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, 0);
-		postForwardEuler();  // ?
+		postForwardEuler(tt);  // ?
 
 		// RK2 Step 2
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, 0);
-		postForwardEuler();  // ?
+		postForwardEuler(tt);  // ?
 
 		(*enforceBC_fptr)();
 
@@ -253,19 +256,19 @@ void rk4() {
 		update_k_RK_fptr = &update_k_RK_directAssign;
 		preForwardEuler();
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
-		postForwardEuler();
+		postForwardEuler(tt);
 
 		// RK4 Step 2
 		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
-		postForwardEuler();
+		postForwardEuler(tt);
 
 		// RK4 Step 3
 		update_k_RK_fptr = &update_k_RK_accum;
 		preForwardEuler();
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
-		postForwardEuler();
+		postForwardEuler(tt);
 
 		// RK4 Step 4
 		update_k_RK_fptr = &update_k_RK_noUpdate;
@@ -277,7 +280,7 @@ void rk4() {
 				q_[i][j] += k_rk_q_[i][j];
 				u_[i][j] += k_rk_u_[i][j];
 			}
-		postForwardEuler();
+		postForwardEuler(tt);
 
 		//showL2Errors(t);
 		(*aveSoln_fptr)(tt + 1);

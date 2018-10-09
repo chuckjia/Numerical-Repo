@@ -147,8 +147,8 @@ void writeCSV_ab_proj() {
 		fprintf(f, "%1.20e,", a_proj_[i]);
 	fprintf(f, "%1.20e\n", a_proj_[last]);
 	for (int i = 1; i < last; ++i)
-			fprintf(f, "%1.20e,", b_proj_[i]);
-		fprintf(f, "%1.20e\n", b_proj_[last]);
+		fprintf(f, "%1.20e,", b_proj_[i]);
+	fprintf(f, "%1.20e\n", b_proj_[last]);
 	fclose(f);
 	printf("\n>> writeCSV_ab_proj() printed out something to CSV file!\n");
 }
@@ -173,8 +173,7 @@ void setProjection() {
 	if (modelNo == 1)
 		projU_fptr = &empty_fcn;
 	else
-		// projU_fptr = &projU_orig;
-		projU_fptr = &empty_fcn;
+		projU_fptr = &projU_orig;
 }
 
 

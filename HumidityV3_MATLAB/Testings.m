@@ -1,3 +1,6 @@
+
+%% Graph solution at level j
+
 clear; clc; close all
 projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
 
@@ -10,7 +13,7 @@ centersP = csvread(projectPath + "Output/CellCenters_P.csv");
 solnName = 'q';
 stepNo = -1;
 plotName = "Numerical Solution";
-plotLevel = Np - 60;
+plotLevel = Np - 100;
 
 resultFolder = "MovieFrames/";
 stepNo = genActualStepNo(stepNo, projectPath + resultFolder, solnName);
