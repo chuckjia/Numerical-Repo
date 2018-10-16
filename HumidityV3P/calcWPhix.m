@@ -16,6 +16,5 @@ end
 
 % gradxT = calcGradx(Dx, T_, a1, a2mat, a3mat, a4mat, M_e12, M_e22);
 
-
 end
 

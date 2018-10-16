@@ -28,9 +28,10 @@ void fillCache_quadCell() {
 		double d22 = thisCell_centerX - rightCell_centerX,
 				e2 = thisCell_rightX - a1 * thisCell_centerX - (1 - a1) * rightCell_centerX;
 		for (int j = 1; j <= Np; ++j) {
-			double thisCell_centerP = getCellCenterP(i, j), thisCell_topRightP = getCellTopRightP(i, j),
-					upperCell_centerP = getCellCenterP(i, j + 1),
-					rightCell_centerP = getCellCenterP(i + 1, j),
+			double thisCell_centerP        = getCellCenterP(i, j),
+					thisCell_topRightP     = getCellTopRightP(i, j),
+					upperCell_centerP      = getCellCenterP(i, j + 1),
+					rightCell_centerP      = getCellCenterP(i + 1, j),
 					upperRightCell_centerP = getCellCenterP(i + 1, j + 1);
 			double d32 = upperCell_centerP - rightCell_centerP,
 					d33 = upperRightCell_centerP - rightCell_centerP,
@@ -60,6 +61,7 @@ void fillCache_diagMatInv_quadCell() {
 					d = getCellCenterP(i, j + 1) - getCellCenterP(i, j);
 			e12_MInv_quad_[i][j] = -b / (Dx * d);
 			e22_MInv_quad_[i][j] = 1. / d;
+			//			printf("i = %d, j = %d, b = %1.6e, d = %1.6e, e12 = %1.6e\n", i, j, b, d, e12_MInv_quad_[i][j]);
 		}
 }
 
@@ -79,9 +81,11 @@ double getGradhU_x(int i, int j) {
 			e12_MInv_quad_[i][j] * (u_[i][j + 1] - u_[i][j]);
 }
 
+/*
 double getGradhU_p(int i, int j) {
 	return e22_MInv_quad_[i][j] * (u_[i][j + 1] - u_[i][j]);  // Assuming the (2, 1) element of the inverse matrix is 0
 }
+*/
 
 // Return T_{i+1/2, j+1/2}, i.e. the interpolated value of T in the quadrilateral cells
 double getCellTopRightT(int i, int j) {
@@ -99,9 +103,11 @@ double getGradhT_x(int i, int j) {
 			e12_MInv_quad_[i][j] * (T_[i][j + 1] - T_[i][j]);
 }
 
+/*
 double getGradhT_p(int i, int j) {
 	return e22_MInv_quad_[i][j] * (T_[i][j + 1] - T_[i][j]);
 }
+*/
 
 void writeCSV_quadCoefs() {
 	FILE *f2 = fopen("Output/a2_quad.csv", "wb");
@@ -120,6 +126,48 @@ void writeCSV_quadCoefs() {
 	}
 
 	fclose(f2); fclose(f3); fclose(f4);
+}
+
+void writeCSV_MInv_quad() {
+	FILE *f12 = fopen("Output/MInv_e12_quad.csv", "wb");
+
+	for (int i = 0; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j) {
+			fprintf(f12, "%1.20e,", e12_MInv_quad_[i][j]);
+		}
+		fprintf(f12, "%1.20e\n", e12_MInv_quad_[i][Np]);
+	}
+
+	fclose(f12);
+}
+
+void test_u_quad() {
+	FILE *f = fopen("Output/u_quad.csv", "wb");
+
+	for (int i = 0; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j) {
+			fprintf(f, "%1.20e,", getCellTopRightU(i, j));
+		}
+		fprintf(f, "%1.20e\n", getCellTopRightU(i, Np));
+	}
+
+	fclose(f);
+
+}
+
+void test_gradhUx() {
+	FILE *f = fopen("Output/gradhUx.csv", "wb");
+	for (int j = 0; j < Np; ++j)
+		fprintf(f, "0,");
+	fprintf(f, "0\n");
+
+	for (int i = 1; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j)
+			fprintf(f, "%1.20e,", getGradhU_x(i, j));
+		fprintf(f, "%1.20e\n", getGradhU_x(i, Np));
+	}
+
+	fclose(f);
 }
 
 

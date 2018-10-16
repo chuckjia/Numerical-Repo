@@ -395,21 +395,6 @@ void selectModel() {
 	case 102:
 		setParam_MDL1();
 		return;
-	case 101:
-		setPar_MDL101();
-		return;
-	case 2:
-		setPar_MDL2();
-		return;
-	case 3:
-		setPar_MDL3();
-		return;
-	case 4:
-		setPar_MDL4();
-		return;
-	case 5:
-		setPar_MDL5();
-		return;
 	default: // Throw error message when the model number does correspond to any model
 		throw "Error: Model does NOT exist!";
 	}

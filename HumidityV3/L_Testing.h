@@ -52,7 +52,12 @@ void projU_diagnostics() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	// writeCSV_quadCoefs();
-	writeCSV_matrix(w_, "Output/w_test.csv");
+	//	writeCSV_quadCoefs();
+	//	writeCSV_matrix(w_, "Output/w_test.csv");
+	//	writeCSV_MInv_quad();
+	//	test_u_quad();
+	//	test_gradhUx();
+	runTimeSteps();
 }
+
 #endif /* L_TESTING_H_ */

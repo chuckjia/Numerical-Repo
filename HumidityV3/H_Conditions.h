@@ -233,7 +233,7 @@ void enforceIC() {
 		}
 	(*projU_fptr)();
 	(*calcW_fptr)();
-	writeCSV_matrix(u_, "Output/u_after.csv");
+	// writeCSV_matrix(u_, "Output/u_after.csv");
 }
 
 

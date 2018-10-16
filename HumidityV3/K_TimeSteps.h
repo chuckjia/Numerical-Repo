@@ -187,8 +187,8 @@ void subExactVelocity(double t) {
 }
 
 void postForwardEuler(int tt) {
-	if (tt == 0)
-		(*projU_fptr)();  // Projection method on u
+	//	if (tt == 0)
+	(*projU_fptr)();  // Projection method on u
 	(*calcW_fptr)();  // Calculate w
 	(*enforceBC_fptr)();  // Enforce boundary conditions
 }

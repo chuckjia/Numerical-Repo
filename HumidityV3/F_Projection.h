@@ -23,7 +23,7 @@ int first_i_proj = 1, last_i_proj = Nx;  // Range of the index for the projectio
 double a_proj_[Nx + 2], b_proj_[Nx + 2];  // Only values from first_i_proj to (last_i_proj-1) are used
 double d_proj_[Nx + 2];  // Values from first_i_proj to last_i_proj are used
 double lambdax_proj_[Nx + 2];  // Only values from 0/1 to Nx are used
-double d_lastRow = 100;
+double d_lastRow = 10;
 
 /*
  * Test Functions
@@ -68,7 +68,7 @@ void fillCache_d_proj() {
 	for (int i = first_i_proj; i < last; ++i)
 		d_proj_[i + 1] = (d_lastRow - b_proj_[i] * d_proj_[i]) / a_proj_[i + 1];
 	d_proj_[last_i_proj] = d_lastRow - b_proj_[last] * d_proj_[last];
-	writeCSV_d_proj();
+	// writeCSV_d_proj();
 }
 
 // Calculate the c_i's as in (3.34). Note that c_i changes in each time step.
@@ -88,7 +88,7 @@ void calc_c_proj() {
 	for (int i = first_i_proj; i < last_i_proj; ++i)  // Only up to (last index - 1), as we need the (i+1)th element in the calculation of the ith element. See (3.34)
 		lambdax_proj_[i] = lambdax_proj_[i + 1] - lambdax_proj_[i];
 	lambdax_proj_[last_i_proj] = 0;  // This is in fact not necessary, since we directly assign values to c_i in the Gaussian elimination
-	// writeCSV_lambdax();
+	//	writeCSV_lambdax();
 }
 
 // Perform Gaussian elimination to calculate lambda_x
@@ -173,8 +173,7 @@ void setProjection() {
 	if (modelNo == 1)
 		projU_fptr = &empty_fcn;
 	else
-		//		projU_fptr = &projU_orig;
-		projU_fptr = &empty_fcn;
+		projU_fptr = &projU_orig;
 }
 
 
