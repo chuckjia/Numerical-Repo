@@ -6,10 +6,12 @@ numFrame = length(F) * rate;
 
 F2 = repmat(F(1), 1, numFrame);
 
+fprintf("Processing slow motion movie...\n");
 for i = 1:numFrame
     F2(i) = F(ceil(i / rate));
 end
 
+fprintf("Saving slow motion movie...\n");
 v = VideoWriter(movieName);
 v.FrameRate = 15;
 open(v);

@@ -13,7 +13,8 @@ for stepNo = steps
     solnFilename = genSolnFilename(path, solnName, stepNo);
     
     viewAngle = [0, -90];
-    graphContour(solnFilename, centersX, centersP, contourLevels, titleLine1, titleLine2, viewAngle);
+    proportion = 0.5;
+    graphContour(solnFilename, centersX, centersP, contourLevels, titleLine1, titleLine2, viewAngle, proportion);
     
     F(frameNo) = getframe(gcf);
     if (frameNo == 1) % Allocate memory space at the beginning

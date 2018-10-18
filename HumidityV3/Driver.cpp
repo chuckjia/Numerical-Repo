@@ -36,5 +36,6 @@ int main(int argc, char *argv[]) {
 	testing();
 	showL2Errors();
 	writeCSV_finalSolnErr();
+	fileManagement();
 	printf("\n");
 }

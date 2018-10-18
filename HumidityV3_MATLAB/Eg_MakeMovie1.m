@@ -8,9 +8,10 @@ clearAllScp
 % ===== ===== ===== ===== 
 
 solnName = "T";
-steps = 0:500:20000;  % Vector of all the step numbers to be included in movie
+steps = 0:500:80000;  % Vector of all the step numbers to be included in movie
 % Path and solution file names
-projectPath = "~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
+% projectPath = "~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
+projectPath = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_10_16_17_39_00/";
 outputFilename = "Output/" + solnName + "_slow.avi";
 
 % ===== ===== ===== ===== 
@@ -23,6 +24,7 @@ centersX = csvread(projectPath + "Output/CellCenters_X.csv"); centersX = centers
 centersP = csvread(projectPath + "Output/CellCenters_P.csv"); centersP = centersP(2:end-1, 2:end-1);
 
 F = genMovie(solnName, projectPath + "MovieFrames/", param, centersX, centersP, steps, false);
-slowMotion(F, 10, char(outputFilename));  
+fprintf("Parameters used: mesh size = %dx%d, averaging frequency = every %d steps.\n", param.Nx, param.Np, param.aveFreq);
+slowMotion(F, 5, char(outputFilename));  
 
 

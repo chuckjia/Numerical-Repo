@@ -58,6 +58,8 @@ void testing() {
 	//	test_u_quad();
 	//	test_gradhUx();
 	runTimeSteps();
+	//	test_gradhUx();
+	//test_u_quad();
 }
 
 #endif /* L_TESTING_H_ */

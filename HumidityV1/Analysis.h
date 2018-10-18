@@ -390,7 +390,7 @@ void noAveSoln(int tt) {
 	// Empty
 }
 
-void printResToFile_convAnalysis() {
+void writeCSV_convAnalysis() {
 	FILE *f = fopen("Results/ConvAnalysis.txt", "a");
 	fprintf(f, "%d  %1.7e  %1.7e  % 1.7e  %1.7e  %1.2f\n",
 			Nx, relatL2Err_T_, relatL2Err_q_,

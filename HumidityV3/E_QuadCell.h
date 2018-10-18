@@ -109,6 +109,10 @@ double getGradhT_p(int i, int j) {
 }
 */
 
+/*
+ * Test functions
+ */
+
 void writeCSV_quadCoefs() {
 	FILE *f2 = fopen("Output/a2_quad.csv", "wb");
 	FILE *f3 = fopen("Output/a3_quad.csv", "wb");

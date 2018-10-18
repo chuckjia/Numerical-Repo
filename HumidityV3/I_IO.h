@@ -406,9 +406,9 @@ void peformAnalysis() {
 }
 
 // !!AlphaVersion!!
-void printResToFile_convAnalysis() {
-	FILE *f = fopen("Results/ConvAnalysis.txt", "a");
-	fprintf(f, "%d  %1.7e  %1.7e  % 1.7e  %1.7e  %1.2f\n",
+void writeCSV_convAnalysis() {
+	FILE *f = fopen("Results/ConvAnalysis.csv", "a");
+	fprintf(f, "%d,%1.7e,%1.7e,%1.7e,%1.7e,%1.7e\n",
 			Nx, relatL2Err_T_, relatL2Err_q_,
 			relatL2Err_u_, relatL2Err_w_,
 			computationTime);
@@ -424,11 +424,11 @@ void closeGlobalFiles_IO() {
 
 // !!AlphaVersion!!
 void setAnalysis() {
-	T_norm_file = fopen("Results/T_norm.txt", "wb");
-	q_norm_file = fopen("Results/q_norm.txt", "wb");
-	u_norm_file = fopen("Results/u_norm.txt", "wb");
-	w_norm_file = fopen("Results/w_norm.txt", "wb");
-	time_file = fopen("Results/time.txt", "wb");
+	T_norm_file = fopen("Output/T_norm.csv", "wb");
+	q_norm_file = fopen("Output/q_norm.csv", "wb");
+	u_norm_file = fopen("Output/u_norm.csv", "wb");
+	w_norm_file = fopen("Output/w_norm.csv", "wb");
+	time_file   = fopen("Output/time.csv",   "wb");
 }
 
 #endif /* I_IO_H_ */

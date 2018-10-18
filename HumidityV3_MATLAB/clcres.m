@@ -26,7 +26,8 @@ act = lower(input(char(prompt), 's'));
 if strcmp(act, 'y') || strcmp(act, 'yes')
     delete(projectPath + "MovieFrames/*.csv")
     delete(projectPath + "Output/*.csv")
-    fprintf("All CSV files with in MovieFrames and Output cleared.\n");
+    delete(projectPath + "Output/out")
+    fprintf("All CSV and output files with in MovieFrames and Output cleared.\n");
     return
 end
 

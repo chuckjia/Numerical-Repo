@@ -16,7 +16,7 @@ if nargin == 0
         return
     end
 end
-destination = destination + strjoin(strsplit(num2str(fix(clock))), '_');
+destination = destination + "MATLAB_" + strjoin(strsplit(num2str(fix(clock))), '_');
 mkdir(destination);
 movefile("Output/*", destination);
 fprintf("Moved all output files to: " + destination + "\n");
