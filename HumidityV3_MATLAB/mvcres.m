@@ -11,8 +11,9 @@ if accno == 1
 elseif accno == 2
     projectPath = "~/git/Numerical-Repo/HumidityV3/";  % Path on Ubuntu
     fprintf("On office Ubuntu | chuck\n");
-    fprintf("Need to configure, nothing is changed.\n");
-    return
+    if nargin == 0
+        destination = "~/Documents/workspace/DataStorage/Humidity/temp/";
+    end
 else
     fprintf("Unknown computer account. Abort. Nothing is changed.\n");
     return

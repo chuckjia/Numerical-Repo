@@ -1,7 +1,7 @@
 function fileList = listfiles(folder)
 %LISTFILES Returns list of all files and folders within a folder
 
-if ismac
+if isunix
     fileList = dir(folder);
     fileList = {fileList.name};
     

@@ -4,16 +4,15 @@
 clearAllScp
 % projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
 % projectPath = "~/git/Numerical-Repo/HumidityV3/";  % Path on Ubuntu
-projectPath = "~/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_10_17_11_1_7";
-
-projectPath = fixProjectPathName(projectPath);
+projectPath = "~/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_10_18_15_28_10";
+projectPath = genFolderPathName(projectPath);
 
 % ===== ===== ===== =====
 % Settings
 % ===== ===== ===== =====
 
 solnName = "q";
-stepNo = 40000;  % A value of -1 indicates graph the latest solution
+stepNo = -1;  % A value of -1 indicates graph the latest solution
 
 resultFolder = "MovieFrames/";  % Commonly used: "MovieFrames/" or "Output/"
 plotName = "Numerical Solution";  % "Solution", "Error", or "Exact Solution"
@@ -36,21 +35,7 @@ graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepN
     graphGhostCells, graphContourPlots, viewAngle, saveToPDF)
 
 
-%% 
 
-function projectPath = fixProjectPathName(projectPath)
-    if ischar(projectPath)
-        lastChar = projectPath(end);
-        projectPath = string(projectPath);
-    else
-        projectPath_temp = char(projectPath);
-        lastChar = projectPath_temp(end);
-    end
-    
-    if lastChar ~= '/'
-        projectPath = projectPath + "/";
-    end
-end
 
 
 

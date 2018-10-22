@@ -1,8 +1,9 @@
 
-%% Graph solution at level j
+%% Graph solution at p-level j
 
 clear; clc; close all
-projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
+% projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
+projectPath = genFolderPathName("~/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_10_18_15_28_10");
 
 % Mesh grid: cell centers
 param = readParam(projectPath + "Output/Param.csv");
@@ -13,7 +14,7 @@ centersP = csvread(projectPath + "Output/CellCenters_P.csv");
 solnName = 'q';
 stepNo = -1;
 plotName = "Numerical Solution";
-plotLevel = Np - 100;
+plotLevel = Np - 190;
 
 resultFolder = "MovieFrames/";
 stepNo = genActualStepNo(stepNo, projectPath + resultFolder, solnName);
@@ -40,11 +41,16 @@ pB = @(x) 1000 - 250 * exp(-((x - 37500) / 6000) .^ 2);
 pB_vec = pB(x_vec);
 max_pB = max(pB_vec);
 magnify = unit_height;  shiftUp = max_soln - magnify + (max_soln - min_soln) * 0.5;
+max_pB = max(pB_vec);
 pB_vec = pB_vec ./ max_pB * magnify + shiftUp;
-fig = plot(x_vec, pB_vec, '-.', 'Color', 0.75*[1,1,1], 'LineWidth', 1);
+max_pB = max(pB_vec);  yLimUnit = (max_pB - min_soln) * 0.2;
+fig = plot(x_vec, pB_vec, '-', 'Color', 0.75*[1,1,1], 'LineWidth', 1);
+ylim([min_soln - yLimUnit, max_pB + yLimUnit]);
 xlabel('x-axis');  ylabel('Value of Solution q');
-legend('Solution q', 'Mountain (for reference)','Location', 'southwest');
 title({titleLine1, titleLine2, titleLine3, ""})
+x_middle = (x0 + xf) * 0.5;
+plot([x_middle, x_middle], [min_soln - yLimUnit, max_pB + yLimUnit], '--', 'Color', 0.9*[1,1,1], 'LineWidth', 0.5)
+legend('Solution q', 'Mountain (for reference)','Location', 'southwest');
 hold off
 filename = "Output/" + solnName + "_j_" + num2str(plotLevel);
 saveas(fig, char(filename), 'pdf');
