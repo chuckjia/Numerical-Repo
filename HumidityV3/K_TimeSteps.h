@@ -170,24 +170,27 @@ void copySoln(double T_copy[numCellX][numCellP], double q_copy[numCellX][numCell
 		}
 }
 
-void preForwardEuler() {
+void preForwardEuler(double t) {
+	// Tests on convergence
+	enforceIC(u_, initU_fptr, t);
+	enforceIC(w_, initW_fptr, t);
+
 	(*calcFluxes)();  // Calculate numerical fluxes
 	(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
 }
 
-void subExactVelocity(double t) {
-	for (int i = 0; i < numCellX; ++i) {
-		double x = getCellCenterX(i);
-		for (int j = 0; j < numCellP; ++j) {
-			double p = getCellCenterP(i, j);
-			u_[i][j] = (*initU_fptr)(x, p, t);
-			w_[i][j] = (*initQ_fptr)(x, p, t);
-		}
-	}
-}
+//void subExactVelocity(double t) {
+//	for (int i = 0; i < numCellX; ++i) {
+//		double x = getCellCenterX(i);
+//		for (int j = 0; j < numCellP; ++j) {
+//			double p = getCellCenterP(i, j);
+//			u_[i][j] = (*initU_fptr)(x, p, t);
+//			w_[i][j] = (*initQ_fptr)(x, p, t);
+//		}
+//	}
+//}
 
-void postForwardEuler(int tt) {
-	//	if (tt == 0)
+void postForwardEuler(double t) {
 	(*projU_fptr)();  // Projection method on u
 	(*calcW_fptr)();  // Calculate w
 	(*enforceBC_fptr)();  // Enforce boundary conditions
@@ -214,14 +217,14 @@ void rk2() {
 		copySoln(T_copy_, q_copy_, u_copy_);
 
 		// RK2 Step 1
-		preForwardEuler();
+		preForwardEuler(t);
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, 0);
-		postForwardEuler(tt);  // ?
+		postForwardEuler(t);  // ?
 
 		// RK2 Step 2
-		preForwardEuler();
+		preForwardEuler(t + halfDt);
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, 0);
-		postForwardEuler(tt);  // ?
+		postForwardEuler(t + halfDt);  // ?
 
 		(*enforceBC_fptr)();
 
@@ -254,25 +257,25 @@ void rk4() {
 
 		// RK4 Step 1
 		update_k_RK_fptr = &update_k_RK_directAssign;
-		preForwardEuler();
+		preForwardEuler(t);
 		forwardEuler_singleStep(t, halfDt, T_, q_, u_, ONE_SIXTH);
-		postForwardEuler(tt);
+		postForwardEuler(t);
 
 		// RK4 Step 2
 		update_k_RK_fptr = &update_k_RK_accum;
-		preForwardEuler();
+		preForwardEuler(t + halfDt);
 		forwardEuler_singleStep(t + halfDt, halfDt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
-		postForwardEuler(tt);
+		postForwardEuler(t + halfDt);
 
 		// RK4 Step 3
 		update_k_RK_fptr = &update_k_RK_accum;
-		preForwardEuler();
+		preForwardEuler(t + halfDt);
 		forwardEuler_singleStep(t + halfDt, Dt, T_copy_, q_copy_, u_copy_, ONE_THIRD);
-		postForwardEuler(tt);
+		postForwardEuler(t + halfDt);
 
 		// RK4 Step 4
 		update_k_RK_fptr = &update_k_RK_noUpdate;
-		preForwardEuler();
+		preForwardEuler(t + Dt);
 		forwardEuler_singleStep(t + Dt, oneSixthDt, T_copy_, q_copy_, u_copy_, 0);
 		for (int i = 1; i <= Nx; ++i)
 			for (int j = 1; j <= Np; ++j) {
@@ -280,7 +283,7 @@ void rk4() {
 				q_[i][j] += k_rk_q_[i][j];
 				u_[i][j] += k_rk_u_[i][j];
 			}
-		postForwardEuler(tt);
+		postForwardEuler(t + Dt);
 
 		//showL2Errors(t);
 		(*aveSoln_fptr)(tt + 1);

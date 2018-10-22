@@ -237,6 +237,13 @@ void enforceIC() {
 }
 
 
+void enforceIC(double sl[numCellX][numCellP], double (*initSl_fptr)(double, double, double), double t) {
+	for (int i = 0; i < numCellX; ++i)
+		for (int j = 0; j < numCellP; ++j)
+			sl[i][j] = (*initSl_fptr)(getCellCenterX(i, j), getCellCenterP(i, j), t);
+}
+
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Averaging Method
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
