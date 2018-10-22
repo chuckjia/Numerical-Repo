@@ -21,7 +21,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 0;  // Model number: 0 = original physical model; other number = test models
+int modelNo    = 1;  // Model number: 0 = original physical model; other number = test models
 int timeMethod = 4;  // Time method: 4 = RK4, 2 = RK2, 1 = Forward Euler, 0 = Control experiment with no time advancement
 
 
@@ -29,10 +29,10 @@ int timeMethod = 4;  // Time method: 4 = RK4, 2 = RK2, 1 = Forward Euler, 0 = Co
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivision = 200;  // Number of space divisions in both x and p directions
+const int numDivision = 100;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 40000;  // Number of time steps
-double Dt = 0.5;  // Size of one time step
+int       numTimeStep = 100;  // Number of time steps
+double    Dt          = 0.01;  // Size of one time step
 
 double finalTime = numTimeStep * Dt;  // Final time
 
@@ -42,10 +42,10 @@ double finalTime = numTimeStep * Dt;  // Final time
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Averaging method
-int aveSolnFreq = 30;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
+int aveSolnFreq    = 30;  // The frequency of using the averaging method. 0 or negative values indicate no averaging
 
 // Total number of progress messages
-int numProgMsg = 200;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
+int numProgMsg     = 200;  // Progress messages are more frequent than movie frame prints and L2 norm info, guaranteed in setTimeSteps
 
 // Movie I/O
 int movieFrameFreq = 500;  // The frequency of printing results to file as movie frames
@@ -54,7 +54,7 @@ int movieFrameFreq = 500;  // The frequency of printing results to file as movie
 int calcL2NormFreq = 500;  // Choose whether to calculate, show, and print to file the L2 errors during computation
 
 // Test cases
-bool _printResultToFile_ = true;  // Choose if print numerical SOLUTION and ERRORS to file at the END of computation
+bool _printResultToFile_    = true;  // Choose if print numerical SOLUTION and ERRORS to file at the END of computation
 bool _printExactSolnToFile_ = false;  // Choose if print EXACT solutions to file at the END of computation
 
 
