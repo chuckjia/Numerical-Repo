@@ -16,7 +16,7 @@ if nargin < 10
     saveToPDF = false;
 end
 
-contourProportion = 0.3;
+contourProportion = 0.5;
 
 if ~exist(solnFileFullPath, 'file')
     fprintf("File does not exist (yet)!\n");

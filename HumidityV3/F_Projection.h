@@ -23,7 +23,7 @@ int first_i_proj = 1, last_i_proj = Nx;  // Range of the index for the projectio
 double a_proj_[Nx + 2], b_proj_[Nx + 2];  // Only values from first_i_proj to (last_i_proj-1) are used
 double d_proj_[Nx + 2];  // Values from first_i_proj to last_i_proj are used
 double lambdax_proj_[Nx + 2];  // Only values from 0/1 to Nx are used
-double d_lastRow = 10;
+double d_lastRow = 20;
 
 /*
  * Test Functions
@@ -68,7 +68,6 @@ void fillCache_d_proj() {
 	for (int i = first_i_proj; i < last; ++i)
 		d_proj_[i + 1] = (d_lastRow - b_proj_[i] * d_proj_[i]) / a_proj_[i + 1];
 	d_proj_[last_i_proj] = d_lastRow - b_proj_[last] * d_proj_[last];
-	// writeCSV_d_proj();
 }
 
 // Calculate the c_i's as in (3.34). Note that c_i changes in each time step.
@@ -88,7 +87,6 @@ void calc_c_proj() {
 	for (int i = first_i_proj; i < last_i_proj; ++i)  // Only up to (last index - 1), as we need the (i+1)th element in the calculation of the ith element. See (3.34)
 		lambdax_proj_[i] = lambdax_proj_[i + 1] - lambdax_proj_[i];
 	lambdax_proj_[last_i_proj] = 0;  // This is in fact not necessary, since we directly assign values to c_i in the Gaussian elimination
-	//	writeCSV_lambdax();
 }
 
 // Perform Gaussian elimination to calculate lambda_x
@@ -101,6 +99,37 @@ void calcLambdax_proj() {
 	for (int i = last_i_proj - 1; i >= first_i_proj; --i)
 		lambdax_proj_[i] = (lambdax_proj_[i] - b_proj_[i] * lambdax_proj_[i + 1]) / a_proj_[i];
 }
+
+void calcDxIntU() {
+	//	printf("lambda_x = [ ");
+	//	for (int i = 1; i <= Nx; ++i)
+	//		printf("%1.20e, ", lambdax_proj_[i]);
+	//	printf("]\n");
+	//	printf("lambdax_proj_[100] = %1.4f\n", lambdax_proj_[100]);
+	double prevIntU = 0, maxDxIntU = 0, loc = 0;
+	for (int j = 1; j < Np; ++j)
+		prevIntU += u_[1][j];
+	prevIntU *= getCellCenterDp(1);
+	// printf("DxIntU = [ %1.4f, ", prevIntU);
+	for (int i = 2; i <= Nx; ++i) {
+		double intU = 0;
+		for (int j = 1; j < Np; ++j)
+			intU += u_[i][j];
+		intU *= getCellCenterDp(i);
+		double DxIntU = (intU - prevIntU) / Dx;
+		// printf("%1.4f, ", intU);
+		DxIntU = DxIntU >= 0 ? DxIntU : -DxIntU;
+		if (maxDxIntU < DxIntU) {
+			maxDxIntU = DxIntU;
+			loc = i * Dx;
+		}
+		prevIntU = intU;
+	}
+	// printf("]\n");
+	printf("    >> Largest DxIntU is %1.4e, occurred at %1.2f\n", maxDxIntU, loc);
+}
+
+int countOfDxIntUCalculation = 0;
 
 // Perform the projection method on uTilde to calculate u
 void projU_orig() {

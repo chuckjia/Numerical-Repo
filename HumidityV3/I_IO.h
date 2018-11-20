@@ -28,7 +28,24 @@
 void writeCSV_param() {
 	FILE *f = fopen("Output/Param.csv", "wb");
 	fprintf(f, "%1.20e,%1.20e,%1.20e,%1.20e,%1.20e,%d,%d,%1.20e,%d,%d,%d\n",
-			x0, xf, pA, (*pB_fptr)(x0), (*pB_fptr)(xf), Nx, Np, Dt, numTimeStep, movieFrameFreq, aveSolnFreq);
+			x0, xf, pA, (*pB_fptr)(x0), (*pB_fptr)(xf), Nx, Np, Dt, numTimeStep, movieFrameFreq, aveSolnFreq_T);
+	fclose(f);
+}
+
+void writeCSV_testParam() {
+	FILE *f = fopen("Output/ParamTests.csv", "wb");
+	fprintf(f, "Using compatible IC for q,");
+	if (_useCompatibleInitQ_) fprintf(f, "true"); else fprintf(f, "false");
+	fprintf(f, "\n");
+	fprintf(f, "Enforcing top BC for u and w,");
+	if (_enforceTopBC_) fprintf(f, "true"); else fprintf(f, "false");
+	fprintf(f, "\n");
+
+	fprintf(f, "aveSolnFreq_T,%d\n",    aveSolnFreq_T);
+	fprintf(f, "aveSolnFreq_q,%d\n",    aveSolnFreq_q);
+	fprintf(f, "aveSolnFreq_u,%d\n",    aveSolnFreq_u);
+	fprintf(f, "aveSolnFreq_w,%d\n",    aveSolnFreq_w);
+	fprintf(f, "aveSolnFreq_phix,%d\n", aveSolnFreq_phix);
 	fclose(f);
 }
 
@@ -78,18 +95,20 @@ void writeCSV_cellCenters() {
 
 // Print solutions to movie frame files. File names are appended with time step numbers
 void writeMovie_soln(int tt) {
-	char filename[30];
-	sprintf(filename, "MovieFrames/T_%d.csv", tt);
-	writeCSV_matrix(T_, filename);
+	string suffix = "_" + to_string(tt) + ".csv";
+	string filename;
 
-	sprintf(filename, "MovieFrames/q_%d.csv", tt);
-	writeCSV_matrix(q_, filename);
+	filename = movieFramesFolderName + "/T" + suffix;
+	writeCSV_matrix(T_, filename.c_str());
 
-	sprintf(filename, "MovieFrames/u_%d.csv", tt);
-	writeCSV_matrix(u_, filename);
+	filename = movieFramesFolderName + "/q" + suffix;
+	writeCSV_matrix(q_, filename.c_str());
 
-	sprintf(filename, "MovieFrames/w_%d.csv", tt);
-	writeCSV_matrix(w_, filename);
+	filename = movieFramesFolderName + "/u" + suffix;
+	writeCSV_matrix(u_, filename.c_str());
+
+	filename = movieFramesFolderName + "/w" + suffix;
+	writeCSV_matrix(w_, filename.c_str());
 }
 
 
@@ -99,9 +118,9 @@ void writeMovie_soln(int tt) {
 
 // Print title messages
 void printTitle() {
-	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
-	printf(">> Solving Atmospherical Model Using Upwind-type Godunov Scheme\n");
-	printf("===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n\n");
+	printf("* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n");
+	printf("* Solving Atmospherical Model Using Upwind-type Godunov Scheme\n");
+	printf("* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== \n\n");
 }
 
 // Print all parameters for diagnostics
@@ -128,16 +147,18 @@ void printSchemeSummary() {
 	printf("\n>> SCHEME DESCRIPTION\n");
 	printf("\n  MODEL %d:  \n", modelNo);
 
-	printf("  [1] Time:  ");
-	printf("Dt = %1.2e, finalTime = %1.2es, numTimeSteps = %d\n", Dt, finalTime, numTimeStep);
+	printf("  [1] Time           : ");
+	printf("Dt = %1.2e,  finalTime = %1.2es,  numTimeSteps = %d\n", Dt, finalTime, numTimeStep);
 
-	printf("  [2] Mesh Specs:  ");
-	printf("Nx = %d, Np = %d\n", Nx, Np);
+	printf("  [2] Mesh Specs     : ");
+	printf("Nx = %3d,       Np = %3d\n", Nx, Np);
 
-	printf("  [3] Average Method:  ");
-	if (aveMethodApplied)
-		printf("Average method applied every %d steps.\n", aveSolnFreq);
-	else
+	printf("  [3] Average Method : ");
+	if (aveMethodApplied) {
+		printf("every %3d, %3d, %3d, %3d, %3d steps on T, q, u, w, phi_x, resp.\n", aveSolnFreq_T, aveSolnFreq_q, aveSolnFreq_u, aveSolnFreq_w, aveSolnFreq_phix);
+		printf("                               |    |    |    |    |\n");
+		printf("                               T    q    u    w  phi_x\n");
+	} else
 		printf("No averaging is applied.\n");
 }
 
@@ -213,6 +234,59 @@ void showL2Errors(double t) {
 void showL2Errors() {
 	printf("\n>> NUMERICAL ERRORS\n");
 	showL2Errors(finalTime);
+}
+
+void writeCSV_realTimeErr(int tt) {
+	string suffix = "_" + to_string(tt) + ".csv";
+	string filename;
+	double t = Dt * tt;
+
+	// Numerical errors files
+	filename = movieFramesFolderName + "/err_T" + suffix;
+	FILE *err_T = fopen(filename.c_str(), "wb");
+	filename = movieFramesFolderName + "/err_q" + suffix;
+	FILE *err_q = fopen(filename.c_str(), "wb");
+	filename = movieFramesFolderName + "/err_u" + suffix;
+	FILE *err_u = fopen(filename.c_str(), "wb");
+	filename = movieFramesFolderName + "/err_w" + suffix;
+	FILE *err_w = fopen(filename.c_str(), "wb");
+
+	// Write data to files
+	int last_j = numCellP - 1;
+	for (int i = 0; i < numCellX; ++i) {
+		double x = getCellCenterX(i);
+		for (int j = 0; j < last_j; ++j) {
+			double p = getCellCenterP(i, j),
+					numer_T = T_[i][j],
+					numer_q = q_[i][j],
+					numer_u = u_[i][j],
+					numer_w = w_[i][j],
+					exact_T = (*initT_fptr)(x, p, t),
+					exact_q = (*initQ_fptr)(x, p, t),
+					exact_u = (*initU_fptr)(x, p, t),
+					exact_w = (*initW_fptr)(x, p, t);
+			fprintf(err_T, "%1.20e,", numer_T - exact_T);
+			fprintf(err_q, "%1.20e,", numer_q - exact_q);
+			fprintf(err_u, "%1.20e,", numer_u - exact_u);
+			fprintf(err_w, "%1.20e,", numer_w - exact_w);
+		}  // End of loop for j
+
+		double p = getCellCenterP(i, last_j),
+				numer_T = T_[i][last_j],
+				numer_q = q_[i][last_j],
+				numer_u = u_[i][last_j],
+				numer_w = w_[i][last_j],
+				exact_T = (*initT_fptr)(x, p, t),
+				exact_q = (*initQ_fptr)(x, p, t),
+				exact_u = (*initU_fptr)(x, p, t),
+				exact_w = (*initW_fptr)(x, p, t);
+		fprintf(err_T, "%1.20e\n", numer_T - exact_T);
+		fprintf(err_q, "%1.20e\n", numer_q - exact_q);
+		fprintf(err_u, "%1.20e\n", numer_u - exact_u);
+		fprintf(err_w, "%1.20e\n", numer_w - exact_w);
+	}
+	printf("\n>> Writing real time error as CSV files.\n");
+	fclose(err_T); fclose(err_q); fclose(err_u); fclose(err_w);
 }
 
 // Write the result to file: res.txt for the solution and err.txt for the error

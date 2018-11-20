@@ -216,10 +216,17 @@ void calcCellSideNormVec() {
 }
 
 void cellSizeNormVec_diagnostics() {
-	for (int j = 0; j <= Np/2; ++j) {
-		for (int i = 1; i <= Nx; ++i) {
-			printf("i=%d, j=%d: ", i, j);
-			printf("norm vec = (%f, %f)    ", cellTopSideNormVecX_[i][j], cellTopSideNormVecP_[i][j]);
+	for (int i = 1; i <= Nx; ++i) {
+		for (int j = 0; j <= Np/2; ++j) {
+
+			double pDiff = getCellTopRightP(i, j) - getCellTopLeftP(i, j),
+					xDiff = getCellRightX(i, j) - getCellLeftX(i, j);
+			double check_orthog = xDiff * cellTopSideNormVecX_[i][j] + pDiff * cellTopSideNormVecP_[i][j];
+			double small = 1e-15;
+			if (check_orthog > small) {
+				printf("i=%d, j=%d: ", i, j);
+				printf("Norm vec * Side Vec = %1.4e\n", check_orthog);
+			}
 		}
 		printf("\n");
 	}

@@ -17,7 +17,7 @@ using namespace std;
  * Select Model and Scheme
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-int modelNo = 0;  // Model number. 0 = original physical model; other number = test models
+int modelNo = 1;  // Model number. 0 = original physical model; other number = test models
 int fluxMethod = 0;  // Select flux calculation method. 0 = Upwind Godunov
 
 // Select time method.
@@ -28,10 +28,10 @@ int timeMethod = 4;
  * Scheme Specifications
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-const int numDivision = 200;  // Number of space divisions in both x and p directions
+const int numDivision = 100;  // Number of space divisions in both x and p directions
 
-int numTimeStep = 10000;  // Number of time steps
-double Dt = 0.5;  // Size of one time step
+int numTimeStep = 100;  // Number of time steps
+double Dt = 0.01;  // Size of one time step
 double finalTime = numTimeStep * Dt;  // Final time
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -44,7 +44,7 @@ double finalTime = numTimeStep * Dt;  // Final time
 
 // The frequency of using the average method
 bool _aveResult_ = true;
-int aveSolnFreq = 20;
+int aveSolnFreq_T = 20;
 // Choose whether to calculate, show, and print to file the L2 errors during computation
 bool _calcL2err_ = true;
 

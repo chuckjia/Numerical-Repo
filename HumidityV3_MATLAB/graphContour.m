@@ -19,7 +19,7 @@ elseif ~isequal(graphSize, solnSize)
 end
 
 pRange = max(floor(graphSize(2) * (1-proportion)), 1) : graphSize(2);
-fig = contourf(centersX(:, pRange), centersP(:, pRange), soln(:, pRange), contourLevels);
+[~, fig] = contourf(centersX(:, pRange), centersP(:, pRange), soln(:, pRange), contourLevels);
 
 if nargin == 5
     title(titleLine1);

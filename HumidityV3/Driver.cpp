@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 	writeCSV_cellCenters();
 	writeCSV_meshGrid();
 	writeCSV_param();
+	writeCSV_testParam();
 	testing();
 	showL2Errors();
 	writeCSV_finalSolnErr();

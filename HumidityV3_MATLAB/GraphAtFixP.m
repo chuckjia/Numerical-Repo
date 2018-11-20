@@ -1,9 +1,59 @@
 
-%% Graph solution at p-level j
+%% 
 
 clear; clc; close all
+
+solnName = 'T';
+stepNo = -1;
 % projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
-projectPath = genFolderPathName("~/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_10_18_15_28_10");
+projectPath = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_11_6_1_14_14_h270_2700m/";
+
+
+% iVec = [11:19];
+iVec = [1:10, 20:10:50, 60:20:190, 195, 197, 199];
+% iVec = [1:10, 20:10:50, 60:30:360, 370:10:390, 395];
+% iVec = [1:20, 30:10:50, 60:50:760, 770:10:790, 795];
+graphAtFixedP_wrapper(solnName, iVec, projectPath, stepNo);
+
+
+%% 
+
+function graphAtFixedP_wrapper(solnName, iVec, projectPath, stepNo) 
+
+fprintf("Plotting %d levels in total.\n", length(iVec));
+for j = 1:length(iVec)
+    i = iVec(j);
+    fprintf("Plotting at i = %d. Progress = %1.2f%%\n", i, j / length(iVec) * 100);
+    graphAtFixedP_fcn(solnName, i, projectPath, stepNo);
+end
+
+end
+
+%%
+
+function graphAtFixedP_fcn(solnName, i, projectPath, stepNo)
+% graphAtFixedP_fcn Generate plots of solutions at a fixed p level.
+%    INPUT:: solnName    : The name of the solution. Currently, 2 options are supported: 'T' or 'q', with 'q'
+%                              as the default
+%            i           : The number of levels away from mountain surface. In other words, we are plotting  
+%                              the level Np-i
+%            projectPath : The path to the project directory
+% 
+
+close all
+if nargin < 4
+    stepNo = -1;
+    if nargin < 3
+        projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
+        if nargin < 2
+            i = 1;
+            if nargin < 1
+                solnName = 'q';
+            end
+        end
+    end
+end
+projectPath = genFolderPathName(projectPath);
 
 % Mesh grid: cell centers
 param = readParam(projectPath + "Output/Param.csv");
@@ -11,10 +61,10 @@ x0 = param.x0;  xf = param.xf;  Nx = param.Nx;  Np = param.Np;  Dx = (xf - x0) /
 centersX = csvread(projectPath + "Output/CellCenters_X.csv");
 centersP = csvread(projectPath + "Output/CellCenters_P.csv");
 
-solnName = 'q';
-stepNo = -1;
+%solnName = 'T';
+% stepNo = -1;
 plotName = "Numerical Solution";
-plotLevel = Np - 190;
+plotLevel = Np - i;
 
 resultFolder = "MovieFrames/";
 stepNo = genActualStepNo(stepNo, projectPath + resultFolder, solnName);
@@ -54,4 +104,8 @@ legend('Solution q', 'Mountain (for reference)','Location', 'southwest');
 hold off
 filename = "Output/" + solnName + "_j_" + num2str(plotLevel);
 saveas(fig, char(filename), 'pdf');
+
+
+end
+
 

@@ -15,7 +15,7 @@ function [u_afterProj, u_beforeProj, derAfterProj, derBeforeProj, ...
 % ===== ===== ===== ===== ===== ===== 
 
 % Size of mesh used in the Finite Volume Method
-if nargin < 1  Nx = 100;  end  % Default value for numDivisions
+if nargin < 1  Nx = 200;  end  % Default value for numDivisions
 Np = Nx;
 
 % Mountain geometry

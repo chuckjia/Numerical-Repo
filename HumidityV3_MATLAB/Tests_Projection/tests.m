@@ -233,12 +233,12 @@ intU_vec_m - intU_vec_c
 
 
 
+%%
+clear; clc
+[u_afterProj, u_beforeProj, derAfterProj, derBeforeProj, ...
+    a_vec, b_vec, c_vec, intU_vec, lambdax_vec] = main(200);
 
-
-
-
-
-
+intU_vec
 
 
 

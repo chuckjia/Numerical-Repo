@@ -200,7 +200,7 @@ void writeCSV_param() {
 	FILE *f = fopen("Results/par.txt", "wb");
 	fprintf(f, "%1.20e %1.20e %1.20e %1.20e %1.20e %d %d %1.20e %d %d %d",
 			x0, xf, pA, (*pB_fptr)(x0), (*pB_fptr)(xf), Nx, Np, Dt, numTimeStep,
-			movieFrameFreq, aveSolnFreq);
+			movieFrameFreq, aveSolnFreq_T);
 	fclose(f);
 }
 
@@ -377,7 +377,7 @@ void aveSoln_oneTerm(double sl[numCellX][numCellP]) {
 }
 
 void aveSoln(int tt) {
-	if (tt % aveSolnFreq == 0) {
+	if (tt % aveSolnFreq_T == 0) {
 		aveSoln_oneTerm(T_);
 		// aveSoln_oneTerm(q_sl);
 	}

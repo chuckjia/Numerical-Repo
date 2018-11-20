@@ -9,13 +9,13 @@ function clcres()
 %
 
 username = getenv('USER');  % Computer account user name
-prompt = "confirm to clear all c result files (enter N to stop): ";
+prompt = "\n  - Confirm to clear all c result files (Y/N): ";
 if ismac && strcmp(username, 'chuckjia') % Macbook Pro
     projectPath = "~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/";
-    prompt = "On Chuck's Macbook Pro, " + prompt;
+    prompt = "On [Chuck's Macbook Pro] " + prompt;
 elseif isunix && strcmp(username, 'chuck') % Office Ubuntu
     projectPath = "~/git/Numerical-Repo/HumidityV3/";
-    prompt = "On Chuck's Office Ubuntu, " + prompt;
+    prompt = "On [Chuck's Office Ubuntu] " + prompt;
 else
     fprintf("Unknown computer!! Cannot perform delete operations.\n");
     return
@@ -25,6 +25,7 @@ act = lower(input(char(prompt), 's'));
 
 if strcmp(act, 'y') || strcmp(act, 'yes')
     delete(projectPath + "MovieFrames/*.csv")
+    delete(projectPath + "MovieFrames2/*.csv")
     delete(projectPath + "Output/*.csv")
     if exist(projectPath + "Output/out", 'file')
         delete(projectPath + "Output/out")

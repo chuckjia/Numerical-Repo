@@ -34,7 +34,7 @@ double _h_pB_MDL0, _c1_pBxDer_MDL0, _n_initU_MDL0, _cp_initU_MDL0, _cx_initU_MDL
 // Set values to the coefficients defined in this section
 // Coefficients need to be initialized here, because some of them depend on x0, xf, etc
 void setFcnCoef_MDL0() {
-	_h_pB_MDL0 = 250.;  // Multiplicative factor that controls the height of mountain
+	_h_pB_MDL0 = 280.;  // Multiplicative factor that controls the height of mountain
 	_c1_pBxDer_MDL0 = _h_pB_MDL0 / 1.8e7;  // heightFactor * 2 / 6000^2
 
 	_n_initU_MDL0 = 1.;   // n in (4.10)
@@ -70,6 +70,10 @@ double init_T_fcn_MDL0(double x, double p, double t) {
 // Initial q function
 double init_q_fcn_MDL0(double x, double p, double t) {
 	double T = init_T_fcn_MDL0(x, p, 0);
+	if (_useCompatibleInitQ_) {
+		double x_sec = (xf - x0) * 0.1, reduction = x > (x0 + x_sec) ? 0.0052 : 0.0052 / (x_sec - x0) * (x - x0);
+		return qs_fcn(T, p) - reduction;
+	}
 	return qs_fcn(T, p) - 0.0052;
 }
 
@@ -84,19 +88,19 @@ double init_u_fcn_MDL0(double x, double p, double t) {
 
 // Source function for the T equation
 double source_T_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
-	double qsVal = qs_fcn(T, p),
+	double qsVal     = qs_fcn(T, p),
 			deltaVal = delta_fcn(q, w, qsVal),
-			LVal = L_fcn(T),
-			FVal = F_fcn(T, qsVal, LVal);
+			LVal     = L_fcn(T),
+			FVal     = F_fcn(T, qsVal, LVal);
 	return w / (p * Cp_CONST) * (R_CONST * T - deltaVal * LVal * FVal);
 }
 
 // Source function for the q equation
 double source_q_fcn_MDL0(double T, double q, double u, double w, double x, double p, double t) {
-	double qsVal = qs_fcn(T, p),
+	double qsVal     = qs_fcn(T, p),
 			deltaVal = delta_fcn(q, w, qsVal),
-			LVal = L_fcn(T),
-			FVal = F_fcn(T, qsVal, LVal);
+			LVal     = L_fcn(T),
+			FVal     = F_fcn(T, qsVal, LVal);
 	return deltaVal * FVal * w / p;
 }
 
@@ -205,7 +209,7 @@ double exact_TtDer_fcn_MDL1(double x, double p, double t) {
 
 // Manufactured solution: exact q function
 double exact_q_fcn_MDL1(double x, double p, double t) {
-	return 0;
+	return exact_T_fcn_MDL1(x, p, t);
 }
 
 // The terms in u that involves only x and p
@@ -284,7 +288,7 @@ double source_T_fcn_MDL1(double T, double q, double u, double w, double x, doubl
 
 // Source function for the q equation
 double source_q_fcn_MDL1(double T, double q, double u, double w, double x, double p, double t) {
-	return 0;
+	return source_T_fcn_MDL1(T, q, u, w, x, p, t);
 }
 
 // Source function for the u equation

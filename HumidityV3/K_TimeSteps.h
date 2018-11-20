@@ -172,8 +172,8 @@ void copySoln(double T_copy[numCellX][numCellP], double q_copy[numCellX][numCell
 
 void preForwardEuler(double t) {
 	// Tests on convergence
-	enforceIC(u_, initU_fptr, t);
-	enforceIC(w_, initW_fptr, t);
+	//	enforceIC(u_, initU_fptr, t);
+	//	enforceIC(w_, initW_fptr, t);
 
 	(*calcFluxes)();  // Calculate numerical fluxes
 	(*calcPhix_fptr)();  // Calculate phi_x value at the beginning of each time step
@@ -229,7 +229,7 @@ void rk2() {
 		(*enforceBC_fptr)();
 
 		//showL2Errors(t);
-		//writeResToFileForMovie_T(tt + 1);
+		// writeResToFileForMovie_T(tt + 1);
 	}
 	printf("\r  - Runge-Kutta 2 method complete\n");
 }
@@ -287,6 +287,7 @@ void rk4() {
 
 		//showL2Errors(t);
 		(*aveSoln_fptr)(tt + 1);
+		// writeCSV_realTimeErr(tt + 1);  // Changed!
 	}
 	writeMovie_soln(numTimeStep);
 	printf("\r  - Runge-Kutta 4 method complete\n");

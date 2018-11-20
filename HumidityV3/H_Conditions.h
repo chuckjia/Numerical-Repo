@@ -32,7 +32,7 @@ void (*enforceBC_fptr)();
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary values specified by a function, defined by (*bdVal_fptr)(p)
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double (&bdVal_fptr)(double)) {
-	for (int j = 1; j <= Np; ++j) {
+	for (int j = 1; j <= Np; ++j) {  // Changed!
 		// This interpolation on p only works for pB() that are sufficiently flat on the left side of domain
 		double p = 0.5 * (getCellBottLeftP(1, j) + getCellTopLeftP(1, j));
 		sl[0][j] = 2 * bdVal_fptr(p) - sl[1][j];
@@ -41,13 +41,13 @@ void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double (&bdVal_fptr)
 
 // Enforce Dirichlet BCs on the LEFT boundary: with constant boundary value, specified by bdVal
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double bdVal) {
-	for (int j = 1; j <= Np; ++j)
+	for (int j = 1; j <= Np; ++j)  // Changed!
 		sl[0][j] = 2 * bdVal - sl[1][j];
 }
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary value 0
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP]) {
-	for (int j = 1; j <= Np; ++j)
+	for (int j = 1; j <= Np; ++j)  // Changed!
 		sl[0][j] = -sl[1][j];
 }
 
@@ -56,7 +56,7 @@ double T_leftBdVal_[numCellP], q_leftBdVal_[numCellP], u_leftBdVal_[numCellP];
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary value from cache
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double bdVal_[numCellP]) {
-	for (int j = 1; j <= Np; ++j)
+	for (int j = 1; j <= Np; ++j)  // Changed!
 		sl[0][j] = 2 * bdVal_[j] - sl[1][j];
 	// sl[0][j] = bdVal_[j];  // CHANGED!
 }
@@ -109,12 +109,13 @@ void enforceNonPenetrationBC_topBD_math() {
 // !!AlphaVersion!!
 // Enforce Non-penetration boundary condition on the top side of the domain
 void enforceNonPenetrationBC_topBD() {
-	// This method ensures the flux only comes from within the domain, not from the ghost cells, by mirroring within domain boundary cell
-	// values to ghost cells
+	//	// This method ensures the flux only comes from within the domain, not from the ghost cells, by mirroring within domain boundary cell
+	//	// values to ghost cells
 	//	for (int i = 1; i <= Nx; ++i) {
 	//		T_[i][lastGhostIndexP] = T_[i][Np];
 	//		q_[i][lastGhostIndexP] = q_[i][Np];
 	//		u_[i][lastGhostIndexP] = u_[i][Np];
+	//		// w_[i][lastGhostIndexP] = w_[i][Np];
 	//	}
 
 	// This part ensures the upwind scheme only draws flux values from within the domain, not from ghost cells
@@ -171,7 +172,8 @@ void enforceBC_MDL0() {
 	// Conditions are enforced directly in the calculation of the two solutions
 
 	// Top boundary: for u and w
-	enforceNonPenetrationBC_topBD();  // CHANGED!
+	if (_enforceTopBC_)
+		enforceNonPenetrationBC_topBD();  // CHANGED!
 	// enforceNonPenetrationBC_topBD_math();
 }
 
@@ -179,21 +181,19 @@ void enforceBC_MDL0() {
  * Test Case 1 BCs
  * ----- ----- ----- ----- ----- ----- */
 
-// double leftBdVal_T_fcn_MDL1(double p) { return exact_T_fcn_MDL1(0, p, 0); }
+double leftBdVal_T_fcn_MDL1(double p) { return exact_T_fcn_MDL1(0, p, 0); }
 
 void enforceBC_MDL1() {
 	// Left boundary
-	// enforceDirichlet_leftBD(T_sl, leftBdVal_T_fcn_MDL1);
-	enforceDirichlet_leftBD(T_);
+	enforceDirichlet_leftBD(T_, leftBdVal_T_fcn_MDL1);
+	//	enforceDirichlet_leftBD(T_);
 	enforceDirichlet_leftBD(q_);
 	enforceDirichlet_leftBD(u_);
-	enforceNeumann_leftBD(w_);
 
 	// Right boundary: Neumann BC
 	enforceNeumann_rightBD(T_);
 	enforceNeumann_rightBD(q_);
 	enforceNeumann_rightBD(u_);
-	enforceNeumann_rightBD(w_);
 
 	// Bottom boundary: for w, Dirichlet BC with boudnary value 0
 
@@ -230,9 +230,10 @@ void enforceIC() {
 			T_[i][j] = (*initT_fptr)(x, p, 0);
 			q_[i][j] = (*initQ_fptr)(x, p, 0);
 			u_[i][j] = (*initU_fptr)(x, p, 0);
+			// w_[i][j] = (*initW_fptr)(x, p, 0);  // Changed
 		}
-	(*projU_fptr)();
-	(*calcW_fptr)();
+	//(*projU_fptr)();  // Changed
+	//(*calcW_fptr)();  // Changed
 	// writeCSV_matrix(u_, "Output/u_after.csv");
 }
 
@@ -267,16 +268,13 @@ void aveSoln_vertical(double sl[numCellX][numCellP]) {
 
 // Apply average method on all solutions
 void aveSoln(int tt) {
-	if (aveSolnFreq <= 0 || tt == 0) return;
+	if (tt == 0) return;
 
-	if (tt % aveSolnFreq == 0) {
-		aveSoln(T_);
-		// aveSoln(q_);  // CHANGED!
-	}
-
-	aveSoln(u_);
-	aveSoln(w_);
-	aveSoln(phix_);
+	if (!(tt % aveSolnFreq_T))     aveSoln(T_);
+	if (!(tt % aveSolnFreq_q))     aveSoln(q_);
+	if (!(tt % aveSolnFreq_u))     aveSoln(u_);
+	if (!(tt % aveSolnFreq_w))     aveSoln(w_);
+	if (!(tt % aveSolnFreq_phix))  aveSoln(phix_);
 }
 
 
