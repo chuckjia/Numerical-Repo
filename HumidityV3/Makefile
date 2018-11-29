@@ -18,12 +18,35 @@ run:
 	fi 
 
 clang:
-	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -Ofast
+	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -O0
 	Output/./out notInEclipse
 
 cleanall:
 	rm -rf Output MovieFrames
 	mkdir Output MovieFrames
+	clear
+	clear
+	clear
+	clear
+	clear
+
+clear:
+	clear
+	clear
+	clear
+	clear
+	clear
+
+new:
+	rm -rf Output MovieFrames
+	mkdir Output MovieFrames
+	clear
+	clear
+	clear
+	clear
+	clear
+	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -O0
+	Output/./out notInEclipse
 
 all:
 	run

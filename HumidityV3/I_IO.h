@@ -46,6 +46,10 @@ void writeCSV_testParam() {
 	fprintf(f, "aveSolnFreq_u,%d\n",    aveSolnFreq_u);
 	fprintf(f, "aveSolnFreq_w,%d\n",    aveSolnFreq_w);
 	fprintf(f, "aveSolnFreq_phix,%d\n", aveSolnFreq_phix);
+
+	fprintf(f, "numMountains,%d\n", numMountain);
+	fprintf(f, "Mountain 1 Height,%1.20e\n", _h_pB_MDL0);
+	fprintf(f, "Mountain 2 Height,%1.20e\n", _h2_pB_MDL0);
 	fclose(f);
 }
 
@@ -494,6 +498,32 @@ void closeGlobalFiles_IO() {
 	fclose(T_norm_file); fclose(q_norm_file);
 	fclose(u_norm_file); fclose(w_norm_file);
 	fclose(time_file);
+}
+
+void printTestValue(double mat[Nx + 2][Np + 2], int i, int j, int target_tt, int tt) {
+	if (target_tt != tt)
+		return;
+	printf("\nCurrent time iteration = %d\n", tt);
+	if (mat == T_)         printf("T");
+	else if (mat == q_)    printf("q");
+	else if (mat == u_)    printf("u");
+	else if (mat == w_)    printf("w");
+	else if (mat == phix_) printf("phix");
+	printf("[%d][%d] = %1.25e\n", i, j, mat[i][j]);
+}
+
+void printTestValue(double mat[Nx + 2][Np + 2], int i, int j, int target_tt, int tt, string msg) {
+	printf("%s", msg.c_str());
+	printTestValue(mat, i, j, target_tt, tt);
+}
+
+void printTestValue(double mat[Nx + 2][Np + 2], int i, int j) {
+	printTestValue(mat, i, j, -1, -1);
+}
+
+void printTestValue(double mat[Nx + 2][Np + 2], int i, int j, string msg) {
+	printf("%s", msg.c_str());
+	printTestValue(mat, i, j, -1, -1);
 }
 
 // !!AlphaVersion!!

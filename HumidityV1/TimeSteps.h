@@ -58,19 +58,19 @@ void forwardEuler_singleStep(double t, double stepSize, double T_arr[numCellX][n
 			double RHS;
 			// Updating T
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_T_, FF_T_) +
-					(*source_T_fcnPtr)(T, q, u, w, x, p, t);
+					(*source_T_fptr)(T, q, u, w, x, p, t);
 			T_[i][j] = T_arr[i][j] + RHS * stepSize;
 			(*update_k_RK_fptr)(k_rk_T_, i, j, rkCoef, RHS);
 
 			// Updating q
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_q_, FF_q_) +
-					(*source_q_fcnPtr)(T, q, u, w, x, p, t);
+					(*source_q_fptr)(T, q, u, w, x, p, t);
 			q_[i][j] = q_arr[i][j] + RHS * stepSize;
 			(*update_k_RK_fptr)(k_rk_q_, i, j, rkCoef, RHS);
 
 			// Updating u
 			RHS = -volInv * calcFluxes_OneCell(i, j, GG_u_, FF_u_) - phix_[i][j] +
-					(*source_u_fcnPtr)(T, q, u, w, x, p, t);
+					(*source_u_fptr)(T, q, u, w, x, p, t);
 			u_[i][j] = u_arr[i][j] + RHS * stepSize;
 			(*update_k_RK_fptr)(k_rk_u_, i, j, rkCoef, RHS);
 		}

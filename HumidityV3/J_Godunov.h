@@ -89,6 +89,25 @@ void calcFluxes_upwind() {
 	}
 }
 
+void writeCSV_flux(double mat[Nx + 1][Np + 1], string filename) {
+	FILE *f = fopen(filename.c_str(), "wb");
+	for (int i = 0; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j)
+			fprintf(f, "%1.20e,", mat[i][j]);
+		fprintf(f, "%1.20e\n", mat[i][Np]);
+	}
+	fclose(f);
+}
+
+void writeCSV_flux() {
+	writeCSV_flux(FF_T_, "Output/FF_T.csv");
+	writeCSV_flux(FF_q_, "Output/FF_q.csv");
+	writeCSV_flux(FF_u_, "Output/FF_u.csv");
+	writeCSV_flux(GG_T_, "Output/GG_T.csv");
+	writeCSV_flux(GG_q_, "Output/GG_q.csv");
+	writeCSV_flux(GG_u_, "Output/GG_u.csv");
+}
+
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Parameters for Godunov Type Flux Calculation

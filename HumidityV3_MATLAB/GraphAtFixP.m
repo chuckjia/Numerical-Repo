@@ -3,10 +3,10 @@
 
 clear; clc; close all
 
-solnName = 'T';
+solnName = 'q';
 stepNo = -1;
-% projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
-projectPath = "/Users/chuckjia/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_11_6_1_14_14_h270_2700m/";
+projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";
+% projectPath = "~/Documents/Workspace/DataStorage/Humidity/temp/2018_11_29_11_7_42";
 
 
 % iVec = [11:19];

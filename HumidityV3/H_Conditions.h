@@ -32,7 +32,7 @@ void (*enforceBC_fptr)();
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary values specified by a function, defined by (*bdVal_fptr)(p)
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double (&bdVal_fptr)(double)) {
-	for (int j = 1; j <= Np; ++j) {  // Changed!
+	for (int j = 1; j <= Np; ++j) {
 		// This interpolation on p only works for pB() that are sufficiently flat on the left side of domain
 		double p = 0.5 * (getCellBottLeftP(1, j) + getCellTopLeftP(1, j));
 		sl[0][j] = 2 * bdVal_fptr(p) - sl[1][j];
@@ -41,13 +41,13 @@ void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double (&bdVal_fptr)
 
 // Enforce Dirichlet BCs on the LEFT boundary: with constant boundary value, specified by bdVal
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double bdVal) {
-	for (int j = 1; j <= Np; ++j)  // Changed!
+	for (int j = 1; j <= Np; ++j)
 		sl[0][j] = 2 * bdVal - sl[1][j];
 }
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary value 0
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP]) {
-	for (int j = 1; j <= Np; ++j)  // Changed!
+	for (int j = 1; j <= Np; ++j)
 		sl[0][j] = -sl[1][j];
 }
 
@@ -56,7 +56,7 @@ double T_leftBdVal_[numCellP], q_leftBdVal_[numCellP], u_leftBdVal_[numCellP];
 
 // Enforce Dirichlet BCs on the LEFT boundary: with boundary value from cache
 void enforceDirichlet_leftBD(double sl[numCellX][numCellP], double bdVal_[numCellP]) {
-	for (int j = 1; j <= Np; ++j)  // Changed!
+	for (int j = 1; j <= Np; ++j)
 		sl[0][j] = 2 * bdVal_[j] - sl[1][j];
 	// sl[0][j] = bdVal_[j];  // CHANGED!
 }
@@ -207,9 +207,9 @@ void enforceBC_MDL1() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Function pointers: mathematical functions to calculate source term values
-double (*source_T_fcnPtr)(double T, double q, double u, double w, double x, double p, double t),
-		(*source_q_fcnPtr)(double T, double q, double u, double w, double x, double p, double t),
-		(*source_u_fcnPtr)(double T, double q, double u, double w, double x, double p, double t);
+double (*source_T_fptr)(double T, double q, double u, double w, double x, double p, double t),
+		(*source_q_fptr)(double T, double q, double u, double w, double x, double p, double t),
+		(*source_u_fptr)(double T, double q, double u, double w, double x, double p, double t);
 
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -232,9 +232,8 @@ void enforceIC() {
 			u_[i][j] = (*initU_fptr)(x, p, 0);
 			// w_[i][j] = (*initW_fptr)(x, p, 0);  // Changed
 		}
-	//(*projU_fptr)();  // Changed
-	//(*calcW_fptr)();  // Changed
-	// writeCSV_matrix(u_, "Output/u_after.csv");
+	(*projU_fptr)();
+	(*calcW_fptr)();
 }
 
 
@@ -275,6 +274,8 @@ void aveSoln(int tt) {
 	if (!(tt % aveSolnFreq_u))     aveSoln(u_);
 	if (!(tt % aveSolnFreq_w))     aveSoln(w_);
 	if (!(tt % aveSolnFreq_phix))  aveSoln(phix_);
+
+	(*enforceBC_fptr)();
 }
 
 
@@ -294,9 +295,9 @@ void setConditions() {
 		fillCache_leftBdVal_MDL0();
 		enforceBC_fptr = &enforceBC_MDL0;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL0;
-		source_q_fcnPtr = &source_q_fcn_MDL0;
-		source_u_fcnPtr = &source_u_fcn_MDL0;
+		source_T_fptr = &source_T_fcn_MDL0;
+		source_q_fptr = &source_q_fcn_MDL0;
+		source_u_fptr = &source_u_fcn_MDL0;
 		// Averaging method
 		aveSoln_fptr = &aveSoln;
 		aveMethodApplied = true;
@@ -311,9 +312,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL1;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL1;
-		source_q_fcnPtr = &source_q_fcn_MDL1;
-		source_u_fcnPtr = &source_u_fcn_MDL1;
+		source_T_fptr = &source_T_fcn_MDL1;
+		source_q_fptr = &source_q_fcn_MDL1;
+		source_u_fptr = &source_u_fcn_MDL1;
 		// Averaging method
 		aveSoln_fptr = &empty_fcn;
 		aveMethodApplied = false;

@@ -53,17 +53,17 @@ void forwardEuler_singleStep(double t, double _Dt,
 			double RHS;  // The source terms in the forward-Euler scheme
 
 			// Update T
-			RHS = -volInv * calcFlux_singleCell(i, j, GG_T_, FF_T_) + (*source_T_fcnPtr)(T, q, u, w, x, p, t);
+			RHS = -volInv * calcFlux_singleCell(i, j, GG_T_, FF_T_) + (*source_T_fptr)(T, q, u, w, x, p, t);
 			T_[i][j] = T_arr[i][j] + RHS * _Dt;
 			(*update_k_RK_fptr)(k_rk_T_, i, j, rkCoef, RHS);
 
 			// Update q
-			RHS = -volInv * calcFlux_singleCell(i, j, GG_q_, FF_q_) + (*source_q_fcnPtr)(T, q, u, w, x, p, t);
+			RHS = -volInv * calcFlux_singleCell(i, j, GG_q_, FF_q_) + (*source_q_fptr)(T, q, u, w, x, p, t);
 			q_[i][j] = q_arr[i][j] + RHS * _Dt;
 			(*update_k_RK_fptr)(k_rk_q_, i, j, rkCoef, RHS);
 
 			// Update u
-			RHS = -volInv * calcFlux_singleCell(i, j, GG_u_, FF_u_) - phix_[i][j] + (*source_u_fcnPtr)(T, q, u, w, x, p, t);
+			RHS = -volInv * calcFlux_singleCell(i, j, GG_u_, FF_u_) - phix_[i][j] + (*source_u_fptr)(T, q, u, w, x, p, t);
 			u_[i][j] = u_arr[i][j] + RHS * _Dt;
 			(*update_k_RK_fptr)(k_rk_u_, i, j, rkCoef, RHS);
 		}

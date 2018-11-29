@@ -20,6 +20,8 @@ end
 
 pRange = max(floor(graphSize(2) * (1-proportion)), 1) : graphSize(2);
 [~, fig] = contourf(centersX(:, pRange), centersP(:, pRange), soln(:, pRange), contourLevels);
+caxis([contourLevels(1), contourLevels(end)])
+colorbar
 
 if nargin == 5
     title(titleLine1);

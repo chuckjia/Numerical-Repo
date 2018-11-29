@@ -292,9 +292,9 @@ void enforceBC_MDL3() {
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 // Function pointers: mathematical functions to calculate source term values
-double (*source_T_fcnPtr)(double T, double q, double u, double w, double x, double p, double t),
-		(*source_q_fcnPtr)(double T, double q, double u, double w, double x, double p, double t),
-		(*source_u_fcnPtr)(double T, double q, double u, double w, double x, double p, double t);
+double (*source_T_fptr)(double T, double q, double u, double w, double x, double p, double t),
+		(*source_q_fptr)(double T, double q, double u, double w, double x, double p, double t),
+		(*source_u_fptr)(double T, double q, double u, double w, double x, double p, double t);
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Set All Conditions: ICs, BCs and Source Functions
@@ -312,9 +312,9 @@ void setConditions() {
 		fillCache_leftBdVal_MDL0();
 		enforceBC_fptr = &enforceBC_MDL0;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL0;
-		source_q_fcnPtr = &source_q_fcn_MDL0;
-		source_u_fcnPtr = &source_u_fcn_MDL0;
+		source_T_fptr = &source_T_fcn_MDL0;
+		source_q_fptr = &source_q_fcn_MDL0;
+		source_u_fptr = &source_u_fcn_MDL0;
 		return;
 
 	case 1:
@@ -327,9 +327,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL1;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL1;
-		source_q_fcnPtr = &source_q_fcn_MDL1;
-		source_u_fcnPtr = &source_u_fcn_MDL1;
+		source_T_fptr = &source_T_fcn_MDL1;
+		source_q_fptr = &source_q_fcn_MDL1;
+		source_u_fptr = &source_u_fcn_MDL1;
 		return;
 
 	case 102:
@@ -341,9 +341,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL102;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL1;
-		source_q_fcnPtr = &source_q_fcn_MDL1;
-		source_u_fcnPtr = &source_u_fcn_MDL1;
+		source_T_fptr = &source_T_fcn_MDL1;
+		source_q_fptr = &source_q_fcn_MDL1;
+		source_u_fptr = &source_u_fcn_MDL1;
 		return;
 
 	case 2:
@@ -355,9 +355,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL2;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL2;
-		source_q_fcnPtr = &source_q_fcn_MDL2;
-		source_u_fcnPtr = &source_u_fcn_MDL2;
+		source_T_fptr = &source_T_fcn_MDL2;
+		source_q_fptr = &source_q_fcn_MDL2;
+		source_u_fptr = &source_u_fcn_MDL2;
 		return;
 
 	case 3:
@@ -369,9 +369,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL3;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL3;
-		source_q_fcnPtr = &source_q_fcn_MDL3;
-		source_u_fcnPtr = &source_u_fcn_MDL3;
+		source_T_fptr = &source_T_fcn_MDL3;
+		source_q_fptr = &source_q_fcn_MDL3;
+		source_u_fptr = &source_u_fcn_MDL3;
 		return;
 
 	case 4:  // All are the same with MDL1, except for all T functions
@@ -383,9 +383,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL1;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL4;
-		source_q_fcnPtr = &source_q_fcn_MDL1;
-		source_u_fcnPtr = &source_u_fcn_MDL1;
+		source_T_fptr = &source_T_fcn_MDL4;
+		source_q_fptr = &source_q_fcn_MDL1;
+		source_u_fptr = &source_u_fcn_MDL1;
 		return;
 
 	case 5:  // All are the same with MDL1, except for all T functions
@@ -397,9 +397,9 @@ void setConditions() {
 		// Boundary conditions
 		enforceBC_fptr = &enforceBC_MDL1;
 		// Source functions
-		source_T_fcnPtr = &source_T_fcn_MDL5;
-		source_q_fcnPtr = &source_q_fcn_MDL1;
-		source_u_fcnPtr = &source_u_fcn_MDL1;
+		source_T_fptr = &source_T_fcn_MDL5;
+		source_q_fptr = &source_q_fcn_MDL1;
+		source_u_fptr = &source_u_fcn_MDL1;
 		return;
 	}
 }

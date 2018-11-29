@@ -3,24 +3,27 @@
 
 clearAllScp
 
-% ===== ===== ===== ===== 
+% ===== ===== ===== =====
 % Settings
-% ===== ===== ===== ===== 
+% ===== ===== ===== =====
 
 solnName = "T";
 steps = 1:100;  % Vector of all the step numbers to be included in movie
-zTopVal = 7e-5;
+saveFile = false;
+
+zTopVal = 3e-5;
 figureSize = [10, 10, 900, 700];  % x-pos, y-pos, width, height
 % Path and solution file names
 projectPath = "~/Documents/Workspace/Git/Numerical-Repo/HumidityV3/";  % Path to the outermost folder
+projectPath = "~/Documents/Workspace/Eclipse/JIASpace/HumidityTest/";
 outputFilename = "Output/Error_" + solnName + "_slow.avi";
 
-% ===== ===== ===== ===== 
+% ===== ===== ===== =====
 % Generate Movies
-% ===== ===== ===== ===== 
+% ===== ===== ===== =====
 
 % Mesh and paramters
-param = readParam(projectPath + "Output/Param.csv"); 
+param = readParam(projectPath + "Output/Param.csv");
 centersX = csvread(projectPath + "Output/CellCenters_X.csv"); centersX = centersX(2:end-1, 2:end-1);
 centersP = csvread(projectPath + "Output/CellCenters_P.csv"); centersP = centersP(2:end-1, 2:end-1);
 
@@ -37,7 +40,7 @@ for stepNo = steps
     viewAngle = false;
     graphSoln(filename, centersX, centersP, titleLine1, titleLine2, viewAngle);
     zlim([-zTopVal, zTopVal])
-
+    
     F(frameNo) = getframe(gcf);
     if (frameNo == 1) % Allocate memory space at the beginning
         F = repmat(F, 1, length(steps));
@@ -45,8 +48,9 @@ for stepNo = steps
 end
 
 fprintf("Parameters used: mesh size = %dx%d\n", param.Nx, param.Np);
-slowMotion(F, 5, char(outputFilename));  
-
+if saveFile
+    slowMotion(F, 5, char(outputFilename));
+end
 
 
 

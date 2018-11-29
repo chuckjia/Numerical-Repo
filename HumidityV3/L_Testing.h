@@ -47,19 +47,57 @@ void projU_diagnostics() {
 //	printf("   %1.20e,  %1.20e\n\n", center[0], center[1]);
 //}
 
+void writeCSV_testQuad() {
+	FILE *fu = fopen("Output/gradhU_x.csv", "wb");
+	int last_j = Np - 1;
+	for (int i = 0; i < Nx; ++i) {
+		for (int j = 0; j < last_j; ++j)
+			fprintf(fu, "%1.20e,", getGradhU_x(i, j));
+		fprintf(fu, "%1.20e\n", getGradhU_x(i, last_j));
+	}
+	fclose(fu);
+}
+
+void writeCSV_testQuadCoef_helper(double mat[Nx + 1][Np + 1], string filename) {
+	FILE *f = fopen(filename.c_str(), "wb");
+	for (int i = 0; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j)
+			fprintf(f, "%1.20e,", mat[i][j]);
+		fprintf(f, "%1.20e\n", mat[i][Np]);
+	}
+	fclose(f);
+}
+
+void writeCSV_testQuadCoef() {
+	printf(">> Printed all quad coefficients a2, a3, and a4 to CSV file.\n");
+	writeCSV_testQuadCoef_helper(a2_quad_, "Output/a2_quad.csv");
+	writeCSV_testQuadCoef_helper(a3_quad_, "Output/a3_quad.csv");
+	writeCSV_testQuadCoef_helper(a4_quad_, "Output/a4_quad.csv");
+	writeCSV_testQuadCoef_helper(e12_MInv_quad_, "Output/e12_MInv_quad.csv");
+
+}
+
+void writeCSV_testCellTopRightU() {
+	FILE *f = fopen("Output/CellTopRightU.csv", "wb");
+	for (int i = 0; i <= Nx; ++i) {
+		for (int j = 0; j < Np; ++j)
+			fprintf(f, "%1.20e,", getCellTopRightU(i, j));
+		fprintf(f, "%1.20e\n", getCellTopRightU(i, Np));
+	}
+	fclose(f);
+}
+
+void testSource() {
+	double x = 10.3847, p = 10.567, t = 20.123;
+	printf("At x = %1.5e, p = %1.5e, t = %1.5e,\n  Source = %1.25e\n", x, p, t, (*source_T_fptr)(1, 1, 1, 1, x, p, t));
+}
+
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
  * Testing
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
 void testing() {
-	//	writeCSV_quadCoefs();
-	//	writeCSV_matrix(w_, "Output/w_test.csv");
-	//	writeCSV_MInv_quad();
-	//	test_u_quad();
-	//	test_gradhUx();
 	runTimeSteps();
-	//	test_gradhUx();
-	//test_u_quad();
 }
 
 #endif /* L_TESTING_H_ */

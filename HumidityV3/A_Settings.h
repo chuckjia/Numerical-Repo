@@ -63,11 +63,13 @@ double    finalTime   = numTimeStep * Dt;  // Final time
  *
  */
 
-int aveSolnFreq_T    = 40;
-int aveSolnFreq_q    = 100;
-int aveSolnFreq_u    = 2;
-int aveSolnFreq_w    = 2;
-int aveSolnFreq_phix = 2;
+int numMountain = 1;
+
+int aveSolnFreq_T    = 32;  // Two mountains: 80, 3000, 2, 2, 2
+int aveSolnFreq_q    = -1;
+int aveSolnFreq_u    = 1;
+int aveSolnFreq_w    = -1;
+int aveSolnFreq_phix = -1;
 
 int numProgMsg       = 200;
 int movieFrameFreq   = 500;
@@ -92,6 +94,12 @@ void validateProgramParameters() {
 	if (aveSolnFreq_u <= 0)     aveSolnFreq_u    = numTimeStep + 1;
 	if (aveSolnFreq_w <= 0)     aveSolnFreq_w    = numTimeStep + 1;
 	if (aveSolnFreq_phix <= 0)  aveSolnFreq_phix = numTimeStep + 1;
+
+	if (numMountain != 1 && numMountain != 2) {
+		printf(">> ! Number of mountains is not set correctly. Using default value of 1 mountain.\n");
+		numMountain = 1;
+	}
+	if (modelNo == 1) numMountain = 1;
 }
 
 

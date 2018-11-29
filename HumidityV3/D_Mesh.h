@@ -21,8 +21,8 @@ const int Np = numDivision;  // Number of space divisions, p-direction
 // Following constants are set up for code readability
 const int numCellX = Nx + 2;  // Number of cells, x-direction
 const int numCellP = Np + 2;  // Number of cells, p-direction
-int lastRealIndexX = Nx;  // Largest x-index of all non-ghost cells; depreciated
-int lastRealIndexP = Np;  // Largest p-index of all non-ghost cells; depreciated
+int lastRealIndexX = Nx;  // Largest x-index of all non-ghost cells; deprecated
+int lastRealIndexP = Np;  // Largest p-index of all non-ghost cells; deprecated
 int lastGhostIndexX = Nx + 1;  // x-index of ghost cells on the RIGHT side of domain
 int lastGhostIndexP = Np + 1;  // p-index of ghost cells on the TOP side of domain
 const int numGridPtX = numCellX + 1;  // Number of grid points, x-direction (including ghost cells)
@@ -57,8 +57,10 @@ void calcGridPts() {
 		meshGridX_[i] = x;
 		double Dp = ((*pB_fptr)(x) - pA) / Np;
 		cellLeftDp_[i] = Dp;
-		for (int j = 0; j < numGridPtP; ++j)
+		for (int j = 0; j < numGridPtP; ++j) {
 			meshGridP_[i][j] = pA + (j - 1) * Dp;
+
+		}
 	}
 }
 
@@ -120,16 +122,21 @@ void calcTrapezoidCenter(double center[2], double x1, double x2, double x3, doub
 void calcBaryCenters() {
 	double h = Dx / 3.;  // h = (x2_Outer - x1_Outer) / 3
 	for (int i = 0; i < numCellX; ++i) {
-		double x1_outer = getCellLeftX(i), x2_outer = getCellRightX(i), x1_inner = (2 * x1_outer + x2_outer) / 3.;
-		double DpVal_right = getCellRightDp(i), DpVal_left = getCellLeftDp(i);
+		double  x1_outer = getCellLeftX(i),
+				x2_outer = getCellRightX(i),
+				x1_inner = (2 * x1_outer + x2_outer) / 3.;
+		double DpVal_right = getCellRightDp(i),
+				DpVal_left = getCellLeftDp(i);
 
 		double r1 = DpVal_right / (DpVal_right + DpVal_left);  // == a / (a + b)
 		cellCenterX_[i] = x1_inner + h * r1;
 		for (int j = 0; j < numCellP; ++j) {
-			double p1_outer = getCellBottLeftP(i, j), p2_outer = getCellBottRightP(i, j),
-					p3_outer = getCellTopRightP(i, j), p4_outer = getCellTopLeftP(i, j);
-			double p1_inner = (p1_outer + p2_outer + p4_outer) / 3;
-			cellCenterP_[i][j] = p1_inner + (DpVal_left - (p4_outer - p3_outer)) / 3 * r1;
+			double  p1_outer = getCellBottLeftP(i, j),
+					p2_outer = getCellBottRightP(i, j),
+					p3_outer = getCellTopRightP(i, j),
+					p4_outer = getCellTopLeftP(i, j);
+			double p1_inner = (p1_outer + p2_outer + p4_outer) / 3.;
+			cellCenterP_[i][j] = p1_inner + (DpVal_left - (p4_outer - p3_outer)) / 3. * r1;
 		}
 	}
 }

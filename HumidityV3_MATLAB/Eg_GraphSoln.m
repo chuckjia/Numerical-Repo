@@ -4,7 +4,7 @@
 clearAllScp
 projectPath = "~/Documents/Workspace/git/Numerical-Repo/HumidityV3/";  % Path to the outmost folder
 % projectPath = "~/git/Numerical-Repo/HumidityV3/";  % Path on Ubuntu
-% projectPath = "/Users/chuckjia/Documents/Workspace/Eclipse/JIASpace/HumidityTest/";
+projectPath = "~/Documents/Workspace/DataStorage/Humidity/HumidityV3/2018_11_29_15_39_25_good/";
 projectPath = genFolderPathName(projectPath);
 
 % ===== ===== ===== =====

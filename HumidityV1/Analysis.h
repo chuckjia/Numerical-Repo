@@ -63,7 +63,7 @@ void printSchemeSummary() {
  * Print The Mesh To File
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-void printMeshToFile() {
+void writeCSV_CellCenters() {
 	FILE *fGridX = fopen("Results/meshGridX.txt", "wb");
 	FILE *fGridP = fopen("Results/meshGridP.txt", "wb");
 	for (int i = 0; i < numGridPtX; ++i)
@@ -348,7 +348,7 @@ void printExactVelocityToFile() {
 		printExactVelocityToMovie(tt);
 	printf("\n\nExact velocity field printed.\n");
 	writeCSV_param();
-	printMeshToFile();
+	writeCSV_CellCenters();
 	writeCSV_finalSolnErr();
 }
 
@@ -359,7 +359,7 @@ void peformAnalysis() {
 	showL2Errors();
 	if (_printResultToFile_) {
 		writeCSV_param();
-		printMeshToFile();
+		writeCSV_CellCenters();
 		writeCSV_finalSolnErr();
 	}
 	if (_printExactSolnToFile_)

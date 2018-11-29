@@ -119,7 +119,7 @@ void testSourceFcns_helper(int numTestTimeSteps,
 			for (int j = 0; j < Np; ++j) {
 				double T = T_[i][j], q = q_[i][j], u = u_[i][j], w = w_[i][j];
 				double x = getCellCenterX(i, j), p = getCellCenterP(i, j), t = tt * Dt;
-				printf("%1.2f ", (*source_T_fcnPtr)(T, q, u, w, x, p, t));
+				printf("%1.2f ", (*source_T_fptr)(T, q, u, w, x, p, t));
 			}
 			printf("\n");
 		}
@@ -130,11 +130,11 @@ void testSourceFcns_helper(int numTestTimeSteps,
 void testSourceFcns() {
 	int numTestTimeSteps = 5;
 	printf("Testing on source function T:\n\n");
-	testSourceFcns_helper(numTestTimeSteps, source_T_fcnPtr);
+	testSourceFcns_helper(numTestTimeSteps, source_T_fptr);
 	printf("Testing on source function q:\n\n");
-	testSourceFcns_helper(numTestTimeSteps, source_q_fcnPtr);
+	testSourceFcns_helper(numTestTimeSteps, source_q_fptr);
 	printf("Testing on source function u:\n\n");
-	testSourceFcns_helper(numTestTimeSteps, source_u_fcnPtr);
+	testSourceFcns_helper(numTestTimeSteps, source_u_fptr);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -180,7 +180,7 @@ void printQuadCellDiagMatToFile() {
 void testQuadCell() {
 	writeCSV_param();
 	writeCSV_finalSolnErr();
-	printMeshToFile();
+	writeCSV_CellCenters();
 	printQuadCellCoefToFile();
 	printQuadCellDiagMatToFile();
 }
@@ -345,7 +345,7 @@ void test_pB_xDer_MDL0() {
 	int n = sizeof(arr) / sizeof(arr[0]);
 	for (int i = 0; i < n; ++i)
 		printf("arr[%d] = %1.2e, pB_x = %1.7e \n", i, arr[i], pBxDer_fcn_MDL0(arr[i]));
-	printf("%f", _c1_pBxDer_MDL0);
+	printf("%f", _c_pBxDer_MDL0);
 }
 
 /* ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

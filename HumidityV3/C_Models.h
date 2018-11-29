@@ -29,13 +29,15 @@ double (*pBxDer_fptr)(double x);  // Function pointer: derivative of pB function
  * ----- ----- ----- ----- ----- ----- */
 
 // Coefficients used in the model
-double _h_pB_MDL0, _c1_pBxDer_MDL0, _n_initU_MDL0, _cp_initU_MDL0, _cx_initU_MDL0;
+double _h_pB_MDL0, _h2_pB_MDL0, _c_pBxDer_MDL0, _c2_pBxDer_MDL0, _n_initU_MDL0, _cp_initU_MDL0, _cx_initU_MDL0;
 
 // Set values to the coefficients defined in this section
 // Coefficients need to be initialized here, because some of them depend on x0, xf, etc
 void setFcnCoef_MDL0() {
-	_h_pB_MDL0 = 280.;  // Multiplicative factor that controls the height of mountain
-	_c1_pBxDer_MDL0 = _h_pB_MDL0 / 1.8e7;  // heightFactor * 2 / 6000^2
+	_h_pB_MDL0 = 250.;  // Multiplicative factor that controls the height of mountain
+	_h2_pB_MDL0 = 200.;
+	_c_pBxDer_MDL0 = _h_pB_MDL0 / 1.8e7;  // heightFactor * 2 / 6000^2
+	_c2_pBxDer_MDL0 = _h2_pB_MDL0 / 1.8e7;  // heightFactor * 2 / 6000^2
 
 	_n_initU_MDL0 = 1.;   // n in (4.10)
 	_cp_initU_MDL0 = M_PI / p0_CONST;   // Coefficient for p in (4.10)
@@ -48,14 +50,35 @@ void setFcnCoef_MDL0() {
 
 // pB function
 double pB_fcn_MDL0(double x) {
-	double term = x - 37500.;
-	return 1000. - _h_pB_MDL0 * exp(-term * term / 3.6e7);
+	// Original 1 mountain problem
+	if (numMountain == 1) {
+		double term = x - 37500.;
+		return 1000. - _h_pB_MDL0 * exp(-term * term / 3.6e7);
+	}
+
+	// 2 mountains
+	double term = x - 37500., h = _h_pB_MDL0;
+	if (x > 75000) {
+		term = x - 112500.;
+		h = _h2_pB_MDL0;
+	}
+	return 1000. - h * exp(-term * term / 3.6e7);
 }
 
 // Derivative of pB function
 double pBxDer_fcn_MDL0(double x) {
-	double term = x - 37500.;
-	return _c1_pBxDer_MDL0 * term * exp(-term * term / 3.6e7);
+	// Original 1 mountain problem
+	if (numMountain == 1) {
+		double term = x - 37500.;
+		return _c_pBxDer_MDL0 * term * exp(-term * term / 3.6e7);
+	}
+
+	double term = x - 37500., c = _c_pBxDer_MDL0;
+	if (x > 75000) {
+		term = x - 112500.;
+		c = _c2_pBxDer_MDL0;
+	}
+	return c * term * exp(-term * term / 3.6e7);
 }
 
 /* ----- ----- ----- ----- ----- -----
@@ -113,7 +136,7 @@ double source_u_fcn_MDL0(double T, double q, double u, double w, double x, doubl
 void setParam_MDL0() {
 	// Parameters for the domain geometry
 	x0 = 0.;
-	xf = 75000.;
+	xf = 75000. * numMountain;  // Changed!
 	pA = 250.;
 	pB_fptr = &pB_fcn_MDL0;
 	pBxDer_fptr = &pBxDer_fcn_MDL0;
