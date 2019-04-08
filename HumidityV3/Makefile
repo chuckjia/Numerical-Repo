@@ -18,7 +18,7 @@ run:
 	fi 
 
 clang:
-	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -O0
+	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -O3
 	Output/./out notInEclipse
 
 cleanall:
@@ -45,7 +45,7 @@ new:
 	clear
 	clear
 	clear
-	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -O0
+	clang Driver.cpp -o Output/out -lm -lstdc++ -std=c++11 -O3
 	Output/./out notInEclipse
 
 all:

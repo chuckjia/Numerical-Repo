@@ -97,7 +97,7 @@ double init_q_fcn_MDL0(double x, double p, double t) {
 		double x_sec = (xf - x0) * 0.1, reduction = x > (x0 + x_sec) ? 0.0052 : 0.0052 / (x_sec - x0) * (x - x0);
 		return qs_fcn(T, p) - reduction;
 	}
-	return qs_fcn(T, p) - 0.0052;
+	return (qs_fcn(T, p) - 0.0052) / 2;
 }
 
 // Initial u function

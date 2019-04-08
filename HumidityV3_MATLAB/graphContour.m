@@ -1,9 +1,12 @@
-function fig = graphContour(filename, centersX, centersP, contourLevels, titleLine1, titleLine2, viewAngle, proportion)
+function fig = graphContour(filename, centersX, centersP, contourLevels, titleLine1, titleLine2, viewAngle, proportion, colmapName)
 %PLOTCONTOUR Summary of this function goes here
 %   Detailed explanation goes here
 
-if nargin < 8
-    proportion = 1;
+if nargin < 9
+    colmapName = 'parula';
+    if nargin < 8
+        proportion = 1;
+    end
 end
 
 soln = csvread(filename);
@@ -20,7 +23,9 @@ end
 
 pRange = max(floor(graphSize(2) * (1-proportion)), 1) : graphSize(2);
 [~, fig] = contourf(centersX(:, pRange), centersP(:, pRange), soln(:, pRange), contourLevels);
+xlabel("x-axis");  ylabel("Solution Value");
 caxis([contourLevels(1), contourLevels(end)])
+colormap(colmapName)
 colorbar
 
 if nargin == 5

@@ -1,6 +1,8 @@
 function graphSolnWrapper(projectPath, solnFileFullPath, param, solnName, plotName, stepNo, ...
-    graphGhostCells, graphContourPlots, viewAngle, saveToPDF)
+    graphGhostCells, graphContourPlots, viewAngle, saveToPDF, contourProportion, colmapName)
 %GRAPHSOLNWRAPPER  Wrapper function for graphing numerical solutions, numerical errors, or exact solutions
+
+saveSurfPlotToPDF = false;
 
 % Parsing parameters
 if nargin < 7
@@ -15,8 +17,12 @@ end
 if nargin < 10
     saveToPDF = false;
 end
-
-contourProportion = 0.5;
+if nargin < 11
+    contourProportion = 0.5;
+end
+if nargin < 12
+    colmapName = 'default';  % or 'gray'
+end
 
 if ~exist(solnFileFullPath, 'file')
     fprintf("File does not exist (yet)!\n");
@@ -31,7 +37,8 @@ centersP = csvread(projectPath + "Output/CellCenters_P.csv");
 % Generate graph titles
 titleLine1 = "Plot of " + plotName + " " + solnName;
 plotTime = param.Dt * stepNo;
-titleLine2 = "Time = " + num2str(plotTime) + "s";
+displayPlotTime = plotTime;
+titleLine2 = "Time = " + num2str(displayPlotTime) + "s";
 
 if graphGhostCells
     % Graph all solution values, with ghost cell values
@@ -52,8 +59,8 @@ else
 end
 
 % Print pdf
-if saveToPDF
-    filename = "Output/" + solnName + "_" + num2str(plotTime) + "s";
+if saveToPDF && saveSurfPlotToPDF
+    filename = "Output/" + solnName + "_" + num2str(displayPlotTime) + "s";
     saveas(fig, char(filename), 'pdf');
 end
 
@@ -63,13 +70,13 @@ if graphContourPlots
     figure
     if graphGhostCells
         fig = graphContour(solnFileFullPath, centersX, centersP, contourLevels, titleLine1, titleLine2, ...
-            viewAngle, contourProportion);
+            viewAngle, contourProportion, colmapName);
     else
         fig = graphContour(solnFileFullPath, centersX_noGhost, centersP_noGhost, contourLevels, titleLine1, titleLine2, ...
-            viewAngle, contourProportion);
+            viewAngle, contourProportion, colmapName);
     end
     if saveToPDF
-        filename = "Output/" + solnName + "_" + num2str(plotTime) + "s_contour";
+        filename = "Output/" + solnName + "_" + num2str(displayPlotTime) + "s_contour";
         saveas(fig, char(filename), 'pdf');
     end
 end

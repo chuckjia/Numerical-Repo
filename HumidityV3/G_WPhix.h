@@ -36,8 +36,8 @@ void (*calcPhix_fptr)();
 // This function uses formula in (3.42): questionable calculation
 void calcPhix_orig() {
 	for (int i = 1; i <= Nx; ++i) {
-//		phix_[i][0] = 0;  // Might be unnecessary, just to be safe
-//		phix_[i][1] = 0;
+		//		phix_[i][0] = 0;  // Might be unnecessary, just to be safe
+		//		phix_[i][1] = 0;
 		double sum = 0, DpVal = getCellCenterDp(i);
 		for (int j = 1; j < Np; ++j) {
 			// sum += (getCellTopCenterP(i, j) - getCellBottCenterP(i, j)) / getCellCenterP(i, j) * getGradhT_x(i, j);  // Changed! Back to old implementation

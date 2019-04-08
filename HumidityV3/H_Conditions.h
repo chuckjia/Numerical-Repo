@@ -149,7 +149,7 @@ void fillCache_leftBdVal_MDL0() {
 	for (int j = 0; j < numCellP; ++j) {
 		double p = getCellCenterP(1, j), T = init_T_fcn_MDL0(x0, p, 0);
 		T_leftBdVal_[j] = T;  // Put T values in cache
-		q_leftBdVal_[j] = qs_fcn(T, p);  // Put q values in cache
+		q_leftBdVal_[j] = qs_fcn(T, p) * 0.5;  // Put q values in cache
 		u_leftBdVal_[j] = init_u_fcn_MDL0(0, p, 0); // - lambda_x_leftBdVal;  // Put u values in cache
 	}
 }

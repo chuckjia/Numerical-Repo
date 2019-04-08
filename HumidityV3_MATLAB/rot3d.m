@@ -60,9 +60,12 @@ if FrameRate < 0
     FrameRate = default_FrameRate;
 end
 
+% axis vis3d  % Can fix limit of z axis, but does not have good result
+
 frameNo = 1;
 for az = xyAngleVec
     view(az, zAngle)
+    % zlim([0.005, 0.025])  % Use this to keep z axis fixed
     drawnow
     
     if saveVideo
