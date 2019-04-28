@@ -49,19 +49,16 @@ double    finalTime   = numTimeStep * Dt;  // Final time
  * Settings
  * ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== */
 
-/*
- * aveSolnFreq    : The frequency of using the averaging method. 0 or negative values indicate no averaging
- * numProgMsg     : Total number of progress messages. Progress messages are more frequent than movie frame prints and L2 norm info,
- *                     guaranteed in setTimeSteps
- * movieFrameFreq : Movie I/O: The frequency of printing results to file as movie frames
- * calcL2NormFreq : Result evaluations: Choose whether to calculate, show, and print to file the L2 errors during computation
- *
- * movieFramesFolderName  : Name of the folder to print movie frames
- * _printResultToFile_    : Choose if print numerical SOLUTION and ERRORS to file at the END of computation
- * _printExactSolnToFile_ : Choose if print EXACT solutions to file at the END of computation
- * _useCompatibleInitQ_   : Choose if use the more compatible initial conditions for q
- *
- */
+// aveSolnFreq    : The frequency of using the averaging method. 0 or negative values indicate no averaging
+// numProgMsg     : Total number of progress messages. Progress messages are more frequent than movie frame prints and L2 norm info,
+//                      guaranteed in setTimeSteps
+// movieFrameFreq : Movie I/O: The frequency of printing results to file as movie frames
+// calcL2NormFreq : Result evaluations: Choose whether to calculate, show, and print to file the L2 errors during computation
+//
+// movieFramesFolderName  : Name of the folder to print movie frames
+// _printResultToFile_    : Choose if print numerical SOLUTION and ERRORS to file at the END of computation
+// _printExactSolnToFile_ : Choose if print EXACT solutions to file at the END of computation
+// _useCompatibleInitQ_   : Choose if use the more compatible initial conditions for q
 
 int numMountain = 1;
 
